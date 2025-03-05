@@ -110,6 +110,16 @@ export interface ClientToServerEvents {
 }
 
 /**
+ * Interface representing the payload for a community update event.
+ * - `community`: The updated community object.
+ * - `type`: The type of modification (`'created'`, `'deleted'`, or `'updated'`).
+ */
+export interface CommunityUpdatePayload {
+  community: DatabaseCommunity;
+  type: 'created' | 'deleted' | 'updated';
+}
+
+/**
  * Interface representing the events the server can emit to the client.
  * - `questionUpdate`: Server sends updated question.
  * - `answerUpdate`: Server sends updated answer.
@@ -133,4 +143,5 @@ export interface ServerToClientEvents {
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  communityUpdate: (community: CommunityUpdatePayload) => void;
 }

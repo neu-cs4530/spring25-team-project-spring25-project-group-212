@@ -48,3 +48,11 @@ export interface CreateCommunityRequest extends Request {
  * - Either a `DatabaseCommunity` object or an error message.
  */
 export type CommunityResponse = DatabaseCommunity | { error: string };
+
+/**
+ * Type representing the response for multiple community-related operations.
+ * Either:
+ * - `DatabaseCommunity[]`: A list of community objects if the operation is successful.
+ * - `error`: An error message if the operation fails.
+ */
+export type CommunitiesResponse = DatabaseCommunity[] | { error: string };
