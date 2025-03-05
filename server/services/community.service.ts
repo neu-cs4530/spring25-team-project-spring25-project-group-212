@@ -1,4 +1,5 @@
 import CommunityModel from '../models/community.model';
+import ChatModel from '../models/chat.model';
 import {
   Community,
   CommunityResponse,
@@ -7,12 +8,18 @@ import {
 } from '../types/types';
 
 /**
- * Saves a new community to the database.
+ * Saves a new community to the database (including creating the group chat).
  * @param communityPayload - The community object to save.
  * @returns {Promise<CommunityResponse>} - The saved community or an error message.
  */
 export const saveCommunity = async (communityPayload: Community): Promise<CommunityResponse> => {
   try {
+    const chat = await ChatModel.create({ messages: [] });
+    if (!chat) {
+      throw new Error('Error creating chat');
+    }
+
+    communityPayload.groupChatId = chat._id;
     const result = await CommunityModel.create(communityPayload);
     if (!result) {
       throw new Error('Error saving community');

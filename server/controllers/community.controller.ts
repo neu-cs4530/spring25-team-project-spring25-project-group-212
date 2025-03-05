@@ -65,4 +65,11 @@ const communityController = (socket: FakeSOSocket) => {
 
     res.status(200).json(communities);
   };
+
+  router.post('/create', createCommunity);
+  router.get('/getAll', getCommunities);
+
+  return router;
 };
+
+export default communityController;
