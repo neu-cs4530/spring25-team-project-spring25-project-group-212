@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ObjectId } from 'mongodb';
 import useUserContext from './useUserContext';
 import { createCommunity } from '../services/communityService';
 
@@ -78,7 +77,7 @@ const useNewCommunity = () => {
       rules,
       members: [user.username],
       createdBy: user.username,
-      groupChatId: new ObjectId(),
+      groupChatId: null,
     };
 
     const response = await createCommunity(community);

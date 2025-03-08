@@ -1,59 +1,61 @@
-// import useNewCommunity from '../../../hooks/useNewCommunity';
+import useNewCommunity from '../../../hooks/useNewCommunity';
+import Form from '../baseComponents/form';
+import Input from '../baseComponents/input';
+import TextArea from '../baseComponents/textarea';
 
-// const NewCommunityPage = () => {
-//   const {
-//     name,
-//     setName,
-//     about,
-//     setAbout,
-//     rules,
-//     setRules,
-//     nameErr,
-//     aboutErr,
-//     rulesErr,
-//     postCommunity,
-//     err,
-//   } = useNewCommunity();
+const NewCommunityPage = () => {
+  const {
+    name,
+    setName,
+    about,
+    setAbout,
+    rules,
+    setRules,
+    nameErr,
+    aboutErr,
+    rulesErr,
+    postCommunity,
+    err,
+  } = useNewCommunity();
 
-//   const isNameErr = nameErr !== '';
-//   const isAboutErr = aboutErr !== '';
-//   const isRulesErr = rulesErr !== '';
-//   return (
-//     <form>
-//       <input
-//         id='formNameInput'
-//         value={name}
-//         onChange={e => setName(e.target.value)}
-//         onError={isNameErr}
-//         helperText={nameErr}
-//         label='Enter Community Name'
-//       />
-//       <TextField
-//         id='formDescriptionInput'
-//         value={about}
-//         onChange={e => setAbout(e.target.value)}
-//         error={isAboutErr}
-//         helperText={aboutErr}
-//         label="Enter Community 'About' Text"
-//       />
-//       <TextField
-//         id='formRulesInput'
-//         value={rules}
-//         onChange={e => setRules(e.target.value)}
-//         error={isRulesErr}
-//         helperText={rulesErr}
-//         label='Enter Community Rules'
-//       />
-//       <Button
-//         variant='contained'
-//         color='primary'
-//         onClick={() => {
-//           postCommunity();
-//         }}>
-//         Create Community
-//       </Button>
-//     </form>
-//   );
-// };
+  return (
+    <Form>
+      <Input
+        id={'formNameInput'}
+        title={'Community Name'}
+        hint={'Limit name to 100 characters or less'}
+        val={name}
+        setState={setName}
+        err={nameErr}
+      />
+      <TextArea
+        id='formAboutInput'
+        title={'About Community'}
+        hint={'Limit description to 500 characters or less'}
+        val={about}
+        setState={setAbout}
+        err={aboutErr}
+      />
+      <TextArea
+        id='formRulesInput'
+        title={'Community Rules'}
+        hint={'Limit rules to 500 characters or less'}
+        val={rules}
+        setState={setRules}
+        err={rulesErr}
+      />
+      <div className='btn_indicator_container'>
+        <button
+          className='form_postBtn'
+          onClick={() => {
+            postCommunity();
+          }}>
+          Create Community
+        </button>
+        <div className='mandatory_indicator'>* indicates mandatory fields</div>
+      </div>
+    </Form>
+  );
+};
 
-// export default NewCommunityPage;
+export default NewCommunityPage;

@@ -55,6 +55,18 @@ const communityController = (socket: FakeSOSocket) => {
     res.status(200).json(result);
   };
 
+  const getCommunityFromId = async (req: Request, res: Response): Promise<void> => {
+    const communityId: string = req.params.id as string;
+    const community: CommunityResponse = await getCommunityById(communityId);
+
+    if ('error' in community) {
+      res.status(500).send(community.error);
+      return;
+    }
+
+    res.status(200).json(community);
+  };
+
   const getCommunities = async (req: Request, res: Response): Promise<void> => {
     const communities: CommunitiesResponse = await getAllCommunities();
 
@@ -68,6 +80,7 @@ const communityController = (socket: FakeSOSocket) => {
 
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
+  router.get('/getCommunity/:id', getCommunityFromId);
 
   return router;
 };

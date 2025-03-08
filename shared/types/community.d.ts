@@ -16,7 +16,7 @@ export interface Community {
   rules: string;
   members: string[];
   createdBy: string;
-  groupChatId: ObjectId;
+  groupChatId: ObjectId | null;
 }
 
 /**
