@@ -9,12 +9,14 @@ import { handleHyperlink } from '../../../../tool';
  * - text - The content of the question, which may contain hyperlinks.
  * - askby - The username of the user who asked the question.
  * - meta - Additional metadata related to the question, such as the date and time it was asked.
+ * - anonymous - If the question should be rendered anonymous.
  */
 interface QuestionBodyProps {
   views: number;
   text: string;
   askby: string;
   meta: string;
+  anonymous: boolean;
 }
 
 /**
@@ -26,13 +28,14 @@ interface QuestionBodyProps {
  * @param text The content of the question.
  * @param askby The username of the question's author.
  * @param meta Additional metadata related to the question.
+ * @param anonymous If the question should be rendered anonymous.
  */
-const QuestionBody = ({ views, text, askby, meta }: QuestionBodyProps) => (
+const QuestionBody = ({ views, text, askby, meta, anonymous }: QuestionBodyProps) => (
   <div id='questionBody' className='questionBody right_padding'>
     <div className='bold_title answer_question_view'>{views} views</div>
     <div className='answer_question_text'>{handleHyperlink(text)}</div>
     <div className='answer_question_right'>
-      <div className='question_author'>{askby}</div>
+      <div className='question_author'>{anonymous ? 'Anonymous' : askby}</div>
       <div className='answer_question_meta'>asked {meta}</div>
     </div>
   </div>

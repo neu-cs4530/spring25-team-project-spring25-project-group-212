@@ -29,6 +29,7 @@ const AnswerPage = () => {
         text={question.text}
         askby={question.askedBy}
         meta={getMetaData(new Date(question.askDateTime))}
+        anonymous={question.anonymous}
       />
       <CommentSection
         comments={question.comments}
