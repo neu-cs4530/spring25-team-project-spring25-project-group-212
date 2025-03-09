@@ -298,6 +298,7 @@ describe('Question model', () => {
         upVotes: [],
         downVotes: [],
         comments: [],
+        anonymous: false,
       };
 
       const result = (await saveQuestion(mockQn)) as DatabaseQuestion;
