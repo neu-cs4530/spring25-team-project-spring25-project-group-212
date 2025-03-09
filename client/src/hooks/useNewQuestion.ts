@@ -11,6 +11,7 @@ import { Question } from '../types/types';
  * @returns title - The current value of the title input.
  * @returns text - The current value of the text input.
  * @returns tagNames - The current value of the tags input.
+ * @returns anonymous - The current value of the anonymous input.
  * @returns titleErr - Error message for the title field, if any.
  * @returns textErr - Error message for the text field, if any.
  * @returns tagErr - Error message for the tag field, if any.
@@ -22,6 +23,7 @@ const useNewQuestion = () => {
   const [title, setTitle] = useState<string>('');
   const [text, setText] = useState<string>('');
   const [tagNames, setTagNames] = useState<string>('');
+  const [anonymous, setAnonymous] = useState<boolean>(false);
 
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
@@ -102,6 +104,7 @@ const useNewQuestion = () => {
       downVotes: [],
       views: [],
       comments: [],
+      anonymous,
     };
 
     const res = await addQuestion(question);
@@ -118,6 +121,8 @@ const useNewQuestion = () => {
     setText,
     tagNames,
     setTagNames,
+    anonymous,
+    setAnonymous,
     titleErr,
     textErr,
     tagErr,
