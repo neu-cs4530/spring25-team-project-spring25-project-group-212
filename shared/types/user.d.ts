@@ -91,10 +91,14 @@ export interface UpdateBiographyRequest extends Request {
   };
 }
 
-
+/**
+ * Express request for (un)saving a question for a user.
+ * - `username`: The username whose biography is being updated (body).
+ * - `qid`: The qid of the question to be (un)saved (body).
+ */
 export interface UpdateSavedQuestionsRequest extends Request {
   body: {
     username: string;
     qid: string;
-  }
+  };
 }
