@@ -93,6 +93,5 @@ export const sortQuestionsByMostViews = (
 export const sortQuestionsBySaved = (
   qlist: PopulatedDatabaseQuestion[],
   slist: string[],
-): PopulatedDatabaseQuestion[] => {
-  return sortQuestionsByNewest(qlist).filter(q => slist.includes(q._id.toString()));
-};
+): PopulatedDatabaseQuestion[] =>
+  sortQuestionsByNewest(qlist).filter(q => slist.includes(q._id.toString()));
