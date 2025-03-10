@@ -239,6 +239,12 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Toggles save question for a user.
+   * @param req The request containing the username and questionId in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
   const toggleSaveQuestion = async (
     req: UpdateSavedQuestionsRequest,
     res: Response,
