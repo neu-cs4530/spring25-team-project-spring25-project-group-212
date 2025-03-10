@@ -46,6 +46,10 @@ const communitySchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
+    questions: {
+      type: [Schema.Types.ObjectId],
+      required: true,
+    },
   },
   { collection: 'Community', timestamps: true },
 );

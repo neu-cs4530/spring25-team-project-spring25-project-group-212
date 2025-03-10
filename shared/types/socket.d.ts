@@ -4,6 +4,7 @@ import { DatabaseMessage } from './message';
 import { PopulatedDatabaseQuestion } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
+import { PopulatedDatabaseCommunity } from './community';
 
 /**
  * Payload for an answer update event.
@@ -115,7 +116,7 @@ export interface ClientToServerEvents {
  * - `type`: The type of modification (`'created'`, `'deleted'`, or `'updated'`).
  */
 export interface CommunityUpdatePayload {
-  community: DatabaseCommunity;
+  community: PopulatedDatabaseCommunity;
   type: 'created' | 'deleted' | 'updated';
 }
 

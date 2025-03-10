@@ -1,5 +1,4 @@
 import express, { Request, Response, Router } from 'express';
-import { ObjectId } from 'mongodb';
 
 import {
   Community,
@@ -7,8 +6,13 @@ import {
   CommunityResponse,
   FakeSOSocket,
   CommunitiesResponse,
+  PopulatedDatabaseCommunity,
+  PopulatedDatabaseQuestion,
+  PopulatedDatabaseChat,
+  DatabaseCommunity,
 } from '../types/types';
 import { saveCommunity, getCommunityById, getAllCommunities } from '../services/community.service';
+import { populateDocument } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -32,50 +36,116 @@ const communityController = (socket: FakeSOSocket) => {
     req.body.community.createdBy !== undefined &&
     req.body.community.createdBy !== '';
 
+  const populateDatabaseCommunity = async (
+    community: DatabaseCommunity,
+  ): Promise<PopulatedDatabaseCommunity> => {
+    try {
+      const populatedChat = await populateDocument(community.groupChatId.toString(), 'chat');
+      if ('error' in populatedChat) {
+        throw new Error(`populateDatabaseCommunity chat: ${populatedChat.error}`);
+      }
+
+      const populatedQuestions = await Promise.all(
+        (community.questions || []).map(async questionId => {
+          const populatedQuestion = await populateDocument(questionId.toString(), 'question');
+          if ('error' in populatedQuestion) {
+            throw new Error(`populateDatabaseCommunity question: ${populatedQuestion.error}`);
+          }
+          return populatedQuestion as PopulatedDatabaseQuestion;
+        }),
+      );
+
+      const populatedCommunity: PopulatedDatabaseCommunity = {
+        ...community,
+        groupChat: populatedChat as PopulatedDatabaseChat,
+        questions: populatedQuestions,
+      };
+
+      populatedCommunity._id = community._id;
+
+      return populatedCommunity;
+    } catch (err: unknown) {
+      throw new Error((err as Error).message);
+    }
+  };
+  /**
+   * Creates a new community and saves it to the database.
+   * If the community is invalid or saving fails, the HTTP response status is updated.
+   * @param req The CreateCommunityRequest object containing the community data.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const createCommunity = async (req: CreateCommunityRequest, res: Response): Promise<void> => {
     if (!isCommunityBodyValid(req)) {
       res.status(400).send('Invalid community body');
       return;
     }
 
-    const requestCommunity = req.body.community;
+    try {
+      const requestCommunity: Omit<Community, 'groupChat' | 'questions'> = req.body.community;
 
-    const community: Community = {
-      ...requestCommunity,
-      groupChatId: new ObjectId(),
-    };
+      const result: CommunityResponse = await saveCommunity(requestCommunity);
 
-    const result: CommunityResponse = await saveCommunity(community);
+      if ('error' in result) {
+        throw new Error(result.error);
+      }
 
-    if ('error' in result) {
-      res.status(500).send(result.error);
-      return;
+      const populatedCommunity: PopulatedDatabaseCommunity =
+        await populateDatabaseCommunity(result);
+
+      socket.emit('communityUpdate', { community: populatedCommunity, type: 'created' });
+      res.json(populatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while creating community: ${(err as Error).message}`);
     }
-
-    res.status(200).json(result);
   };
 
+  /**
+   * Gets a community (fully populated) by its ID from the database.
+   * @param req Get request containing the community ID in params
+   * @param res HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const getCommunityFromId = async (req: Request, res: Response): Promise<void> => {
     const communityId: string = req.params.id as string;
-    const community: CommunityResponse = await getCommunityById(communityId);
 
-    if ('error' in community) {
-      res.status(500).send(community.error);
-      return;
+    try {
+      const community: CommunityResponse = await getCommunityById(communityId);
+      if ('error' in community) {
+        throw new Error(community.error);
+      }
+
+      const populatedCommunity: PopulatedDatabaseCommunity =
+        await populateDatabaseCommunity(community);
+
+      res.status(200).json(populatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while retrieving community: ${(err as Error).message}`);
     }
-
-    res.status(200).json(community);
   };
 
+  /**
+   * Gets all communities from database (fully populated)
+   * @param req Generic request (nothing special)
+   * @param res JSON response containing all populated communities from the database
+   */
   const getCommunities = async (req: Request, res: Response): Promise<void> => {
-    const communities: CommunitiesResponse = await getAllCommunities();
+    try {
+      const communities: CommunitiesResponse = await getAllCommunities();
+      if ('error' in communities) {
+        throw new Error(communities.error);
+      }
 
-    if ('error' in communities) {
-      res.status(500).send(communities.error);
-      return;
+      const populatedDatabaseCommunities = await Promise.all(
+        communities.map(async c => {
+          const populatedDatabaseCommunity = await populateDatabaseCommunity(c);
+          return populatedDatabaseCommunity as PopulatedDatabaseCommunity;
+        }),
+      );
+      res.status(200).json(populatedDatabaseCommunities);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while retrieving all communities: ${(err as Error).message}`);
     }
-
-    res.status(200).json(communities);
   };
 
   router.post('/create', createCommunity);

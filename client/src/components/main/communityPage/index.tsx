@@ -13,6 +13,8 @@ const CommunityPage = () => {
     error: messageError,
   } = useCommunityMessagingPage(community?.groupChatId);
 
+
+  
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -29,7 +31,7 @@ const CommunityPage = () => {
     <div className='community-page'>
       <h1>{community.name}</h1>
       <p>{community.about}</p>
-      <div className='communit y-content'>
+      <div className='community-content'>
         <div className='community-questions'>
           <QuestionPage questions={questions} />
         </div>

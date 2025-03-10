@@ -36,7 +36,9 @@ const getCommunityById = async (id: string): Promise<DatabaseCommunity> => {
  * @returns {Promise<DatabaseCommunity>} The newly created community object.
  * @throws {Error} If an error occurs during the creation process.
  */
-const createCommunity = async (community: Community): Promise<DatabaseCommunity> => {
+const createCommunity = async (
+  community: Omit<Community, 'groupChat' | 'questions'>,
+): Promise<DatabaseCommunity> => {
   try {
     const res = await api.post(`${COMMUNITY_API_URL}/create`, { community });
     return res.data;

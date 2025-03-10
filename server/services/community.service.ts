@@ -1,26 +1,35 @@
 import CommunityModel from '../models/community.model';
-import ChatModel from '../models/chat.model';
+import { getQuestionsByOrder } from './question.service';
 import {
   Community,
   CommunityResponse,
   DatabaseCommunity,
   CommunitiesResponse,
+  PopulatedDatabaseQuestion,
 } from '../types/types';
-
+import ChatModel from '../models/chat.model';
 /**
- * Saves a new community to the database (including creating the group chat).
+ * Saves a new community to the database (including creating the community's associated group chat).
  * @param communityPayload - The community object to save.
  * @returns {Promise<CommunityResponse>} - The saved community or an error message.
  */
-export const saveCommunity = async (communityPayload: Community): Promise<CommunityResponse> => {
+export const saveCommunity = async (
+  communityPayload: Omit<Community, 'groupChat' | 'questions'>,
+): Promise<CommunityResponse> => {
   try {
-    const chat = await ChatModel.create({ messages: [] });
+    const chat = await ChatModel.create({ participants: communityPayload.createdBy, messages: [] });
     if (!chat) {
       throw new Error('Error creating chat');
     }
 
-    communityPayload.groupChatId = chat._id;
-    const result = await CommunityModel.create(communityPayload);
+    // create a new community with the group chat id and no questions to start
+    const CommunityWithModel = {
+      ...communityPayload,
+      groupChatId: chat._id,
+      questions: [],
+    };
+
+    const result = await CommunityModel.create(CommunityWithModel);
     if (!result) {
       throw new Error('Error saving community');
     }
@@ -57,5 +66,35 @@ export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
     return communities;
   } catch (error) {
     return { error: `Error retrieving communities: ${error}` };
+  }
+};
+
+/**
+ * Gets all questions associated with this community from the database.
+ * @param communityId - The ID of the community to retrieve questions for.
+ * @returns {Promise<PopulatedDatabaseQuestion[]>} - An array of questions or an error message.
+ * NOTE - the rest of the service functions do not return fully populated Community (e.g. chat and questions), that is done in the controller
+ */
+export const getQuestionsForCommunity = async (
+  communityId: string,
+): Promise<PopulatedDatabaseQuestion[]> => {
+  try {
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
+    if (!community) {
+      throw new Error('Community not found');
+    }
+
+    const allQuestions: PopulatedDatabaseQuestion[] = await getQuestionsByOrder('active');
+
+    const questions: PopulatedDatabaseQuestion[] = [];
+    for (const question of allQuestions) {
+      if (community.questions.findIndex(cq => cq._id === question._id) !== -1) {
+        questions.push(question);
+      }
+    }
+
+    return questions;
+  } catch (error) {
+    return [];
   }
 };
