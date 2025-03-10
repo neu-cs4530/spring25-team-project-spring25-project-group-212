@@ -85,7 +85,7 @@ export const sortQuestionsByMostViews = (
   sortQuestionsByNewest(qlist).sort((a, b) => b.views.length - a.views.length);
 
 /**
- * Filters and sorts a list of questions to return only questions by the current user, sorted by the asking date in descending order.
+ * Filters and sorts a list of questions to return only questions saved by the current user, sorted by the asking date in descending order.
  *
  * @param {PopulatedDatabaseQuestion[]} qlist - The list of questions to filter and sort
  *
