@@ -58,6 +58,7 @@ import {
 } from './data/posts_strings';
 import CommentModel from './models/comments.model';
 import UserModel from './models/users.model';
+import { ObjectId } from 'mongodb';
 
 // Pass URL of your mongoDB instance as first argument(e.g., mongodb://127.0.0.1:27017/fake_so)
 const userArgs = process.argv.slice(2);
@@ -188,6 +189,7 @@ async function userCreate(
   username: string,
   password: string,
   dateJoined: Date,
+  savedQuestions: string[],
   biography?: string,
 ): Promise<DatabaseUser> {
   if (username === '' || password === '' || dateJoined === null) {
@@ -199,6 +201,7 @@ async function userCreate(
     password,
     dateJoined,
     biography: biography ?? '',
+    savedQuestions,
   };
 
   return await UserModel.create(userDetail);
@@ -214,62 +217,72 @@ const populate = async () => {
       'sana',
       'sanaPassword',
       new Date('2023-12-11T03:30:00'),
+      [],
       'I am a software engineer.',
     );
     await userCreate(
       'ihba001',
       'SomePassword#123',
       new Date('2022-12-11T03:30:00'),
+      [],
       'I am a student.',
     );
     await userCreate(
       'saltyPeter',
       'VeryStrongPassword#!@',
       new Date('2023-12-11T03:30:00'),
+      [],
       'I am a chef.',
     );
-    await userCreate('monkeyABC', 'password', new Date('2023-11-11T03:30:00'), 'I am a monkey.');
-    await userCreate('hamkalo', 'redapplecar', new Date('2023-12-02T03:30:00'), 'I am a hamster.');
+    await userCreate('monkeyABC', 'password', new Date('2023-11-11T03:30:00'), [], 'I am a monkey.');
+    await userCreate('hamkalo', 'redapplecar', new Date('2023-12-02T03:30:00'), [], 'I am a hamster.');
     await userCreate(
       'azad',
       'treeorangeBike',
       new Date('2023-06-11T03:30:00'),
+      [],
       'I am a free spirit.',
     );
     await userCreate(
       'abhi3241',
       '112@realpassword',
       new Date('2023-01-12T03:30:00'),
+      [],
       'I am a student.',
     );
     await userCreate(
       'Joji John',
       'jurassicPark#12',
       new Date('2023-10-11T03:30:00'),
+      [],
       'I like Jurassic Park.',
     );
     await userCreate(
       'abaya',
       'letmein',
       new Date('2023-04-20T03:30:00'),
+      [],
       'I like fashion designing.',
     );
     await userCreate(
       'mackson3332',
       'TrIcKyPhRaSe',
       new Date('2023-07-26T03:30:00'),
+      [],
       'I am a magician.',
     );
     await userCreate(
       'alia',
       'correcthorsebatterystaple',
       new Date('2023-03-19T03:30:00'),
+      [],
       'I am an actress.',
     );
     await userCreate(
       'elephantCDE',
       'ElephantPass123',
       new Date('2023-05-10T14:28:01'),
+      [],
       'I am an elephant lover.',
     );
 
