@@ -9,7 +9,7 @@ const useQuestion = () => {
       const user = await getUserByUsername(userName);
       setQuestionSaved(user.savedQuestions.includes(qid));
     } catch {
-      const nothing = 0;
+      setQuestionSaved(questionSaved);
     }
   };
 
