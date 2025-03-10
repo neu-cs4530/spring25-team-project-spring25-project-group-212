@@ -21,6 +21,7 @@ export interface UserCredentials {
 export interface User extends UserCredentials {
   dateJoined: Date;
   biography?: string;
+  savedQuestions: string[];
 }
 
 /**
@@ -88,4 +89,12 @@ export interface UpdateBiographyRequest extends Request {
     username: string;
     biography: string;
   };
+}
+
+
+export interface UpdateSavedQuestionsRequest extends Request {
+  body: {
+    username: string;
+    qid: string;
+  }
 }
