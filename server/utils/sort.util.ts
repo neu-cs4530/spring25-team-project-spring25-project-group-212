@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { PopulatedDatabaseQuestion } from '../types/types';
 import { getMostRecentAnswerTime } from '../services/answer.service';
 
@@ -95,6 +94,5 @@ export const sortQuestionsBySaved = (
   qlist: PopulatedDatabaseQuestion[],
   slist: string[],
 ): PopulatedDatabaseQuestion[] => {
-  console.log(qlist);
   return sortQuestionsByNewest(qlist).filter(q => slist.includes(q._id.toString()));
 };

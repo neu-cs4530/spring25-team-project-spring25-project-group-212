@@ -1,5 +1,4 @@
 import express, { Request, Response, Router } from 'express';
-import mongoose from 'mongoose';
 import {
   UserRequest,
   User,
