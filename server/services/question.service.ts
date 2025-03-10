@@ -10,6 +10,7 @@ import {
   Question,
   QuestionResponse,
   VoteResponse,
+  SafeDatabaseUser,
 } from '../types/types';
 import AnswerModel from '../models/answers.model';
 import QuestionModel from '../models/questions.model';
@@ -22,7 +23,9 @@ import {
   sortQuestionsByMostViews,
   sortQuestionsByNewest,
   sortQuestionsByUnanswered,
+  sortQuestionsBySaved,
 } from '../utils/sort.util';
+import UserModel from '../models/users.model';
 
 /**
  * Checks if keywords exist in a question's title or text.
@@ -65,10 +68,40 @@ export const getQuestionsByOrder = async (
         return sortQuestionsByUnanswered(qlist);
       case 'newest':
         return sortQuestionsByNewest(qlist);
+      case 'saved':
+        return [];
       case 'mostViewed':
       default:
         return sortQuestionsByMostViews(qlist);
     }
+  } catch (error) {
+    return [];
+  }
+};
+
+/**
+ * Retrieves questions ordered by saved.
+ * @param {OrderType} username - The username of the user whos saved questions should be ordered
+ * @returns {Promise<Question[]>} - The ordered list of questions
+ */
+export const getQuestionsBySaved = async (
+  username: string,
+): Promise<PopulatedDatabaseQuestion[]> => {
+  try {
+    const qlist: PopulatedDatabaseQuestion[] = await QuestionModel.find().populate<{
+      tags: DatabaseTag[];
+      answers: PopulatedDatabaseAnswer[];
+      comments: DatabaseComment[];
+    }>([
+      { path: 'tags', model: TagModel },
+      { path: 'answers', model: AnswerModel, populate: { path: 'comments', model: CommentModel } },
+      { path: 'comments', model: CommentModel },
+    ]);
+    const user: SafeDatabaseUser | null = await UserModel.findOne({ username }).select('-password');
+    if (!user) {
+      throw Error('User not found');
+    }
+    return sortQuestionsBySaved(qlist, user.savedQuestions);
   } catch (error) {
     return [];
   }
