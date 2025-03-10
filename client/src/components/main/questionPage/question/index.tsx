@@ -47,7 +47,6 @@ const QuestionView = ({ question }: QuestionProps) => {
     navigate(`/question/${questionID}`);
   };
 
-
   /**
    * Code snippet necessary to add saving and unsaving questions provided there is a questionId
    */
