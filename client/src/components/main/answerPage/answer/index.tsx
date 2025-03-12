@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { handleHyperlink } from '../../../../tool';
 import CommentSection from '../../commentSection';
 import './index.css';
@@ -12,6 +13,7 @@ import { Comment, DatabaseComment } from '../../../../types/types';
  * - meta Additional metadata related to the answer.
  * - comments An array of comments associated with the answer.
  * - handleAddComment Callback function to handle adding a new comment.
+ * - isMarkdown Boolean indicating if the text should be rendered as markdown.
  */
 interface AnswerProps {
   text: string;
@@ -19,22 +21,31 @@ interface AnswerProps {
   meta: string;
   comments: DatabaseComment[];
   handleAddComment: (comment: Comment) => void;
+  isMarkdown?: boolean;
 }
 
 /**
  * AnswerView component that displays the content of an answer with the author's name and metadata.
- * The answer text is processed to handle hyperlinks, and a comment section is included.
+ * The answer text is processed to handle hyperlinks or rendered as markdown based on the isMarkdown prop.
  *
  * @param text The content of the answer.
  * @param ansBy The username of the answer's author.
  * @param meta Additional metadata related to the answer.
  * @param comments An array of comments associated with the answer.
  * @param handleAddComment Function to handle adding a new comment.
+ * @param isMarkdown Boolean indicating if the text should be rendered as markdown.
  */
-const AnswerView = ({ text, ansBy, meta, comments, handleAddComment }: AnswerProps) => (
+const AnswerView = ({
+  text,
+  ansBy,
+  meta,
+  comments,
+  handleAddComment,
+  isMarkdown = false,
+}: AnswerProps) => (
   <div className='answer right_padding'>
     <div id='answerText' className='answerText'>
-      {handleHyperlink(text)}
+      {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
     </div>
     <div className='answerAuthor'>
       <div className='answer_author'>{ansBy}</div>
