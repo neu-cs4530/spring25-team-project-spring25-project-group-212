@@ -1,5 +1,4 @@
 import './index.css';
-import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Form from '../baseComponents/form';
 import TextArea from '../baseComponents/textarea';
@@ -9,8 +8,7 @@ import useAnswerForm from '../../../hooks/useAnswerForm';
  * NewAnswerPage component allows users to submit an answer to a specific question.
  */
 const NewAnswerPage = () => {
-  const { text, textErr, setText, postAnswer } = useAnswerForm();
-  const [useMarkdown, setUseMarkdown] = useState(false);
+  const { text, textErr, setText, postAnswer, useMarkdown, setUseMarkdown } = useAnswerForm();
 
   return (
     <Form>
