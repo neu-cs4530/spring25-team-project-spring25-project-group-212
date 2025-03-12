@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Community } from '@fake-stack-overflow/shared';
 import useUserContext from './useUserContext';
 import { createCommunity } from '../services/communityService';
-import { Community } from '@fake-stack-overflow/shared';
 
 /**
  * Custom hook to handle community submission and form validation

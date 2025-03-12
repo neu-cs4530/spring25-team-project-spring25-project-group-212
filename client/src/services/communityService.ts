@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DatabaseCommunity, Community } from '../types/types';
+import { Community, PopulatedDatabaseCommunity, PopulatedDatabaseQuestion } from '../types/types';
 import api from './config';
 
 const COMMUNITY_API_URL = `${process.env.REACT_APP_SERVER_URL}/community`;
@@ -9,7 +9,7 @@ const COMMUNITY_API_URL = `${process.env.REACT_APP_SERVER_URL}/community`;
  *
  * @throws Error if there is an issue fetching communities.
  */
-const getCommunities = async (): Promise<DatabaseCommunity[]> => {
+const getCommunities = async (): Promise<PopulatedDatabaseCommunity[]> => {
   const res = await api.get(`${COMMUNITY_API_URL}/getAll`);
   if (res.status !== 200) {
     throw new Error('Error when fetching communities');
@@ -22,7 +22,7 @@ const getCommunities = async (): Promise<DatabaseCommunity[]> => {
  * @param id The ID of the community to fetch
  * @throws Error if there is an issue fetching the community.
  */
-const getCommunityById = async (id: string): Promise<DatabaseCommunity> => {
+const getCommunityById = async (id: string): Promise<PopulatedDatabaseCommunity> => {
   const res = await api.get(`${COMMUNITY_API_URL}/getCommunity/${id}`);
   if (res.status !== 200) {
     throw new Error('Error when fetching community');
@@ -33,12 +33,12 @@ const getCommunityById = async (id: string): Promise<DatabaseCommunity> => {
 /**
  * Sends a POST request to create a new community.
  * @param community - The community object to create.
- * @returns {Promise<DatabaseCommunity>} The newly created community object.
+ * @returns {Promise<PopulatedDatabaseCommunity>} The newly created community object.
  * @throws {Error} If an error occurs during the creation process.
  */
 const createCommunity = async (
   community: Omit<Community, 'groupChat' | 'questions'>,
-): Promise<DatabaseCommunity> => {
+): Promise<PopulatedDatabaseCommunity> => {
   try {
     const res = await api.post(`${COMMUNITY_API_URL}/create`, { community });
     return res.data;
@@ -51,4 +51,12 @@ const createCommunity = async (
   }
 };
 
-export { getCommunities, getCommunityById, createCommunity };
+const getQuestionsForCommunity = async (id: string): Promise<PopulatedDatabaseQuestion[]> => {
+  const res = await api.get(`${COMMUNITY_API_URL}/getQuestions/${id}`);
+  if (res.status !== 200) {
+    throw new Error('Error while fetching questions for community');
+  }
+  return res.data;
+};
+
+export { getCommunities, getCommunityById, createCommunity, getQuestionsForCommunity };

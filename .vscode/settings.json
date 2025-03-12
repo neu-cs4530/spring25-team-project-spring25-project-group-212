@@ -1,5 +1,6 @@
 {
   "jest.rootPath": "./server",
   "jest.jestCommandLine": "npx jest",
-  "jest.runMode": "on-demand"
+  "jest.runMode": "on-demand",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

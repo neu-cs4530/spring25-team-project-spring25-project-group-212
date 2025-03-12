@@ -1,57 +1,59 @@
-// filepath: /Users/kaushikbalantrapu/Documents/Year 3/CS 4530/spring25-team-project-spring25-project-group-212/client/src/components/main/communityPage/index.tsx
 import React from 'react';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
-import QuestionPage from '../questionPage';
-import './index.css';
+import QuestionHeader from '../questionPage/header';
+import QuestionView from '../questionPage/question';
+import MessageCard from '../messageCard';
+import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 
 const CommunityPage = () => {
-  const {
-    messages,
-    newMessage,
-    setNewMessage,
-    handleSendMessage,
-    error: messageError,
-  } = useCommunityMessagingPage(community?.groupChatId);
+  const { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage } =
+    useCommunityMessagingPage();
 
+  const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
 
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!community) {
+  if (!currentCommunity) {
     return <div>Community not found</div>;
   }
 
   return (
-    <div className='community-page'>
-      <h1>{community.name}</h1>
-      <p>{community.about}</p>
-      <div className='community-content'>
-        <div className='community-questions'>
-          <QuestionPage questions={questions} />
-        </div>
-        <div className='community-chat'>
-          <div className='messages'>
-            {messages.map((msg, index) => (
-              <div key={index} className='message'>
-                <strong>{msg.msgFrom}</strong>: {msg.msg}
-              </div>
+    <div id='community-page'>
+      <h1>{currentCommunity.name}</h1>
+      <p>{currentCommunity.about}</p>
+      <div id='community-content'>
+        <div id='community-questions'>
+          <QuestionHeader
+            titleText={titleText}
+            qcnt={qlist.length}
+            setQuestionOrder={setQuestionOrder}
+          />
+          <div id='question_list' className='question_list'>
+            {qlist.map(q => (
+              <QuestionView question={q} key={String(q._id)} />
             ))}
           </div>
-          <div className='message-input'>
-            <input
-              type='text'
-              value={newMessage}
-              onChange={e => setNewMessage(e.target.value)}
-              placeholder='Type a message...'
-            />
-            <button onClick={handleSendMessage}>Send</button>
-            {messageError && <div className='error'>{messageError}</div>}
+          {titleText === 'Search Results' && !qlist.length && (
+            <div className='bold_title right_padding'>No Questions Found</div>
+          )}
+        </div>
+        <div className='direct-message-container'>
+          <div id='community-chat' className='chat-container'>
+            <div className='chat-messages'>
+              {communityChat?.messages.map(message => (
+                <MessageCard key={String(message._id)} message={message} />
+              ))}
+            </div>
+            <div className='message-input'>
+              <input
+                className='custom-input'
+                type='text'
+                value={newMessage}
+                onChange={e => setNewMessage(e.target.value)}
+                placeholder='Type a message...'
+              />
+              <button className='custom-button' onClick={handleSendMessage}>
+                Send
+              </button>
+            </div>
           </div>
         </div>
       </div>

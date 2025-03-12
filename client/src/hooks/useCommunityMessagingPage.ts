@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ObjectId } from 'mongodb';
+import { useParams } from 'react-router-dom';
 import useUserContext from './useUserContext';
-import { DatabaseMessage, Message, MessageUpdatePayload } from '../types/types';
-import { getChatById, sendMessage } from '../services/chatService';
+import {
+  ChatUpdatePayload,
+  Message,
+  PopulatedDatabaseChat,
+  PopulatedDatabaseCommunity,
+} from '../types/types';
+import { sendMessage } from '../services/chatService';
 import { getCommunityById } from '../services/communityService';
 
 /**
@@ -13,19 +18,26 @@ import { getCommunityById } from '../services/communityService';
  * @returns setNewMessage - The function to set the new message.
  * @returns handleSendMessage - The function to handle sending a new message.
  */
-const useCommunityMessagingPage = (communityId: string) => {
+const useCommunityMessagingPage = () => {
+  const { id } = useParams();
   const { user, socket } = useUserContext();
-  const [chatId, setChatId] = useState<ObjectId | null>(null);
-  const [messages, setMessages] = React.useState<DatabaseMessage[]>([]);
+  const [currentCommunity, setCurrentCommunity] = useState<PopulatedDatabaseCommunity>();
+  const [communityChat, setCommunityChat] = useState<PopulatedDatabaseChat | null>(null);
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
 
   useEffect(() => {
+    if (!id) {
+      setError('Community not found');
+      return;
+    }
+
     const fetchChatId = async () => {
       try {
-        const community = await getCommunityById(communityId);
-        if (community && community.groupChatId) {
-          setChatId(community.groupChatId);
+        const community = await getCommunityById(id);
+        if (community && community.groupChat._id) {
+          setCurrentCommunity(community);
+          setCommunityChat(community.groupChat);
         } else {
           setError('Community not found');
         }
@@ -34,31 +46,29 @@ const useCommunityMessagingPage = (communityId: string) => {
       }
     };
     fetchChatId();
-  }, [communityId]);
+  }, [id]);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (chatId) {
-        const chat = await getChatById(chatId);
-        if (chat) {
-          setMessages(chat.messages);
+    const handleChatUpdate = async (chatUpdate: ChatUpdatePayload) => {
+      const { chat, type } = chatUpdate;
+      switch (type) {
+        case 'newMessage': {
+          setCommunityChat(chat);
+          return;
+        }
+        default: {
+          setError('Invalid chat update type');
         }
       }
     };
-    fetchMessages();
-  }, [chatId]);
 
-  useEffect(() => {
-    const handleMessageUpdate = async (data: MessageUpdatePayload) => {
-      setMessages([...messages, data.msg]);
-    };
-
-    socket.on('messageUpdate', handleMessageUpdate);
+    socket.on('chatUpdate', handleChatUpdate);
 
     return () => {
-      socket.off('messageUpdate', handleMessageUpdate);
+      socket.off('chatUpdate', handleChatUpdate);
+      socket.emit('leaveChat', String(communityChat?._id));
     };
-  }, [socket, messages]);
+  }, [communityChat?._id, socket]);
 
   /**
    * Handles sending a new message.
@@ -78,13 +88,13 @@ const useCommunityMessagingPage = (communityId: string) => {
       msgFrom: user.username,
       msgDateTime: new Date(),
     };
-    if (chatId) {
-      await sendMessage(newMsg, chatId);
+    if (communityChat) {
+      await sendMessage(newMsg, communityChat._id);
       setNewMessage('');
     }
   };
 
-  return { messages, newMessage, setNewMessage, handleSendMessage, error };
+  return { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage, error };
 };
 
 export default useCommunityMessagingPage;

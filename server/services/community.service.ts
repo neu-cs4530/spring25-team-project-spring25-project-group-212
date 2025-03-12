@@ -1,13 +1,19 @@
 import CommunityModel from '../models/community.model';
-import { getQuestionsByOrder } from './question.service';
 import {
   Community,
   CommunityResponse,
   DatabaseCommunity,
   CommunitiesResponse,
   PopulatedDatabaseQuestion,
+  DatabaseTag,
+  PopulatedDatabaseAnswer,
+  DatabaseComment,
 } from '../types/types';
 import ChatModel from '../models/chat.model';
+import QuestionModel from '../models/questions.model';
+import TagModel from '../models/tags.model';
+import AnswerModel from '../models/answers.model';
+import CommentModel from '../models/comments.model';
 /**
  * Saves a new community to the database (including creating the community's associated group chat).
  * @param communityPayload - The community object to save.
@@ -46,7 +52,7 @@ export const saveCommunity = async (
  */
 export const getCommunityById = async (communityId: string): Promise<CommunityResponse> => {
   try {
-    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId).lean();
     if (!community) {
       throw new Error('Community not found');
     }
@@ -62,7 +68,7 @@ export const getCommunityById = async (communityId: string): Promise<CommunityRe
  */
 export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
   try {
-    const communities: DatabaseCommunity[] = await CommunityModel.find();
+    const communities: DatabaseCommunity[] = await CommunityModel.find().lean();
     return communities;
   } catch (error) {
     return { error: `Error retrieving communities: ${error}` };
@@ -79,19 +85,22 @@ export const getQuestionsForCommunity = async (
   communityId: string,
 ): Promise<PopulatedDatabaseQuestion[]> => {
   try {
-    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId).lean();
     if (!community) {
       throw new Error('Community not found');
     }
 
-    const allQuestions: PopulatedDatabaseQuestion[] = await getQuestionsByOrder('active');
-
-    const questions: PopulatedDatabaseQuestion[] = [];
-    for (const question of allQuestions) {
-      if (community.questions.findIndex(cq => cq._id === question._id) !== -1) {
-        questions.push(question);
-      }
-    }
+    const questions: PopulatedDatabaseQuestion[] = await QuestionModel.find({
+      _id: { $in: community.questions },
+    }).populate<{
+      tags: DatabaseTag[];
+      answers: PopulatedDatabaseAnswer[];
+      comments: DatabaseComment[];
+    }>([
+      { path: 'tags', model: TagModel },
+      { path: 'answers', model: AnswerModel, populate: { path: 'comments', model: CommentModel } },
+      { path: 'comments', model: CommentModel },
+    ]);
 
     return questions;
   } catch (error) {

@@ -11,7 +11,12 @@ import {
   PopulatedDatabaseChat,
   DatabaseCommunity,
 } from '../types/types';
-import { saveCommunity, getCommunityById, getAllCommunities } from '../services/community.service';
+import {
+  saveCommunity,
+  getCommunityById,
+  getAllCommunities,
+  getQuestionsForCommunity,
+} from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
@@ -148,9 +153,20 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  const getQuestionsByCommunityId = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const communityId: string = req.params.id as string;
+      const questions: PopulatedDatabaseQuestion[] = await getQuestionsForCommunity(communityId);
+      res.status(200).json(questions);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while retrieving questions associated with the community`);
+    }
+  };
+
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
   router.get('/getCommunity/:id', getCommunityFromId);
+  router.get('/getQuestions/:id', getQuestionsByCommunityId);
 
   return router;
 };
