@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import './index.css';
 import useDirectMessage from '../../../hooks/useDirectMessage';
 import ChatsListCard from './chatsListCard';
@@ -22,8 +22,11 @@ const DirectMessage = () => {
     handleChatSelect,
     handleUserSelect,
     handleCreateChat,
+    handleRenameChat,
     error,
   } = useDirectMessage();
+
+  const [newChatName, setNewChatName] = useState('');
 
   return (
     <>
@@ -53,7 +56,23 @@ const DirectMessage = () => {
         <div className='chat-container'>
           {selectedChat ? (
             <>
+              <div>
+                <strong>{selectedChat.name}</strong>
+              </div>
+              <div className='rename-chat'>
+                <input
+                  className='custom-input'
+                  type='text'
+                  value={newChatName}
+                  onChange={e => setNewChatName(e.target.value)}
+                  placeholder='Enter new chat name'
+                />
+                <button className='custom-button' onClick={() => handleRenameChat(newChatName)}>
+                  Rename
+                </button>
+              </div>
               <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
+
               <div className='chat-messages'>
                 {selectedChat.messages.map(message => (
                   <MessageCard key={String(message._id)} message={message} />
