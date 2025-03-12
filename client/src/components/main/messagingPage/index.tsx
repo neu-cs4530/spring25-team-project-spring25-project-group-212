@@ -7,7 +7,24 @@ import MessageCard from '../messageCard';
  * and provides functionality to send and receive messages.
  */
 const MessagingPage = () => {
-  const { messages, newMessage, setNewMessage, handleSendMessage, error } = useMessagingPage();
+  const {
+    messages,
+    newMessage,
+    handleTyping,
+    setNewMessage,
+    handleSendMessage,
+    typingUsers,
+    error,
+  } = useMessagingPage();
+
+  const renderTypingIndicator = () => {
+    if (typingUsers.length === 0) return null;
+    if (typingUsers.length === 1)
+      return <p className='typing-indicator'>{typingUsers[0]} is typing...</p>;
+    if (typingUsers.length === 2)
+      return <p className='typing-indicator'>{typingUsers.join(', ')} are typing...</p>;
+    return <p className='typing-indicator'>Many people are typing...</p>;
+  };
 
   return (
     <div className='chat-room'>
@@ -19,12 +36,13 @@ const MessagingPage = () => {
           <MessageCard key={String(message._id)} message={message} />
         ))}
       </div>
+      {renderTypingIndicator()}
       <div className='message-input'>
         <textarea
           className='message-textbox'
           placeholder='Type your message here'
           value={newMessage}
-          onChange={e => setNewMessage(e.target.value)}
+          onChange={handleTyping}
         />
         <div className='message-actions'>
           <button type='button' className='send-button' onClick={handleSendMessage}>
