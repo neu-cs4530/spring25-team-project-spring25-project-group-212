@@ -133,6 +133,7 @@ async function answerCreate(
     ansBy: ansBy,
     ansDateTime: ansDateTime,
     comments: comments,
+    useMarkdown: false,
   };
   return await AnswerModel.create(answerDetail);
 }
