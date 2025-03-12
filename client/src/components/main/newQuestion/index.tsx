@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import Form from '../baseComponents/form';
@@ -22,9 +22,9 @@ const NewQuestionPage = () => {
     textErr,
     tagErr,
     postQuestion,
+    useMarkdown,
+    setUseMarkdown,
   } = useNewQuestion();
-
-  const [useMarkdown, setUseMarkdown] = useState(false);
 
   return (
     <Form>
@@ -62,7 +62,6 @@ const NewQuestionPage = () => {
           </div>
         </div>
       )}
-
       <Input
         title={'Tags'}
         hint={'Add keywords separated by whitespace'}
