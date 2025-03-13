@@ -6,5 +6,8 @@
     "client",
     "server",
     "shared"
-  ]
+  ],
+  "dependencies": {
+    "emoji-picker-react": "^4.12.2"
+  }
 }

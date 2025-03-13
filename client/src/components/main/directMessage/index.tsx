@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './index.css';
+import EmojiPicker from 'emoji-picker-react';
 import useDirectMessage from '../../../hooks/useDirectMessage';
 import ChatsListCard from './chatsListCard';
 import UsersListPage from '../usersListPage';
@@ -27,6 +28,11 @@ const DirectMessage = () => {
   } = useDirectMessage();
 
   const [newChatName, setNewChatName] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const handleEmojiSelect = (emojiObject: { emoji: string }) => {
+    setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
+  };
 
   return (
     <>
@@ -78,17 +84,31 @@ const DirectMessage = () => {
                   <MessageCard key={String(message._id)} message={message} />
                 ))}
               </div>
-              <div className='message-input'>
-                <input
-                  className='custom-input'
-                  type='text'
-                  value={newMessage}
-                  onChange={e => setNewMessage(e.target.value)}
-                  placeholder='Type a message...'
-                />
-                <button className='custom-button' onClick={handleSendMessage}>
-                  Send
-                </button>
+
+              <div className='message-input-container'>
+                <div className='message-input'>
+                  <input
+                    className='custom-input'
+                    type='text'
+                    value={newMessage}
+                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder='Type a message...'
+                  />
+                  <button
+                    className='emoji-button'
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                    😀
+                  </button>
+                  <button className='custom-button' onClick={handleSendMessage}>
+                    Send
+                  </button>
+                </div>
+
+                {showEmojiPicker && (
+                  <div className='emoji-picker-container'>
+                    <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                  </div>
+                )}
               </div>
             </>
           ) : (

@@ -25,6 +25,15 @@ const messageSchema: Schema = new Schema(
       type: String,
       enum: ['global', 'direct'],
     },
+    reactions: [
+      {
+        emoji: String,
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+        },
+      },
+    ],
   },
   { collection: 'Message' },
 );

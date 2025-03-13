@@ -93,6 +93,11 @@ export interface GameMovePayload {
   move: GameMove<BaseMove>;
 }
 
+export interface ReactionUpdatePayload {
+  messageId: string;
+  reactions?: { emoji: string; userId: string }[];
+}
+
 /**
  * Interface representing the events the client can emit to the server.
  * - `makeMove`: Client can emit a move in the game.
@@ -133,4 +138,5 @@ export interface ServerToClientEvents {
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  reactionUpdate: (payload: ReactionUpdatePayload) => void;
 }
