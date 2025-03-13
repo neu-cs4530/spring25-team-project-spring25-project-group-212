@@ -18,10 +18,20 @@
   padding: 2% 0 2% 2%;
 }
 
+.right_bottom_padding {
+  padding: 2% 0 1% 2%;
+}
+
 .bold_title {
   font-size: 24px;
   font-weight: 800;
   line-height: 40px;
+}
+
+.not_quite_so_bold_title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 30px;
 }
 
 .bluebtn {
