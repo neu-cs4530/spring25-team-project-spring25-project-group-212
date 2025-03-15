@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { Community, PopulatedDatabaseCommunity, PopulatedDatabaseQuestion } from '../types/types';
+import {
+  Community,
+  PopulatedDatabaseCommunity,
+  PopulatedDatabaseQuestion,
+  Question,
+} from '../types/types';
 import api from './config';
 
 const COMMUNITY_API_URL = `${process.env.REACT_APP_SERVER_URL}/community`;
@@ -59,4 +64,27 @@ const getQuestionsForCommunity = async (id: string): Promise<PopulatedDatabaseQu
   return res.data;
 };
 
-export { getCommunities, getCommunityById, createCommunity, getQuestionsForCommunity };
+/**
+ * Sends POST request to add question to community
+ */
+const addQuestionToCommunity = async (
+  communityId: string,
+  questionId: string,
+): Promise<PopulatedDatabaseCommunity> => {
+  console.log(`called addQuestionToCommunity, ${communityId}`);
+  const res = await api.post(`${COMMUNITY_API_URL}/addQuestionToCommunity/${communityId}`, {
+    questionId,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error while adding question to community');
+  }
+  return res.data;
+};
+
+export {
+  getCommunities,
+  getCommunityById,
+  createCommunity,
+  getQuestionsForCommunity,
+  addQuestionToCommunity,
+};

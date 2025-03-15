@@ -10,12 +10,14 @@ import {
   PopulatedDatabaseQuestion,
   PopulatedDatabaseChat,
   DatabaseCommunity,
+  AddQuestionToCommunityRequest,
 } from '../types/types';
 import {
   saveCommunity,
   getCommunityById,
   getAllCommunities,
   getQuestionsForCommunity,
+  saveQuestionToCommunity,
 } from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
@@ -163,10 +165,29 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  const addQuestionToCommunity = async (
+    req: AddQuestionToCommunityRequest,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const communityId: string = req.params.id as string;
+      const { questionId } = req.body;
+      const updatedCommunity = await saveQuestionToCommunity(communityId, questionId);
+      if ('error' in updatedCommunity) {
+        throw new Error(updatedCommunity.error);
+      }
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      res.status(200).json(populatedUpdatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while adding question to community: ${(err as Error).message}`);
+    }
+  };
+
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
   router.get('/getCommunity/:id', getCommunityFromId);
   router.get('/getQuestions/:id', getQuestionsByCommunityId);
+  router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
 
   return router;
 };

@@ -107,3 +107,32 @@ export const getQuestionsForCommunity = async (
     return [];
   }
 };
+
+/**
+ * Saves given question to database and adds it to community with given ID.
+ * @param communityId ID of community that question is being added to (asked in)
+ * @param questionId ID of question that has been saved
+ * @returns community object with new question included or error
+ */
+export const saveQuestionToCommunity = async (
+  communityId: string,
+  questionId: string,
+): Promise<CommunityResponse> => {
+  try {
+    const question = await QuestionModel.findById(questionId);
+    if (!question) {
+      throw new Error('Question with given ID could not be found');
+    }
+    const updatedCommunity: DatabaseCommunity | null = await CommunityModel.findOneAndUpdate(
+      { _id: communityId },
+      { $push: { questions: { $each: [question._id], $position: 0 } } },
+      { new: true },
+    );
+    if (updatedCommunity === null) {
+      throw new Error('Error when adding question to community');
+    }
+    return updatedCommunity;
+  } catch (error) {
+    return { error: `Error when adding question to community: ${(error as Error).message}` };
+  }
+};

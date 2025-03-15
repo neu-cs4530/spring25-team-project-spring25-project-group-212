@@ -23,23 +23,6 @@ export interface Community {
   questions: Question[];
 }
 
-/**
- * Represents a community stored in the database.
- * - `_id`: Unique identifier for the community.
- * - `name`: The name of the community.
- * - `about`: A brief description of the community.
- * - `rules`: The rules of the community.
- * - `members`: The list of members in the community.
- * - `createdBy`: The username of the user who created the community.
- * - `groupChatId`: The id of the community's group chat.
- * - `questions`: An array of ObjectIds referencing questions associated with the community.
- */
-// export interface DatabaseCommunity extends Omit<Community, 'groupChat', 'questions'> {
-//   _id: ObjectId;
-//   groupChatId: ObjectId;
-//   questions: ObjectId[];
-// }
-
 export interface DatabaseCommunity {
   _id: ObjectId;
   name: string;
@@ -63,12 +46,6 @@ export interface DatabaseCommunity {
  * - `groupChat`: The populated group chat associated with the community.
  * - `questions`: An array of populated `PopulatedDatabaseQuestion` objects.
  */
-// export interface PopulatedDatabaseCommunity
-//   extends Omit<DatabaseCommunity, 'groupChatId' | 'questions'> {
-//   groupChat: PopulatedDatabaseChat;
-//   questions: PopulatedDatabaseQuestion[];
-// }
-
 export interface PopulatedDatabaseCommunity {
   _id: ObjectId;
   name: string;
@@ -87,6 +64,18 @@ export interface PopulatedDatabaseCommunity {
 export interface CreateCommunityRequest extends Request {
   body: {
     community: Omit<Community, 'groupChat', 'questions'>;
+  };
+}
+
+/**
+ * Interface extending the request body for saving a question and adding it to a community
+ */
+export interface AddQuestionToCommunityRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    questionId: string;
   };
 }
 

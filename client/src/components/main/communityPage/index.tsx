@@ -1,9 +1,9 @@
 import React from 'react';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
-import QuestionHeader from '../questionPage/header';
 import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
+import CommunityQuestionHeader from './CommunityQuestionHeader';
 
 const CommunityPage = () => {
   const { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage } =
@@ -21,7 +21,7 @@ const CommunityPage = () => {
       <p>{currentCommunity.about}</p>
       <div id='community-content'>
         <div id='community-questions'>
-          <QuestionHeader
+          <CommunityQuestionHeader
             titleText={titleText}
             qcnt={qlist.length}
             setQuestionOrder={setQuestionOrder}
