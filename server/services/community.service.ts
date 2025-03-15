@@ -85,7 +85,7 @@ export const getQuestionsForCommunity = async (
   communityId: string,
 ): Promise<PopulatedDatabaseQuestion[]> => {
   try {
-    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId).lean();
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
     if (!community) {
       throw new Error('Community not found');
     }

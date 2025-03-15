@@ -5,8 +5,8 @@ import Input from '../../baseComponents/input';
 import TextArea from '../../baseComponents/textarea';
 
 /**
- * NewQuestionPage component allows users to submit a new question with a title,
- * description, tags, and username.
+ * NewQuestionInCommunityPage component allows users to submit a new question with a title,
+ * description, tags, and username to a community.
  */
 const NewQuestionInCommunityPage = () => {
   const {

@@ -1,7 +1,12 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useUserContext from './useUserContext';
-import { AnswerUpdatePayload, OrderType, PopulatedDatabaseQuestion } from '../types/types';
+import {
+  AnswerUpdatePayload,
+  CommunityUpdatePayload,
+  OrderType,
+  PopulatedDatabaseQuestion,
+} from '../types/types';
 import { getQuestionsForCommunity } from '../services/communityService';
 
 /**
@@ -55,6 +60,13 @@ const useCommunityQuestionPage = () => {
       }
     };
 
+    const handleCommunityUpdate = (payload: CommunityUpdatePayload) => {
+      const { community, type } = payload;
+      if (type === 'updated') {
+        setQlist(community.questions);
+      }
+    };
+
     /**
      * Function to handle question updates from the socket.
      *
@@ -96,11 +108,13 @@ const useCommunityQuestionPage = () => {
 
     fetchData();
 
+    socket.on('communityUpdate', handleCommunityUpdate);
     socket.on('questionUpdate', handleQuestionUpdate);
     socket.on('answerUpdate', handleAnswerUpdate);
     socket.on('viewsUpdate', handleViewsUpdate);
 
     return () => {
+      socket.off('communityUpdate', handleCommunityUpdate);
       socket.off('questionUpdate', handleQuestionUpdate);
       socket.off('answerUpdate', handleAnswerUpdate);
       socket.off('viewsUpdate', handleViewsUpdate);

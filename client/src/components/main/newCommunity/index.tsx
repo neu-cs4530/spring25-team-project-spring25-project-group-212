@@ -15,7 +15,6 @@ const NewCommunityPage = () => {
     aboutErr,
     rulesErr,
     postCommunity,
-    err,
   } = useNewCommunity();
 
   return (

@@ -1,10 +1,5 @@
 import axios from 'axios';
-import {
-  Community,
-  PopulatedDatabaseCommunity,
-  PopulatedDatabaseQuestion,
-  Question,
-} from '../types/types';
+import { Community, PopulatedDatabaseCommunity, PopulatedDatabaseQuestion } from '../types/types';
 import api from './config';
 
 const COMMUNITY_API_URL = `${process.env.REACT_APP_SERVER_URL}/community`;
@@ -71,7 +66,6 @@ const addQuestionToCommunity = async (
   communityId: string,
   questionId: string,
 ): Promise<PopulatedDatabaseCommunity> => {
-  console.log(`called addQuestionToCommunity, ${communityId}`);
   const res = await api.post(`${COMMUNITY_API_URL}/addQuestionToCommunity/${communityId}`, {
     questionId,
   });

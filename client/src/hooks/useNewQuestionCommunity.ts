@@ -109,14 +109,11 @@ const useNewQuestionCommunity = () => {
     // main change from useNewQuestion - instead of just adding the question to the question db, add its ID
     // to the community and include it as part of the community questions
     if (id !== undefined) {
-      console.log(`Inside if id, id: ${id}`);
       const savedQuestion = await addQuestion(question);
       const res = await addQuestionToCommunity(id, savedQuestion._id.toString());
       if (res && res._id) {
         navigate(`/community/${id}`);
       }
-    } else {
-      console.log('No Id');
     }
   };
 

@@ -177,6 +177,7 @@ const communityController = (socket: FakeSOSocket) => {
         throw new Error(updatedCommunity.error);
       }
       const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      socket.emit('communityUpdate', { community: populatedUpdatedCommunity, type: 'updated' });
       res.status(200).json(populatedUpdatedCommunity);
     } catch (err: unknown) {
       res.status(500).send(`Error while adding question to community: ${(err as Error).message}`);
