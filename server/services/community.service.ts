@@ -150,6 +150,16 @@ export const joinCommunityService = async (
     if (!updatedCommunity) {
       throw new Error('Community with given ID could not be found');
     }
+
+    const result = await ChatModel.updateOne(
+      { _id: updatedCommunity.groupChatId },
+      { $addToSet: { participants: username } },
+    );
+
+    if (!result) {
+      throw new Error('Unable to update chat with new user after they joined community');
+    }
+
     return updatedCommunity;
   } catch (error) {
     return { error: `Error when joining community: ${(error as Error).message}` };
