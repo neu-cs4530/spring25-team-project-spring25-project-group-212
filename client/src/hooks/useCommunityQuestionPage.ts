@@ -18,7 +18,7 @@ import { getQuestionsForCommunity } from '../services/communityService';
  */
 const useCommunityQuestionPage = () => {
   const { socket } = useUserContext();
-  const { communityId } = useParams();
+  const { id } = useParams();
   const [searchParams] = useSearchParams();
   const [titleText, setTitleText] = useState<string>('Community Questions');
   const [search, setSearch] = useState<string>('');
@@ -50,8 +50,8 @@ const useCommunityQuestionPage = () => {
      */
     const fetchData = async () => {
       try {
-        if (communityId) {
-          const res = await getQuestionsForCommunity(communityId);
+        if (id) {
+          const res = await getQuestionsForCommunity(id);
           setQlist(res || []);
         }
       } catch (error) {
@@ -108,18 +108,25 @@ const useCommunityQuestionPage = () => {
 
     fetchData();
 
+    // if (communityId) {
+    //   socket.emit('joinCommunity', communityId);
+    // }
+
     socket.on('communityUpdate', handleCommunityUpdate);
     socket.on('questionUpdate', handleQuestionUpdate);
     socket.on('answerUpdate', handleAnswerUpdate);
     socket.on('viewsUpdate', handleViewsUpdate);
 
     return () => {
+      // if (communityId) {
+      //   socket.emit('leaveCommunity', communityId);
+      // }
       socket.off('communityUpdate', handleCommunityUpdate);
       socket.off('questionUpdate', handleQuestionUpdate);
       socket.off('answerUpdate', handleAnswerUpdate);
       socket.off('viewsUpdate', handleViewsUpdate);
     };
-  }, [communityId, questionOrder, search, socket]);
+  }, [id, questionOrder, search, socket]);
 
   return { titleText, qlist, setQuestionOrder };
 };

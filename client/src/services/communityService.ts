@@ -75,10 +75,25 @@ const addQuestionToCommunity = async (
   return res.data;
 };
 
+/**
+ * Sends POST request to add user to community
+ */
+const joinCommunity = async (
+  communityId: string,
+  username: string,
+): Promise<PopulatedDatabaseCommunity> => {
+  const res = await api.post(`${COMMUNITY_API_URL}/join/${communityId}`, { username });
+  if (res.status !== 200) {
+    throw new Error('Error while adding user to community');
+  }
+  return res.data;
+};
+
 export {
   getCommunities,
   getCommunityById,
   createCommunity,
   getQuestionsForCommunity,
   addQuestionToCommunity,
+  joinCommunity,
 };

@@ -1,15 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
+import useUserContext from '../../../hooks/useUserContext';
+import { joinCommunity } from '../../../services/communityService';
 
 const CommunityPage = () => {
   const { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage } =
     useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
+
+  const { user } = useUserContext();
+  useEffect(() => {
+    if (currentCommunity && user) {
+      joinCommunity(currentCommunity._id.toString(), user.username);
+    }
+  }, [currentCommunity, user]);
+
+  // useEffect(() => {
+  //   if (currentCommunity) {
+  //     socket.emit('joinCommunity', currentCommunity._id.toString());
+  //   }
+
+  //   return () => {
+  //     if (currentCommunity) {
+  //       socket.emit('leaveCommunity', currentCommunity._id.toString());
+  //     }
+  //   };
+  // }, [currentCommunity, socket]);
 
   if (!currentCommunity) {
     return <div>Community not found</div>;

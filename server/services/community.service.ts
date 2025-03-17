@@ -136,3 +136,22 @@ export const saveQuestionToCommunity = async (
     return { error: `Error when adding question to community: ${(error as Error).message}` };
   }
 };
+
+export const joinCommunityService = async (
+  communityId: string,
+  username: string,
+): Promise<CommunityResponse> => {
+  try {
+    const updatedCommunity: DatabaseCommunity | null = await CommunityModel.findOneAndUpdate(
+      { _id: communityId },
+      { $addToSet: { members: username } },
+      { new: true },
+    );
+    if (!updatedCommunity) {
+      throw new Error('Community with given ID could not be found');
+    }
+    return updatedCommunity;
+  } catch (error) {
+    return { error: `Error when joining community: ${(error as Error).message}` };
+  }
+};

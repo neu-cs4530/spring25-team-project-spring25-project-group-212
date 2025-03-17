@@ -56,6 +56,10 @@ const useCommunityMessagingPage = () => {
           setCommunityChat(chat);
           return;
         }
+        case 'newParticipant': {
+          setCommunityChat(chat);
+          return;
+        }
         default: {
           setError('Invalid chat update type');
         }

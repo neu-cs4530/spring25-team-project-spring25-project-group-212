@@ -108,6 +108,8 @@ export interface ClientToServerEvents {
   leaveGame: (gameID: string) => void;
   joinChat: (chatID: string) => void;
   leaveChat: (chatID: string | undefined) => void;
+  joinCommunity: (communityID: string) => void;
+  leaveCommunity: (communityID: string) => void;
 }
 
 /**

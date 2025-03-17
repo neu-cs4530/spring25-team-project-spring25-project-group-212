@@ -20,6 +20,7 @@ import GamePage from './main/games/gamePage';
 import NewCommunityPage from './main/newCommunity';
 import CommunityPage from './main/communityPage';
 import NewQuestionInCommunityPage from './main/communityPage/newQuestionInCommunity';
+import CommunitiesListPage from './main/communitiesListPage';
 
 const ProtectedRoute = ({
   user,
@@ -72,6 +73,7 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
             <Route path='/new/community' element={<NewCommunityPage />} />
             <Route path='/community/:id' element={<CommunityPage />} />
             <Route path='/new/questionInCommunity/:id' element={<NewQuestionInCommunityPage />} />
+            <Route path='/communityList' element={<CommunitiesListPage />} />
           </Route>
         }
       </Routes>

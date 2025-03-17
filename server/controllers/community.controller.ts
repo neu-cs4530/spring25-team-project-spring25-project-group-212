@@ -11,6 +11,7 @@ import {
   PopulatedDatabaseChat,
   DatabaseCommunity,
   AddQuestionToCommunityRequest,
+  UserJoinCommunityRequest,
 } from '../types/types';
 import {
   saveCommunity,
@@ -18,6 +19,7 @@ import {
   getAllCommunities,
   getQuestionsForCommunity,
   saveQuestionToCommunity,
+  joinCommunityService,
 } from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
@@ -177,18 +179,54 @@ const communityController = (socket: FakeSOSocket) => {
         throw new Error(updatedCommunity.error);
       }
       const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
-      socket.emit('communityUpdate', { community: populatedUpdatedCommunity, type: 'updated' });
+      socket
+        .to(communityId)
+        .emit('communityUpdate', { community: populatedUpdatedCommunity, type: 'updated' });
       res.status(200).json(populatedUpdatedCommunity);
     } catch (err: unknown) {
       res.status(500).send(`Error while adding question to community: ${(err as Error).message}`);
     }
   };
 
+  const joinCommunity = async (req: UserJoinCommunityRequest, res: Response): Promise<void> => {
+    try {
+      const communityId: string = req.params.id;
+      const { username } = req.body;
+      const updatedCommunity = await joinCommunityService(communityId, username);
+      if ('error' in updatedCommunity) {
+        throw new Error(updatedCommunity.error);
+      }
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      socket
+        .to(communityId)
+        .emit('communityUpdate', { community: populatedUpdatedCommunity, type: 'updated' });
+      socket
+        .to(populatedUpdatedCommunity.groupChat._id.toString())
+        .emit('chatUpdate', { chat: populatedUpdatedCommunity.groupChat, type: 'newParticipant' });
+      res.status(200).json(populatedUpdatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error while joining community: ${(err as Error).message}`);
+    }
+  };
+
+  socket.on('connection', conn => {
+    conn.on('joinCommunity', (communityID: string) => {
+      conn.join(communityID);
+    });
+
+    conn.on('leaveCommunity', (communityID: string | undefined) => {
+      if (communityID !== undefined) {
+        conn.leave(communityID);
+      }
+    });
+  });
+
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
   router.get('/getCommunity/:id', getCommunityFromId);
   router.get('/getQuestions/:id', getQuestionsByCommunityId);
   router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
+  router.post('/join/:id', joinCommunity);
 
   return router;
 };

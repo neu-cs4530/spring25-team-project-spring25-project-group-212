@@ -80,6 +80,18 @@ export interface AddQuestionToCommunityRequest extends Request {
 }
 
 /**
+ * Interface extending the request body for a user joining a community
+ */
+export interface UserJoinCommunityRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    username: string;
+  };
+}
+
+/**
  * Type representing possible responses for a Community-related operation.
  * - Either a `DatabaseCommunity` object or an error message.
  */
