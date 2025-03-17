@@ -9,6 +9,7 @@ import { PopulatedDatabaseQuestion, Question } from './question';
  * - `about`: A brief description of the community.
  * - `rules`: The rules of the community.
  * - `members`: The list of members in the community.
+ * - `admins`: Subset of members that have admin privileges.
  * - `createdBy`: The username of the user who created the community.
  * - `groupChat`: The group chat associated with the community.
  * - `questions`: The list of questions associated with the community.
@@ -18,6 +19,7 @@ export interface Community {
   about: string;
   rules: string;
   members: string[];
+  admins: string[];
   createdBy: string;
   groupChat: Chat;
   questions: Question[];
@@ -29,6 +31,7 @@ export interface DatabaseCommunity {
   about: string;
   rules: string;
   members: string[];
+  admins: string[];
   createdBy: string;
   groupChatId: ObjectId;
   questions: ObjectId[];
@@ -52,6 +55,7 @@ export interface PopulatedDatabaseCommunity {
   about: string;
   rules: string;
   members: string[];
+  admins: string[];
   createdBy: string;
   groupChat: PopulatedDatabaseChat;
   questions: PopulatedDatabaseQuestion[];

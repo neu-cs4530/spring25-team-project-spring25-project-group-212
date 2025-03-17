@@ -77,6 +77,7 @@ const useNewCommunity = () => {
       about,
       rules,
       members: [user.username],
+      admins: [user.username],
       createdBy: user.username,
     };
 

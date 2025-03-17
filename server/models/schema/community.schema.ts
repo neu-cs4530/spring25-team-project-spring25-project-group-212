@@ -38,6 +38,10 @@ const communitySchema: Schema = new Schema(
       type: [String],
       required: true,
     },
+    admins: {
+      type: [String],
+      required: true,
+    },
     createdBy: {
       type: String,
       required: true,
