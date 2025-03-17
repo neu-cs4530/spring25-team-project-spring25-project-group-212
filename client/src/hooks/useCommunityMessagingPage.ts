@@ -48,31 +48,54 @@ const useCommunityMessagingPage = () => {
     fetchChatId();
   }, [id]);
 
-  useEffect(() => {
-    const handleChatUpdate = async (chatUpdate: ChatUpdatePayload) => {
-      const { chat, type } = chatUpdate;
-      switch (type) {
-        case 'newMessage': {
-          setCommunityChat(chat);
-          return;
-        }
-        case 'newParticipant': {
-          setCommunityChat(chat);
-          return;
-        }
-        default: {
-          setError('Invalid chat update type');
-        }
-      }
-    };
+  const handleChatUpdate = (chatUpdate: ChatUpdatePayload) => {
+    const { chat, type } = chatUpdate;
+    switch (type) {
+      case 'newMessage': {
+        setCommunityChat(prevChat => {
+          if (!prevChat) return chat;
 
-    socket.on('chatUpdate', handleChatUpdate);
+          const existingMessageIds = new Set(prevChat.messages?.map(msg => msg._id));
+          const newMessages = chat.messages.filter(msg => !existingMessageIds.has(msg._id));
+
+          return {
+            ...prevChat,
+            messages: [...(prevChat.messages ?? []), ...newMessages],
+          };
+        });
+        return;
+      }
+      case 'newParticipant': {
+        setCommunityChat(chat);
+        return;
+      }
+      default: {
+        setError('Invalid chat update type');
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!communityChat || !socket) return undefined;
+    socket.emit('joinChat', String(communityChat._id));
 
     return () => {
-      socket.off('chatUpdate', handleChatUpdate);
-      socket.emit('leaveChat', String(communityChat?._id));
+      socket.emit('leaveChat', String(communityChat._id));
     };
-  }, [communityChat?._id, socket]);
+  }, [communityChat, socket]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleUpdate = (chatUpdate: ChatUpdatePayload) => {
+      handleChatUpdate(chatUpdate);
+    };
+
+    socket.on('chatUpdate', handleUpdate);
+    return () => {
+      socket.off('chatUpdate', handleUpdate);
+    };
+  }, [socket]);
 
   /**
    * Handles sending a new message.

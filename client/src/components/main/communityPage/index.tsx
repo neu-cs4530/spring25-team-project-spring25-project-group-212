@@ -20,18 +20,6 @@ const CommunityPage = () => {
     }
   }, [currentCommunity, user]);
 
-  // useEffect(() => {
-  //   if (currentCommunity) {
-  //     socket.emit('joinCommunity', currentCommunity._id.toString());
-  //   }
-
-  //   return () => {
-  //     if (currentCommunity) {
-  //       socket.emit('leaveCommunity', currentCommunity._id.toString());
-  //     }
-  //   };
-  // }, [currentCommunity, socket]);
-
   if (!currentCommunity) {
     return <div>Community not found</div>;
   }
@@ -62,6 +50,14 @@ const CommunityPage = () => {
               {communityChat?.messages.map(message => (
                 <MessageCard key={String(message._id)} message={message} />
               ))}
+
+              {communityChat?.messages && communityChat.messages.length > 0 ? (
+                communityChat.messages.map(message => (
+                  <MessageCard key={String(message._id)} message={message} />
+                ))
+              ) : (
+                <div>No messages yet.</div>
+              )}
             </div>
             <div className='message-input'>
               <input
