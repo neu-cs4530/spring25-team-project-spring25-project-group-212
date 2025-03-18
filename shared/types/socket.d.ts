@@ -4,6 +4,7 @@ import { DatabaseMessage } from './message';
 import { PopulatedDatabaseQuestion } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
+import { PopulatedDatabaseCommunity } from './community';
 
 /**
  * Payload for an answer update event.
@@ -109,6 +110,18 @@ export interface ClientToServerEvents {
   leaveChat: (chatID: string | undefined) => void;
   userTyping: (username: string) => void;
   userStoppedTyping: (username: string) => void;
+  joinCommunity: (communityID: string) => void;
+  leaveCommunity: (communityID: string) => void;
+}
+
+/**
+ * Interface representing the payload for a community update event.
+ * - `community`: The updated community object.
+ * - `type`: The type of modification (`'created'`, `'deleted'`, or `'updated'`).
+ */
+export interface CommunityUpdatePayload {
+  community: PopulatedDatabaseCommunity;
+  type: 'created' | 'deleted' | 'updated';
 }
 
 /**
@@ -136,4 +149,5 @@ export interface ServerToClientEvents {
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
   typingUpdate: (typingUsers: string[]) => void;
+  communityUpdate: (community: CommunityUpdatePayload) => void;
 }
