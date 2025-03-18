@@ -8,6 +8,6 @@
     "shared"
   ],
   "dependencies": {
-    "react-markdown": "^10.0.1"
+    "react-markdown": "^10.1.0"
   }
 }
