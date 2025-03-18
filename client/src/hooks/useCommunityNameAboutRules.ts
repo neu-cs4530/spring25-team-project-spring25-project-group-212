@@ -9,8 +9,6 @@ const useCommunityNameAboutRules = () => {
   const { user } = useUserContext();
   const [community, setCommunity] = useState<PopulatedDatabaseCommunity | null>();
   const [editMode, setEditMode] = useState(false);
-  //   const [editAboutMode, setEditAboutMode] = useState(false);
-  //   const [editRulesMode, setEditRulesMode] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAbout, setNewAbout] = useState('');
   const [newRules, setNewRules] = useState('');

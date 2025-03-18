@@ -14,7 +14,6 @@ import { Schema } from 'mongoose';
  * - `createdAt`: The date and time when the community was created.
  * - `groupChatId`: The id of the community's group chat.
  * TODO: NEED TO ADD:
- * - admins
  * - bulletin board
  * - visibility
  * - community stats

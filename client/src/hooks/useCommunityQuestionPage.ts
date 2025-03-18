@@ -24,6 +24,7 @@ const useCommunityQuestionPage = () => {
   const [search, setSearch] = useState<string>('');
   const [questionOrder, setQuestionOrder] = useState<OrderType>('newest');
   const [qlist, setQlist] = useState<PopulatedDatabaseQuestion[]>([]);
+  const [qError, setQError] = useState('');
 
   useEffect(() => {
     let pageTitle = 'Community Questions';
@@ -53,10 +54,10 @@ const useCommunityQuestionPage = () => {
         if (id) {
           const res = await getQuestionsForCommunity(id);
           setQlist(res || []);
+          setQError('');
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
+        setQError('Unable to get questions for community');
       }
     };
 
@@ -108,19 +109,12 @@ const useCommunityQuestionPage = () => {
 
     fetchData();
 
-    // if (communityId) {
-    //   socket.emit('joinCommunity', communityId);
-    // }
-
     socket.on('communityUpdate', handleCommunityUpdate);
     socket.on('questionUpdate', handleQuestionUpdate);
     socket.on('answerUpdate', handleAnswerUpdate);
     socket.on('viewsUpdate', handleViewsUpdate);
 
     return () => {
-      // if (communityId) {
-      //   socket.emit('leaveCommunity', communityId);
-      // }
       socket.off('communityUpdate', handleCommunityUpdate);
       socket.off('questionUpdate', handleQuestionUpdate);
       socket.off('answerUpdate', handleAnswerUpdate);
@@ -128,7 +122,7 @@ const useCommunityQuestionPage = () => {
     };
   }, [id, questionOrder, search, socket]);
 
-  return { titleText, qlist, setQuestionOrder };
+  return { titleText, qlist, setQuestionOrder, qError };
 };
 
 export default useCommunityQuestionPage;
