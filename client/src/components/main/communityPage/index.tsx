@@ -125,10 +125,6 @@ const CommunityPage = () => {
         <div className='direct-message-container'>
           <div id='community-chat' className='chat-container'>
             <div className='chat-messages'>
-              {/* {communityChat?.messages.map(message => (
-                <MessageCard key={String(message._id)} message={message} />
-              ))} */}
-
               {communityChat?.messages && communityChat.messages.length > 0 ? (
                 communityChat.messages.map(message => (
                   <MessageCard key={String(message._id)} message={message} />
