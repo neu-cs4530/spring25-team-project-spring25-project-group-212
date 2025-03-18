@@ -30,12 +30,7 @@ const useDirectMessage = () => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim() && selectedChat?._id) {
-      const message: {
-        msg: string;
-        msgFrom: string;
-        msgDateTime: Date;
-        useMarkdown: boolean;
-      } = {
+      const message: Omit<Message, 'type'> = {
         msg: newMessage,
         msgFrom: user.username,
         msgDateTime: new Date(),

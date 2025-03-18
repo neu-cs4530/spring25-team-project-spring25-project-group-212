@@ -54,12 +54,7 @@ const useMessagingPage = () => {
 
     setError('');
 
-    const newMsg: {
-      msg: string;
-      msgFrom: string;
-      msgDateTime: Date;
-      useMarkdown: boolean;
-    } = {
+    const newMsg: Omit<Message, 'type'> = {
       msg: newMessage,
       msgFrom: user.username,
       msgDateTime: new Date(),
