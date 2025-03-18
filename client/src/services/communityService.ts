@@ -89,6 +89,23 @@ const joinCommunity = async (
   return res.data;
 };
 
+const updateCommunityNameAboutRules = async (
+  communityId: string,
+  name: string,
+  about: string,
+  rules: string,
+): Promise<PopulatedDatabaseCommunity> => {
+  const res = await api.patch(`${COMMUNITY_API_URL}/updateCommunityNameAboutRules/${communityId}`, {
+    name,
+    about,
+    rules,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error while updating community name, about, and/or rules');
+  }
+  return res.data;
+};
+
 export {
   getCommunities,
   getCommunityById,
@@ -96,4 +113,5 @@ export {
   getQuestionsForCommunity,
   addQuestionToCommunity,
   joinCommunity,
+  updateCommunityNameAboutRules,
 };

@@ -12,6 +12,7 @@ import {
   DatabaseCommunity,
   AddQuestionToCommunityRequest,
   UserJoinCommunityRequest,
+  UpdateCommunityNameAboutRulesRequest,
 } from '../types/types';
 import {
   saveCommunity,
@@ -20,6 +21,7 @@ import {
   getQuestionsForCommunity,
   saveQuestionToCommunity,
   joinCommunityService,
+  updateCommunity,
 } from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
@@ -44,6 +46,17 @@ const communityController = (socket: FakeSOSocket) => {
     Array.isArray(req.body.community.members) &&
     req.body.community.createdBy !== undefined &&
     req.body.community.createdBy !== '';
+
+  const isUpdateCommunityNameAboutRulesRequestValid = (
+    req: UpdateCommunityNameAboutRulesRequest,
+  ): boolean =>
+    req.body !== undefined &&
+    req.body.name !== undefined &&
+    req.body.name !== '' &&
+    req.body.about !== undefined &&
+    req.body.about !== '' &&
+    req.body.rules !== undefined &&
+    req.body.rules !== '';
 
   const populateDatabaseCommunity = async (
     community: DatabaseCommunity,
@@ -209,6 +222,35 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  const updateCommunityNameAboutRules = async (
+    req: UpdateCommunityNameAboutRulesRequest,
+    res: Response,
+  ): Promise<void> => {
+    if (!isUpdateCommunityNameAboutRulesRequestValid(req)) {
+      res.status(400).send('Invalid update community name, about, and/or rules body');
+    }
+
+    try {
+      const updatedCommunity = await updateCommunity(req.params.id, {
+        name: req.body.name,
+        about: req.body.about,
+        rules: req.body.rules,
+      });
+
+      if ('error' in updatedCommunity) {
+        throw new Error(updatedCommunity.error);
+      }
+
+      res.status(200).send(updatedCommunity);
+    } catch (err: unknown) {
+      res
+        .status(500)
+        .send(
+          `Error while updating community's name, about, and/or rules: ${(err as Error).message}`,
+        );
+    }
+  };
+
   socket.on('connection', conn => {
     conn.on('joinCommunity', (communityID: string) => {
       conn.join(communityID);
@@ -227,6 +269,7 @@ const communityController = (socket: FakeSOSocket) => {
   router.get('/getQuestions/:id', getQuestionsByCommunityId);
   router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
   router.post('/join/:id', joinCommunity);
+  router.patch('/updateCommunityNameAboutRules/:id', updateCommunityNameAboutRules);
 
   return router;
 };

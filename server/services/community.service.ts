@@ -165,3 +165,23 @@ export const joinCommunityService = async (
     return { error: `Error when joining community: ${(error as Error).message}` };
   }
 };
+
+export const updateCommunity = async (
+  communityId: string,
+  updates: Partial<Community>,
+): Promise<CommunityResponse> => {
+  try {
+    const updatedCommunity = await CommunityModel.findOneAndUpdate(
+      { _id: communityId },
+      { $set: updates },
+      { new: true },
+    );
+    if (!updatedCommunity) {
+      throw new Error('Error updating community');
+    }
+
+    return updatedCommunity;
+  } catch (error) {
+    return { error: `Error when updating community: ${(error as Error).message}` };
+  }
+};

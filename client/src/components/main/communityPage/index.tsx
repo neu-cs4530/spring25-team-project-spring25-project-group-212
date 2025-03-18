@@ -6,12 +6,28 @@ import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
 import { joinCommunity } from '../../../services/communityService';
+import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
+import './index.css';
 
 const CommunityPage = () => {
   const { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage } =
     useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
+
+  const {
+    community,
+    editMode,
+    setEditMode,
+    newName,
+    setNewName,
+    newAbout,
+    setNewAbout,
+    newRules,
+    setNewRules,
+    handleEditNameAboutRules,
+    canEditNameAboutRules,
+  } = useCommunityNameAboutRules();
 
   const { user } = useUserContext();
   useEffect(() => {
@@ -20,14 +36,76 @@ const CommunityPage = () => {
     }
   }, [currentCommunity, user]);
 
-  if (!currentCommunity) {
+  if (!currentCommunity || !community) {
     return <div>Community not found</div>;
   }
 
   return (
     <div id='community-page'>
-      <h1>{currentCommunity.name}</h1>
-      <p>{currentCommunity.about}</p>
+      {!editMode && (
+        <div>
+          <strong>Community Name: </strong> {community.name}
+          <p>
+            <strong>About: </strong>
+            {community.about}
+          </p>
+          <p>
+            <strong>Rules: </strong>
+            {community.rules}
+          </p>
+          {canEditNameAboutRules && (
+            <button
+              className='login-button'
+              style={{ marginLeft: '1rem' }}
+              onClick={() => {
+                setEditMode(true);
+                setNewName(community?.name || '');
+                setNewAbout(community?.about || '');
+                setNewRules(community?.rules || '');
+              }}>
+              Edit Name, About, and/or Rules
+            </button>
+          )}
+        </div>
+      )}
+
+      {editMode && canEditNameAboutRules && (
+        <div>
+          <input
+            className='input-text'
+            placeholder='Enter new name...'
+            type='text'
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+          />
+          <input
+            className='input-text'
+            placeholder='Enter new about...'
+            type='text'
+            value={newAbout}
+            onChange={e => setNewAbout(e.target.value)}
+          />
+          <input
+            className='input-text'
+            placeholder='Enter new rules...'
+            type='text'
+            value={newRules}
+            onChange={e => setNewRules(e.target.value)}
+          />
+          <button
+            className='login-button'
+            style={{ marginLeft: '1rem' }}
+            onClick={handleEditNameAboutRules}>
+            Save
+          </button>
+          <button
+            className='delete-button'
+            style={{ marginLeft: '1rem' }}
+            onClick={() => setEditMode(false)}>
+            Cancel
+          </button>
+        </div>
+      )}
       <div id='community-content'>
         <div id='community-questions'>
           <CommunityQuestionHeader

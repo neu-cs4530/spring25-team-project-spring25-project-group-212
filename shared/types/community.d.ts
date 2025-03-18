@@ -96,6 +96,23 @@ export interface UserJoinCommunityRequest extends Request {
 }
 
 /**
+ * Interface extending the request body for updating a community's name, about, and/or rules
+ * - `name`: community's name
+ * - `about`: community's "description"
+ * - `rules`: community's rules
+ */
+export interface UpdateCommunityNameAboutRulesRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    name: string;
+    about: string;
+    rules: string;
+  };
+}
+
+/**
  * Type representing possible responses for a Community-related operation.
  * - Either a `DatabaseCommunity` object or an error message.
  */
