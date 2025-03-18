@@ -104,6 +104,7 @@ const useNewQuestionCommunity = () => {
       downVotes: [],
       views: [],
       comments: [],
+      useMarkdown: false,
     };
 
     // main change from useNewQuestion - instead of just adding the question to the question db, add its ID
