@@ -19,6 +19,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -71,6 +72,7 @@ describe('POST /addAnswer', () => {
       ansBy: 'dummyUserId',
       ansDateTime: mockAnswer.ansDateTime.toISOString(),
       comments: [],
+      useMarkdown: false,
     });
   });
 
@@ -80,6 +82,7 @@ describe('POST /addAnswer', () => {
       ans: {
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -94,6 +97,7 @@ describe('POST /addAnswer', () => {
       ans: {
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -108,6 +112,7 @@ describe('POST /addAnswer', () => {
       ans: {
         text: 'This is a test answer',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -122,6 +127,7 @@ describe('POST /addAnswer', () => {
       ans: {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
+        useMarkdown: false,
       },
     };
 
@@ -144,6 +150,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -162,6 +169,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -190,6 +198,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
