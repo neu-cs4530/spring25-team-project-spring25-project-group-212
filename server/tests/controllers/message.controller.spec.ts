@@ -16,6 +16,7 @@ describe('POST /addMessage', () => {
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const message: DatabaseMessage = {
@@ -160,6 +161,7 @@ describe('GET /getMessages', () => {
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const message2: Message = {
@@ -167,6 +169,7 @@ describe('GET /getMessages', () => {
       msgFrom: 'User2',
       msgDateTime: new Date('2024-06-05'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const dbMessage1: DatabaseMessage = {
