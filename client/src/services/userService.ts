@@ -45,6 +45,7 @@ const createUser = async (user: UserCredentials): Promise<SafeDatabaseUser> => {
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(`Error while signing up: ${error.response.data}`);
     } else {
+      console.log('didnt work');
       throw new Error('Error while signing up');
     }
   }
@@ -123,6 +124,24 @@ const updateBiography = async (
   return res.data;
 };
 
+/**
+ * Updates the user's email.
+ * @param username The unique username of the user
+ * @param newEmail The new biography to set for this user
+ * @returns A promise resolving to the updated user
+ * @throws Error if the request fails
+ */
+const updateEmail = async (username: string, newEmail: string): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/updateEmail`, {
+    username,
+    email: newEmail,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when updating email');
+  }
+  return res.data;
+};
+
 export {
   getUsers,
   getUserByUsername,
@@ -131,4 +150,5 @@ export {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateEmail,
 };
