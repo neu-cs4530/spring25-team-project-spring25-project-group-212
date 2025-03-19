@@ -19,6 +19,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -28,6 +29,7 @@ describe('POST /addAnswer', () => {
       ansBy: 'dummyUserId',
       ansDateTime: new Date('2024-06-03'),
       comments: [],
+      useMarkdown: false,
     };
     saveAnswerSpy.mockResolvedValueOnce(mockAnswer);
 
@@ -43,6 +45,7 @@ describe('POST /addAnswer', () => {
       downVotes: [],
       answers: [mockAnswer._id],
       comments: [],
+      useMarkdown: false,
     });
 
     popDocSpy.mockResolvedValueOnce({
@@ -57,6 +60,7 @@ describe('POST /addAnswer', () => {
       downVotes: [],
       answers: [mockAnswer],
       comments: [],
+      useMarkdown: false,
     });
 
     const response = await supertest(app).post('/answer/addAnswer').send(mockReqBody);
@@ -68,6 +72,7 @@ describe('POST /addAnswer', () => {
       ansBy: 'dummyUserId',
       ansDateTime: mockAnswer.ansDateTime.toISOString(),
       comments: [],
+      useMarkdown: false,
     });
   });
 
@@ -77,6 +82,7 @@ describe('POST /addAnswer', () => {
       ans: {
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -91,6 +97,7 @@ describe('POST /addAnswer', () => {
       ans: {
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -105,6 +112,7 @@ describe('POST /addAnswer', () => {
       ans: {
         text: 'This is a test answer',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -119,6 +127,7 @@ describe('POST /addAnswer', () => {
       ans: {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
+        useMarkdown: false,
       },
     };
 
@@ -141,6 +150,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -159,6 +169,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -168,6 +179,7 @@ describe('POST /addAnswer', () => {
       ansBy: 'dummyUserId',
       ansDateTime: new Date('2024-06-03'),
       comments: [],
+      useMarkdown: false,
     };
 
     saveAnswerSpy.mockResolvedValueOnce(mockAnswer);
@@ -186,6 +198,7 @@ describe('POST /addAnswer', () => {
         text: 'This is a test answer',
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-03'),
+        useMarkdown: false,
       },
     };
 
@@ -195,6 +208,7 @@ describe('POST /addAnswer', () => {
       ansBy: 'dummyUserId',
       ansDateTime: new Date('2024-06-03'),
       comments: [],
+      useMarkdown: false,
     };
 
     const mockQuestion = {
@@ -209,6 +223,7 @@ describe('POST /addAnswer', () => {
       downVotes: [],
       answers: [mockAnswer._id],
       comments: [],
+      useMarkdown: false,
     };
 
     saveAnswerSpy.mockResolvedValueOnce(mockAnswer);

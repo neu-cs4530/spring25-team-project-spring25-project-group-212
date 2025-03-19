@@ -20,6 +20,7 @@ describe('Answer model', () => {
         ansBy: 'dummyUserId',
         ansDateTime: new Date('2024-06-06'),
         comments: [],
+        useMarkdown: false,
       };
       const mockDBAnswer = {
         ...mockAnswer,

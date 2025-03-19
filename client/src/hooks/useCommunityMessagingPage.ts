@@ -146,6 +146,7 @@ const useCommunityMessagingPage = () => {
       msg: newMessage,
       msgFrom: user.username,
       msgDateTime: new Date(),
+      useMarkdown: false,
     };
 
     if (communityChat) {
