@@ -66,7 +66,7 @@ const CommunityPage = () => {
       await renameChat(community.groupChat._id, chatName);
       setChatName(chatName);
     } catch (error) {
-      console.error('Failed to rename chat:', error);
+      throw Error('Failed to rename the chat');
     }
   };
 

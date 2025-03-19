@@ -19,14 +19,13 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
   const [reactions, setReactions] = useState<string[]>([]);
   const { socket } = useUserContext();
 
-  // Fetch reactions when the message loads
   useEffect(() => {
     const fetchReactions = async () => {
       try {
         const fetchedReactions = await getReactions(message._id.toString());
         setReactions(fetchedReactions.map((r: { emoji: string }) => r.emoji) || []);
       } catch (error) {
-        console.error('Error fetching reactions:', error);
+        throw Error('Error fetching the reactions');
       }
     };
 
@@ -34,17 +33,15 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
   }, [message._id]);
 
   const handleAddReaction = async (emojiObject: EmojiClickData) => {
-    setReactions(prev => [...prev, emojiObject.emoji]); // Optimistic UI update
+    setReactions(prev => [...prev, emojiObject.emoji]);
     setShowEmojiPicker(false);
 
     await addReaction(message._id.toString(), emojiObject.emoji, message.msgFrom);
 
-    // Fetch updated reactions from DB after adding
     const updatedReactions: { emoji: string }[] = await getReactions(message._id.toString());
     setReactions(updatedReactions.map(r => r.emoji));
   };
 
-  // Listen for reaction updates via socket
   useEffect(() => {
     if (!socket) return undefined;
 
