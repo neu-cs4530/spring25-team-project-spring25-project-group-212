@@ -45,8 +45,8 @@ const QuestionBody = ({ views, text, askby, meta, isMarkdown = false, qid }: Que
     <div id='questionBody' className='questionBody right_padding'>
       <div className='bold_title answer_question_view'>{views} views</div>
       <div className='answer_question_text'>
-      {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
-    </div>
+        {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
+      </div>
       <div className='answer_question_right'>
         <div className='question_author'>{askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
