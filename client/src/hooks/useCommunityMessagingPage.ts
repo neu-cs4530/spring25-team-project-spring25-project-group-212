@@ -6,6 +6,7 @@ import {
   Message,
   PopulatedDatabaseChat,
   PopulatedDatabaseCommunity,
+  DatabaseMessage,
 } from '../types/types';
 import { sendMessage } from '../services/chatService';
 import { getCommunityById } from '../services/communityService';
@@ -22,9 +23,35 @@ const useCommunityMessagingPage = () => {
   const { id } = useParams();
   const { user, socket } = useUserContext();
   const [currentCommunity, setCurrentCommunity] = useState<PopulatedDatabaseCommunity>();
-  const [communityChat, setCommunityChat] = useState<PopulatedDatabaseChat | null>(null);
+  const [messages, setMessages] = React.useState<DatabaseMessage[]>([]);
+  const [communityChat, setCommunityChat] = React.useState<PopulatedDatabaseChat | null>(null);
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
+  const [typingUsers, setTypingUsers] = React.useState<string[]>([]); // Add typingUsers state
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    socket.on('typingUpdate', (users: string[]) => {
+      setTypingUsers(users);
+    });
+
+    return () => {
+      socket.off('typingUpdate');
+    };
+  }, [socket]);
+
+  const handleTyping = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNewMessage(e.target.value);
+    socket.emit('userTyping', user.username);
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit('userStoppedTyping', user.username);
+    }, 2000);
+  };
 
   useEffect(() => {
     if (!id) {
@@ -38,6 +65,7 @@ const useCommunityMessagingPage = () => {
         if (community && community.groupChat._id) {
           setCurrentCommunity(community);
           setCommunityChat(community.groupChat);
+          setMessages(community.groupChat.messages ?? []);
         } else {
           setError('Community not found');
         }
@@ -58,9 +86,12 @@ const useCommunityMessagingPage = () => {
           const existingMessageIds = new Set(prevChat.messages?.map(msg => msg._id));
           const newMessages = chat.messages.filter(msg => !existingMessageIds.has(msg._id));
 
+          const updatedMessages = [...(prevChat.messages ?? []), ...newMessages];
+          setMessages(updatedMessages);
+
           return {
             ...prevChat,
-            messages: [...(prevChat.messages ?? []), ...newMessages],
+            messages: updatedMessages,
           };
         });
         return;
@@ -109,6 +140,7 @@ const useCommunityMessagingPage = () => {
     }
 
     setError('');
+    socket.emit('userStoppedTyping', user.username);
 
     const newMsg: Omit<Message, 'type'> = {
       msg: newMessage,
@@ -116,13 +148,25 @@ const useCommunityMessagingPage = () => {
       msgDateTime: new Date(),
       useMarkdown: false,
     };
+
     if (communityChat) {
       await sendMessage(newMsg, communityChat._id);
+
       setNewMessage('');
     }
   };
 
-  return { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage, error };
+  return {
+    messages,
+    handleTyping, // Return handleTyping so it's available in the component
+    typingUsers, // Return typingUsers so it's available in the component
+    currentCommunity,
+    communityChat,
+    newMessage,
+    setNewMessage,
+    handleSendMessage,
+    error,
+  };
 };
 
 export default useCommunityMessagingPage;
