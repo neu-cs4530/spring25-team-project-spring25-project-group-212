@@ -108,6 +108,8 @@ export interface ClientToServerEvents {
   leaveGame: (gameID: string) => void;
   joinChat: (chatID: string) => void;
   leaveChat: (chatID: string | undefined) => void;
+  userTyping: (username: string) => void;
+  userStoppedTyping: (username: string) => void;
   joinCommunity: (communityID: string) => void;
   leaveCommunity: (communityID: string) => void;
 }
@@ -146,5 +148,6 @@ export interface ServerToClientEvents {
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
 }

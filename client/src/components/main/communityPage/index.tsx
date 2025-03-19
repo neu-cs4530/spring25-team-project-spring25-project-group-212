@@ -10,8 +10,14 @@ import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRule
 import './index.css';
 
 const CommunityPage = () => {
-  const { currentCommunity, communityChat, newMessage, setNewMessage, handleSendMessage } =
-    useCommunityMessagingPage();
+  const {
+    currentCommunity,
+    communityChat,
+    newMessage,
+    handleSendMessage,
+    handleTyping,
+    typingUsers,
+  } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
 
@@ -133,12 +139,22 @@ const CommunityPage = () => {
                 <div>No messages yet.</div>
               )}
             </div>
+
+            {typingUsers.length > 0 && (
+              <div className='typing-indicator'>
+                {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
+                {typingUsers.length === 2 &&
+                  `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
+                {typingUsers.length > 2 && 'Many people are typing...'}
+              </div>
+            )}
+
             <div className='message-input'>
               <input
                 className='custom-input'
                 type='text'
                 value={newMessage}
-                onChange={e => setNewMessage(e.target.value)}
+                onChange={handleTyping}
                 placeholder='Type a message...'
               />
               <button className='custom-button' onClick={handleSendMessage}>
