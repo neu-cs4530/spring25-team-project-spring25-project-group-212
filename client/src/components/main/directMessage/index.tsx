@@ -92,13 +92,11 @@ const DirectMessage = () => {
                 </div>
               </div>
               <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
-
               <div className='chat-messages'>
                 {selectedChat.messages.map(message => (
                   <MessageCard key={String(message._id)} message={message} />
                 ))}
               </div>
-
               <div className='message-input-container'>
                 <div className='message-input'>
                   <input

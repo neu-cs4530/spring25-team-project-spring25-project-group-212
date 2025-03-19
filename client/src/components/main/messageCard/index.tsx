@@ -5,6 +5,7 @@ import './index.css';
 import { DatabaseMessage, ReactionUpdatePayload } from '../../../types/types';
 import { addReaction, getReactions } from '../../../services/messageService';
 import useUserContext from '../../../hooks/useUserContext';
+import { getMetaData } from '../../../tool';
 
 /**
  * MessageCard component displays a single message with its sender and timestamp.
@@ -62,22 +63,31 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
 
   return (
     <div className='message'>
-      <div className='message-text'>
-        <p>{message.msg}</p>
+      <div className='message-header'>
+        <div className='message-sender'>{message.msgFrom}</div>
+        <div className='message-time'>{getMetaData(new Date(message.msgDateTime))}</div>
       </div>
-      <div className='reactions'>
-        {reactions.map((emoji, index) => (
-          <span key={index}>{emoji}</span>
-        ))}
-      </div>
-      <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
-      {showEmojiPicker && <EmojiPicker onEmojiClick={handleAddReaction} />}
-      <div className='message-body'>
-        {'useMarkdown' in message && message.useMarkdown ? (
-          <ReactMarkdown>{message.msg}</ReactMarkdown>
-        ) : (
-          message.msg
-        )}
+      <div className='message-content'>
+        <div className='message-body'>
+          {'useMarkdown' in message && message.useMarkdown ? (
+            <ReactMarkdown>{message.msg}</ReactMarkdown>
+          ) : (
+            <p>{message.msg}</p>
+          )}
+        </div>
+        <div className='message-actions'>
+          {showEmojiPicker && (
+            <div>
+              <EmojiPicker onEmojiClick={handleAddReaction} />
+            </div>
+          )}
+          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
+          <div className='reactions'>
+            {reactions.map((emoji, index) => (
+              <span key={index}>{emoji}</span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
