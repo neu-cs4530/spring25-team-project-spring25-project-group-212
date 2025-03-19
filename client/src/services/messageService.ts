@@ -41,4 +41,30 @@ const getMessages = async (): Promise<DatabaseMessage[]> => {
   return res.data;
 };
 
-export { addMessage, getMessages };
+/**
+ * Adds a reaction to a message.
+ *
+ * @param messageId - The ID of the message being reacted to.
+ * @param emoji - The emoji being added as a reaction.
+ * @param username - The username of the person reacting.
+ * @throws Error if the request fails or the response status is not 200.
+ */
+const addReaction = async (messageId: string, emoji: string, username: string) => {
+  const res = await api.post(`${MESSAGE_API_URL}/addReaction`, { messageId, emoji, username });
+
+  if (res.status !== 200) {
+    throw new Error('Error adding reaction');
+  }
+  return res.data;
+};
+
+const getReactions = async (messageId: string) => {
+  const res = await api.get(`${MESSAGE_API_URL}/getReactions/${messageId}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error fetching reactions');
+  }
+  return res.data;
+};
+
+export { addMessage, getMessages, addReaction, getReactions };

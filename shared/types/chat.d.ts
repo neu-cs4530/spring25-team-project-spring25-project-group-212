@@ -18,6 +18,7 @@ export interface MessageInChat extends DatabaseMessage {
  * - `messages`: Array of `Message` objects.
  */
 export interface Chat {
+  name?: string;
   participants: string[];
   messages: Message[];
 }

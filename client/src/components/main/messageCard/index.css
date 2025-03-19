@@ -8,30 +8,17 @@
   border-radius: 8px;
   background-color: #f9f9f9;
   width: 98%;
-}
-
-.message.sender {
-  align-self: flex-end;
-  background-color: #d1e7ff;
-}
-
-.message.receiver {
-  align-self: flex-start;
-  background-color: #ffffff;
+  font-family: Arial, sans-serif;
 }
 
 .message-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-  color: #666;
 }
 
 .message-sender {
   font-weight: bold;
-  color: #333;
 }
 
 .message-time {
@@ -39,9 +26,45 @@
   color: #999;
 }
 
+.message-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .message-body {
+  flex: 1;
   font-size: 1rem;
   color: #333;
-  line-height: 1.5;
-  word-wrap: break-word;
+}
+
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.emoji-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.reactions {
+  display: flex;
+  gap: 5px;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.emoji-picker {
+  position: absolute;
+  right: 10px;
+  bottom: 40px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
