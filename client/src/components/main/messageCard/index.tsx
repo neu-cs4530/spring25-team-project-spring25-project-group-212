@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState, useEffect } from 'react';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import ReactMarkdown from 'react-markdown';
@@ -73,17 +72,15 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
       </div>
       <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
       {showEmojiPicker && <EmojiPicker onEmojiClick={handleAddReaction} />}
+      <div className='message-body'>
+        {'useMarkdown' in message && message.useMarkdown ? (
+          <ReactMarkdown>{message.msg}</ReactMarkdown>
+        ) : (
+          message.msg
+        )}
+      </div>
     </div>
   );
 };
-    <div className='message-body'>
-      {'useMarkdown' in message && message.useMarkdown ? (
-        <ReactMarkdown>{message.msg}</ReactMarkdown>
-      ) : (
-        message.msg
-      )}
-    </div>
-  </div>
-);
 
 export default MessageCard;
