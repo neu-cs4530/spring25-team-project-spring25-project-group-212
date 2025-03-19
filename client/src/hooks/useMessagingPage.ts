@@ -62,7 +62,13 @@ const useMessagingPage = () => {
     setNewMessage('');
   };
 
-  return { messages, newMessage, setNewMessage, handleSendMessage, error };
+  return {
+    messages,
+    newMessage,
+    setNewMessage,
+    handleSendMessage,
+    error,
+  };
 };
 
 export default useMessagingPage;
