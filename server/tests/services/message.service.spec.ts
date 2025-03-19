@@ -96,7 +96,7 @@ describe('Message model', () => {
     it('should return an empty array if error when retrieving messages', async () => {
       jest
         .spyOn(MessageModel, 'find')
-        .mockRejectedValueOnce(() => new Error('Error retrieving documents'));
+        .mockRejectedValueOnce(new Error('Error retrieving documents'));
 
       const messages = await getMessages();
 
