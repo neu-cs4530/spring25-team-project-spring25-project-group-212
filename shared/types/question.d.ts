@@ -25,6 +25,7 @@ export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed';
  * - `upVotes`: An array of usernames who have upvoted the question.
  * - `downVotes`: An array of usernames who have downvoted the question.
  * - `comments`: An array of comments related to the question.
+ * - `useMarkdown`: Boolean indicating whether markdown formatting is enabled.
  */
 export interface Question {
   title: string;
@@ -37,6 +38,7 @@ export interface Question {
   upVotes: string[];
   downVotes: string[];
   comments: Comment[];
+  useMarkdown: boolean;
 }
 
 /**

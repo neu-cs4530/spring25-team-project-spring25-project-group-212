@@ -7,12 +7,14 @@ import { Request } from 'express';
  * - `msgFrom`: The username of the user sending the message.
  * - `msgDateTime`: The date and time when the message was sent.
  * - `type`: The type of the message, either 'global' or 'direct'.
+ * - `useMarkdown`: Whether to render the message content as markdown.
  */
 export interface Message {
   msg: string;
   msgFrom: string;
   msgDateTime: Date;
   type: 'global' | 'direct';
+  useMarkdown: boolean;
 }
 
 /**
@@ -22,6 +24,7 @@ export interface Message {
  * - `msgFrom`: The username of the user sending the message.
  * - `msgDateTime`: The date and time when the message was sent.
  * - `type`: The type of the message, either 'global' or 'direct'.
+ * - `useMarkdown`: Whether to render the message content as markdown.
  */
 export interface DatabaseMessage extends Message {
   _id: ObjectId;
