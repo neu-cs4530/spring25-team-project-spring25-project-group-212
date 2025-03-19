@@ -25,6 +25,7 @@ const answerSchema: Schema = new Schema(
     useMarkdown: {
       type: Boolean,
       default: false,
+      required: true,
     },
   },
   { collection: 'Answer' },

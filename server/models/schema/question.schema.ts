@@ -39,6 +39,7 @@ const questionSchema: Schema = new Schema(
     useMarkdown: {
       type: Boolean,
       default: false,
+      required: true,
     },
   },
   { collection: 'Question' },
