@@ -3,6 +3,7 @@ import useNewQuestionCommunity from '../../../../hooks/useNewQuestionCommunity';
 import Form from '../../baseComponents/form';
 import Input from '../../baseComponents/input';
 import TextArea from '../../baseComponents/textarea';
+import Checkbox from '../../baseComponents/checkbox';
 
 /**
  * NewQuestionInCommunityPage component allows users to submit a new question with a title,
@@ -16,6 +17,8 @@ const NewQuestionInCommunityPage = () => {
     setText,
     tagNames,
     setTagNames,
+    anonymous,
+    setAnonymous,
     titleErr,
     textErr,
     tagErr,
@@ -47,6 +50,13 @@ const NewQuestionInCommunityPage = () => {
         val={tagNames}
         setState={setTagNames}
         err={tagErr}
+      />
+      <Checkbox
+        title={'Anonymous'}
+        hint={'Check if the question should be displayed anonymous'}
+        id={'formAnonymousInpus'}
+        val={anonymous}
+        setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
         <button
