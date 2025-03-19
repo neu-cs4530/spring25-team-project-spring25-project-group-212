@@ -74,7 +74,7 @@ const QuestionView = ({ question }: QuestionProps) => {
         </div>
       </div>
       <div className='lastActivity'>
-        <div className='question_author'>{question.anonymous ? 'Anonymous' : question.askedBy}</div>
+        <div className='question_author'>{question.anonymous ? <i>Anonymous</i> : question.askedBy}</div>
         <div>&nbsp;</div>
         <div className='question_meta'>asked {getMetaData(new Date(question.askDateTime))}</div>
       </div>

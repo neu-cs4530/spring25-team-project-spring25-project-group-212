@@ -41,7 +41,7 @@ const QuestionBody = ({ views, text, askby, meta, isMarkdown = false, anonymous 
       {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
     </div>
     <div className='answer_question_right'>
-      <div className='question_author'>{anonymous ? 'Anonymous' : askby}</div>
+      <div className='question_author'>{anonymous ? <i>Anonymous</i> : askby}</div>
       <div className='answer_question_meta'>asked {meta}</div>
     </div>
   </div>
