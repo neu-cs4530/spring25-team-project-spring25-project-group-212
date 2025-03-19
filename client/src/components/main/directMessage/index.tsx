@@ -23,6 +23,8 @@ const DirectMessage = () => {
     handleUserSelect,
     handleCreateChat,
     error,
+    useMarkdown,
+    setUseMarkdown,
   } = useDirectMessage();
 
   return (
@@ -67,9 +69,18 @@ const DirectMessage = () => {
                   onChange={e => setNewMessage(e.target.value)}
                   placeholder='Type a message...'
                 />
-                <button className='custom-button' onClick={handleSendMessage}>
-                  Send
-                </button>
+                <div className='message-controls'>
+                  <button className='custom-button' onClick={handleSendMessage}>
+                    Send
+                  </button>
+                  <button
+                    type='button'
+                    className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                    onClick={() => setUseMarkdown(!useMarkdown)}
+                    title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                    MD
+                  </button>
+                </div>
               </div>
             </>
           ) : (

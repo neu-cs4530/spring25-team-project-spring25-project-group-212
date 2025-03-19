@@ -8,12 +8,14 @@ import { Comment, DatabaseComment } from './comment';
  * - `ansBy`: The author of the answer.
  * - `ansDateTime`: The timestamp of when the answer was given.
  * - `comments`: A list of comments associated with the answer.
+ * - `useMarkdown`: Whether the answer should be rendered as markdown.
  */
 export interface Answer {
   text: string;
   ansBy: string;
   ansDateTime: Date;
   comments: Comment[];
+  useMarkdown: boolean;
 }
 
 /**

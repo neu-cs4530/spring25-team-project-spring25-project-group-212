@@ -30,6 +30,7 @@ describe('Chat service', () => {
           msgFrom: 'user1',
           msgDateTime: new Date('2025-01-01T00:00:00.000Z'),
           type: 'direct',
+          useMarkdown: false,
         },
       ],
     };

@@ -191,7 +191,6 @@ export const fetchAndIncrementQuestionViewsById = async (
 export const saveQuestion = async (question: Question): Promise<QuestionResponse> => {
   try {
     const result: DatabaseQuestion = await QuestionModel.create(question);
-
     return result;
   } catch (error) {
     return { error: 'Error when saving a question' };

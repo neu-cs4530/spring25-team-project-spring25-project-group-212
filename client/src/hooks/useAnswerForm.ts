@@ -12,6 +12,8 @@ import { Answer } from '../types/types';
  * @returns textErr - the error message related to the text input.
  * @returns setText - the function to update the answer text input.
  * @returns postAnswer - the function to submit the answer after validation.
+ * @returns useMarkdown - whether the answer uses markdown.
+ * @returns setUseMarkdown - function to update the markdown state.
  */
 const useAnswerForm = () => {
   const { qid } = useParams();
@@ -21,6 +23,7 @@ const useAnswerForm = () => {
   const [text, setText] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
   const [questionID, setQuestionID] = useState<string>('');
+  const [useMarkdown, setUseMarkdown] = useState(false);
 
   useEffect(() => {
     if (!qid) {
@@ -59,6 +62,7 @@ const useAnswerForm = () => {
       ansBy: user.username,
       ansDateTime: new Date(),
       comments: [],
+      useMarkdown,
     };
 
     const res = await addAnswer(questionID, answer);
@@ -74,6 +78,8 @@ const useAnswerForm = () => {
     textErr,
     setText,
     postAnswer,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 
