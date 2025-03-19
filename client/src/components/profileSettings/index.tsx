@@ -99,9 +99,9 @@ const ProfileSettings: React.FC = () => {
               </p>
             )}
 
-            {!editEmailMode && (
+            {!editEmailMode && canEditProfile && (
               <p>
-                <strong>Email:</strong> {userData.email || 'No email yet.'}
+                <strong>Email:</strong> {userData.email || 'No email provided.'}
                 {canEditProfile && (
                   <button
                     className='login-button'
@@ -125,6 +125,10 @@ const ProfileSettings: React.FC = () => {
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                 />
+                <div>
+                  By providing your email you agree to receiving daily emails from
+                  Fake-Stack-Overflow
+                </div>
                 <button
                   className='login-button'
                   style={{ marginLeft: '1rem' }}
