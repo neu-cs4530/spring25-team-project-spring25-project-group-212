@@ -64,6 +64,7 @@ describe('Chat Controller', () => {
               username: 'user1',
             },
             type: 'direct',
+            useMarkdown: false,
           },
         ],
         createdAt: new Date(),
@@ -133,6 +134,7 @@ describe('Chat Controller', () => {
         msgFrom: 'user1',
         msgDateTime: new Date('2025-01-01'),
         type: 'direct',
+        useMarkdown: false,
       };
 
       const serializedPayload = {
@@ -226,6 +228,7 @@ describe('Chat Controller', () => {
         msgFrom: 'UserX',
         msgDateTime: new Date(),
         type: 'direct',
+        useMarkdown: false,
       });
 
       // 2) Mock `addMessageToChat` to return an error object
@@ -250,6 +253,7 @@ describe('Chat Controller', () => {
         msgFrom: 'User1',
         msgDateTime: new Date(),
         type: 'direct',
+        useMarkdown: false,
       };
 
       // Mock createMessageSpy to return an object with _id as undefined
@@ -267,6 +271,7 @@ describe('Chat Controller', () => {
       const mockMessage = {
         _id: new mongoose.Types.ObjectId(),
         type: 'direct' as 'direct' | 'global',
+        useMarkdown: false,
         ...messagePayload,
       };
 
@@ -349,6 +354,7 @@ describe('Chat Controller', () => {
               username: 'user1',
             },
             type: 'direct',
+            useMarkdown: false,
           },
         ],
         createdAt: new Date(),

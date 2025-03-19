@@ -12,6 +12,7 @@ const message1: Message = {
   msgFrom: 'User1',
   msgDateTime: new Date('2024-06-04'),
   type: 'global',
+  useMarkdown: false,
 };
 
 const message2: Message = {
@@ -19,6 +20,7 @@ const message2: Message = {
   msgFrom: 'User2',
   msgDateTime: new Date('2024-06-05'),
   type: 'global',
+  useMarkdown: false,
 };
 
 describe('Message model', () => {
@@ -32,6 +34,7 @@ describe('Message model', () => {
       msgFrom: 'userX',
       msgDateTime: new Date('2025-01-01T10:00:00.000Z'),
       type: 'direct',
+      useMarkdown: false,
     };
 
     it('should create a message successfully if user exists', async () => {

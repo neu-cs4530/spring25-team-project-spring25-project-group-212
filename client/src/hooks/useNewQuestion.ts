@@ -15,6 +15,7 @@ import { Question } from '../types/types';
  * @returns titleErr - Error message for the title field, if any.
  * @returns textErr - Error message for the text field, if any.
  * @returns tagErr - Error message for the tag field, if any.
+ * @returns useMarkdown - Whether the question uses markdown.
  * @returns postQuestion - Function to validate the form and submit a new question.
  */
 const useNewQuestion = () => {
@@ -28,6 +29,7 @@ const useNewQuestion = () => {
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
   const [tagErr, setTagErr] = useState<string>('');
+  const [useMarkdown, setUseMarkdown] = useState(false);
 
   /**
    * Function to validate the form before submitting the question.
@@ -104,6 +106,7 @@ const useNewQuestion = () => {
       downVotes: [],
       views: [],
       comments: [],
+      useMarkdown,
       anonymous,
     };
 
@@ -127,6 +130,8 @@ const useNewQuestion = () => {
     textErr,
     tagErr,
     postQuestion,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 

@@ -42,6 +42,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment._id],
+      useMarkdown: false,
       anonymous: false,
     });
 
@@ -57,6 +58,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment],
+      useMarkdown: false,
       anonymous: false,
     });
 
@@ -99,6 +101,7 @@ describe('POST /addComment', () => {
       ansBy: 'dummyUserId',
       ansDateTime: new Date('2024-06-03'),
       comments: [mockComment._id],
+      useMarkdown: false,
     });
 
     popDocSpy.mockResolvedValueOnce({
@@ -107,6 +110,7 @@ describe('POST /addComment', () => {
       ansBy: 'dummyUserId',
       ansDateTime: new Date('2024-06-03'),
       comments: [mockComment],
+      useMarkdown: false,
     });
 
     const response = await supertest(app).post('/comment/addComment').send(mockReqBody);
@@ -343,6 +347,7 @@ describe('POST /addComment', () => {
       downVotes: [],
       answers: [],
       comments: [mockComment._id],
+      useMarkdown: false,
       anonymous: false,
     };
 

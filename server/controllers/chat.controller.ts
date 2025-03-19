@@ -113,11 +113,17 @@ const chatController = (socket: FakeSOSocket) => {
     }
 
     const { chatId } = req.params;
-    const { msg, msgFrom, msgDateTime } = req.body;
+    const { msg, msgFrom, msgDateTime, useMarkdown } = req.body;
 
     try {
       // Create a new message in the DB
-      const newMessage = await saveMessage({ msg, msgFrom, msgDateTime, type: 'direct' });
+      const newMessage = await saveMessage({
+        msg,
+        msgFrom,
+        msgDateTime,
+        type: 'direct',
+        useMarkdown,
+      });
 
       if ('error' in newMessage) {
         throw new Error(newMessage.error);

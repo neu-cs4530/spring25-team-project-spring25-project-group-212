@@ -298,6 +298,7 @@ describe('Question model', () => {
         upVotes: [],
         downVotes: [],
         comments: [],
+        useMarkdown: false,
         anonymous: false,
       };
 
