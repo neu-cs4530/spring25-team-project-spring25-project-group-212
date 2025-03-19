@@ -34,7 +34,14 @@ interface QuestionBodyProps {
  * @param isMarkdown Whether to render the text as markdown.
  * @param anonymous If the question should be rendered anonymous.
  */
-const QuestionBody = ({ views, text, askby, meta, isMarkdown = false, anonymous }: QuestionBodyProps) => (
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  isMarkdown = false,
+  anonymous,
+}: QuestionBodyProps) => (
   <div id='questionBody' className='questionBody right_padding'>
     <div className='bold_title answer_question_view'>{views} views</div>
     <div className='answer_question_text'>
