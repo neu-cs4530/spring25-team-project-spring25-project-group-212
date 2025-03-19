@@ -28,6 +28,7 @@ const useDirectMessage = () => {
   const [chats, setChats] = useState<PopulatedDatabaseChat[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [useMarkdown, setUseMarkdown] = useState<boolean>(false);
 
   const handleJoinChat = (chatID: ObjectId) => {
     socket.emit('joinChat', String(chatID));
@@ -39,6 +40,7 @@ const useDirectMessage = () => {
         msg: newMessage,
         msgFrom: user.username,
         msgDateTime: new Date(),
+        useMarkdown,
       };
 
       const chat = await sendMessage(message, selectedChat._id);
@@ -161,6 +163,8 @@ const useDirectMessage = () => {
     handleCreateChat,
     handleRenameChat,
     error,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 

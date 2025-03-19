@@ -25,6 +25,8 @@ const DirectMessage = () => {
     handleCreateChat,
     handleRenameChat,
     error,
+    useMarkdown,
+    setUseMarkdown,
   } = useDirectMessage();
 
   const [newChatName, setNewChatName] = useState('');
@@ -76,6 +78,18 @@ const DirectMessage = () => {
                 <button className='custom-button' onClick={() => handleRenameChat(newChatName)}>
                   Rename
                 </button>
+                <div className='message-controls'>
+                  <button className='custom-button' onClick={handleSendMessage}>
+                    Send
+                  </button>
+                  <button
+                    type='button'
+                    className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                    onClick={() => setUseMarkdown(!useMarkdown)}
+                    title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                    MD
+                  </button>
+                </div>
               </div>
               <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
 

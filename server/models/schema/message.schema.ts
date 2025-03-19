@@ -9,21 +9,31 @@ import { Schema } from 'mongoose';
  * - `msgFrom`: The username of the user sending the message.
  * - `msgDateTime`: The date and time the message was sent.
  * - `type`: The type of message, either 'global' or 'direct'.
+ * - `useMarkdown`: Whether to render the message content as markdown.
  */
 const messageSchema: Schema = new Schema(
   {
     msg: {
       type: String,
+      required: true,
     },
     msgFrom: {
       type: String,
+      required: true,
     },
     msgDateTime: {
       type: Date,
+      required: true,
     },
     type: {
       type: String,
       enum: ['global', 'direct'],
+      required: true,
+    },
+    useMarkdown: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
     reactions: [
       {

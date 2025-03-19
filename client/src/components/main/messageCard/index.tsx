@@ -1,5 +1,7 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import ReactMarkdown from 'react-markdown';
 import './index.css';
 import { DatabaseMessage, ReactionUpdatePayload } from '../../../types/types';
 import { addReaction, getReactions } from '../../../services/messageService';
@@ -7,6 +9,7 @@ import useUserContext from '../../../hooks/useUserContext';
 
 /**
  * MessageCard component displays a single message with its sender and timestamp.
+ * Supports rendering markdown content when useMarkdown is enabled.
  *
  * @param message: The message object to display.
  */
@@ -73,5 +76,14 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
     </div>
   );
 };
+    <div className='message-body'>
+      {'useMarkdown' in message && message.useMarkdown ? (
+        <ReactMarkdown>{message.msg}</ReactMarkdown>
+      ) : (
+        message.msg
+      )}
+    </div>
+  </div>
+);
 
 export default MessageCard;

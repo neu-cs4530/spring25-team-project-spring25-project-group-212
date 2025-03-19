@@ -53,6 +53,7 @@ const mockQuestion: Question = {
   upVotes: [],
   downVotes: [],
   comments: [],
+  useMarkdown: false,
 };
 
 const mockDatabaseQuestion: DatabaseQuestion = {
@@ -67,6 +68,7 @@ const mockDatabaseQuestion: DatabaseQuestion = {
   upVotes: [],
   downVotes: [],
   comments: [],
+  useMarkdown: false,
 };
 
 const mockPopulatedQuestion: PopulatedDatabaseQuestion = {
@@ -82,6 +84,7 @@ const ans1: PopulatedDatabaseAnswer = {
   ansBy: 'answer1_user',
   ansDateTime: new Date('2024-06-09'), // The mock date is string type but in the actual implementation it is a Date type
   comments: [],
+  useMarkdown: false,
 };
 
 const ans2: PopulatedDatabaseAnswer = {
@@ -90,6 +93,7 @@ const ans2: PopulatedDatabaseAnswer = {
   ansBy: 'answer2_user',
   ansDateTime: new Date('2024-06-10'),
   comments: [],
+  useMarkdown: false,
 };
 
 const ans3: PopulatedDatabaseAnswer = {
@@ -98,6 +102,7 @@ const ans3: PopulatedDatabaseAnswer = {
   ansBy: 'answer3_user',
   ansDateTime: new Date('2024-06-11'),
   comments: [],
+  useMarkdown: false,
 };
 
 const ans4: PopulatedDatabaseAnswer = {
@@ -106,6 +111,7 @@ const ans4: PopulatedDatabaseAnswer = {
   ansBy: 'answer4_user',
   ansDateTime: new Date('2024-06-14'),
   comments: [],
+  useMarkdown: false,
 };
 
 const MOCK_POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
@@ -121,6 +127,7 @@ const MOCK_POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     upVotes: [],
     downVotes: [],
     comments: [],
+    useMarkdown: false,
   },
   {
     _id: new mongoose.Types.ObjectId('65e9b5a995b6c7045a30d823'),
@@ -134,6 +141,7 @@ const MOCK_POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     upVotes: [],
     downVotes: [],
     comments: [],
+    useMarkdown: false,
   },
   {
     _id: new mongoose.Types.ObjectId('34e9b58910afe6e94fc6e99f'),
@@ -147,6 +155,7 @@ const MOCK_POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     upVotes: [],
     downVotes: [],
     comments: [],
+    useMarkdown: false,
   },
 ];
 
@@ -274,6 +283,7 @@ describe('Test questionController', () => {
         upVotes: [],
         downVotes: [],
         comments: [],
+        useMarkdown: false,
       };
 
       const result: PopulatedDatabaseQuestion = {
