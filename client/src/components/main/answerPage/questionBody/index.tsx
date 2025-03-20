@@ -20,28 +20,6 @@ interface QuestionBodyProps {
   text: string;
   askby: string;
   meta: string;
-import React, { useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import './index.css';
-import { handleHyperlink } from '../../../../tool';
-import useUserContext from '../../../../hooks/useUserContext';
-import useQuestion from '../../../../hooks/useQuestion';
-/**
- * Interface representing the props for the QuestionBody component.
- *
- * - views - The number of views the question has received.
- * - text - The content of the question, which may contain hyperlinks.
- * - askby - The username of the user who asked the question.
- * - meta - Additional metadata related to the question, such as the date and time it was asked.
- * - isMarkdown - Boolean indicating if the text should be rendered as markdown.
- * - qid - String representing the ObjectId of the question.
- * - anonymous - If the question should be rendered anonymous.
- */
-interface QuestionBodyProps {
-  views: number;
-  text: string;
-  askby: string;
-  meta: string;
   isMarkdown?: boolean;
   qid: string;
   anonymous: boolean;
