@@ -75,3 +75,24 @@ export const createChat = async (participants: string[]): Promise<PopulatedDatab
 
   return res.data;
 };
+
+/**
+ * Renames a chat with the given chat ID.
+ *
+ * @param chatID - The ID of the chat to rename.
+ * @param newName - The new name for the chat.
+ * @returns The updated chat data after renaming.
+ * @throws Throws an error if the rename operation fails.
+ */
+export const renameChat = async (
+  chatID: ObjectId,
+  newName: string,
+): Promise<PopulatedDatabaseChat> => {
+  const res = await api.put(`${CHAT_API_URL}/${chatID}/rename`, { newName });
+
+  if (res.status !== 200) {
+    throw new Error('Error renaming chat');
+  }
+
+  return res.data;
+};

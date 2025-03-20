@@ -13,6 +13,29 @@ import useQuestion from '../../../../hooks/useQuestion';
  * - meta - Additional metadata related to the question, such as the date and time it was asked.
  * - isMarkdown - Boolean indicating if the text should be rendered as markdown.
  * - qid - String representing the ObjectId of the question.
+ * - anonymous - If the question should be rendered anonymous.
+ */
+interface QuestionBodyProps {
+  views: number;
+  text: string;
+  askby: string;
+  meta: string;
+import React, { useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import './index.css';
+import { handleHyperlink } from '../../../../tool';
+import useUserContext from '../../../../hooks/useUserContext';
+import useQuestion from '../../../../hooks/useQuestion';
+/**
+ * Interface representing the props for the QuestionBody component.
+ *
+ * - views - The number of views the question has received.
+ * - text - The content of the question, which may contain hyperlinks.
+ * - askby - The username of the user who asked the question.
+ * - meta - Additional metadata related to the question, such as the date and time it was asked.
+ * - isMarkdown - Boolean indicating if the text should be rendered as markdown.
+ * - qid - String representing the ObjectId of the question.
+ * - anonymous - If the question should be rendered anonymous.
  */
 interface QuestionBodyProps {
   views: number;
@@ -21,6 +44,7 @@ interface QuestionBodyProps {
   meta: string;
   isMarkdown?: boolean;
   qid: string;
+  anonymous: boolean;
 }
 
 /**
@@ -34,8 +58,17 @@ interface QuestionBodyProps {
  * @param meta Additional metadata related to the question.
  * @param isMarkdown Whether to render the text as markdown.
  * @param qid String representing the ObjectId of the question.
+ * @param anonymous If the question should be rendered anonymous.
  */
-const QuestionBody = ({ views, text, askby, meta, isMarkdown = false, qid }: QuestionBodyProps) => {
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  isMarkdown = false,
+  qid,
+  anonymous,
+}: QuestionBodyProps) => {
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
   useEffect(() => {
@@ -48,7 +81,7 @@ const QuestionBody = ({ views, text, askby, meta, isMarkdown = false, qid }: Que
         {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
       </div>
       <div className='answer_question_right'>
-        <div className='question_author'>{askby}</div>
+        <div className='question_author'>{anonymous ? <i>Anonymous</i> : askby}</div>
         <div className='answer_question_meta'>asked {meta}</div>
       </div>
       <div>

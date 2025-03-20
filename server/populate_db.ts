@@ -150,6 +150,7 @@ async function answerCreate(
  * @param askDateTime The date and time when the question was asked.
  * @param views An array of usernames who have viewed the question.
  * @param comments An array of comments associated with the question.
+ * @param anonymous A boolen representing if the question is anonymous.
  * @returns A Promise that resolves to the created Question document.
  * @throws An error if any of the parameters are invalid.
  */
@@ -162,6 +163,7 @@ async function questionCreate(
   askDateTime: Date,
   views: string[],
   comments: Comment[],
+  anonymous: boolean,
 ): Promise<DatabaseQuestion> {
   if (
     title === '' ||
@@ -183,6 +185,7 @@ async function questionCreate(
     upVotes: [],
     downVotes: [],
     comments: comments,
+    anonymous: anonymous,
   });
 }
 
@@ -325,6 +328,7 @@ const populate = async () => {
       new Date('2022-01-20T03:00:00'),
       ['sana', 'abaya', 'alia'],
       [c9],
+      false,
     );
     await questionCreate(
       Q2_DESC,
@@ -335,6 +339,7 @@ const populate = async () => {
       new Date('2023-01-10T11:24:30'),
       ['mackson3332'],
       [c10],
+      false,
     );
     await questionCreate(
       Q3_DESC,
@@ -345,6 +350,7 @@ const populate = async () => {
       new Date('2023-02-18T01:02:15'),
       ['monkeyABC', 'elephantCDE'],
       [c11],
+      true,
     );
     await questionCreate(
       Q4_DESC,
@@ -355,6 +361,7 @@ const populate = async () => {
       new Date('2023-03-10T14:28:01'),
       [],
       [c12],
+      false,
     );
 
     console.log('Database populated');

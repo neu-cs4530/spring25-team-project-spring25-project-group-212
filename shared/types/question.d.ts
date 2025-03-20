@@ -26,6 +26,7 @@ export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed' | 'sav
  * - `downVotes`: An array of usernames who have downvoted the question.
  * - `comments`: An array of comments related to the question.
  * - `useMarkdown`: Boolean indicating whether markdown formatting is enabled.
+ * - `anonymous`: A boolean representing if the question should show up as anonymous.
  */
 export interface Question {
   title: string;
@@ -39,6 +40,7 @@ export interface Question {
   downVotes: string[];
   comments: Comment[];
   useMarkdown: boolean;
+  anonymous: boolean;
 }
 
 /**
