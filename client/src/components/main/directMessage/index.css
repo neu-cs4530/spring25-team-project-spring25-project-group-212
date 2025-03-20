@@ -114,6 +114,17 @@
   margin-top: 15px;
 }
 
+.rename-chat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rename-chat .custom-input {
+  flex: 1;
+  min-width: 150px;
+}
+
 .message-controls {
   display: flex;
   gap: 8px;

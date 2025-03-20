@@ -2,6 +2,16 @@ import { ObjectId } from 'mongodb';
 import { Request } from 'express';
 
 /**
+ * Represents a reaction to a message.
+ * - `emoji`: The emoji used for the reaction.
+ * - `userId`: The ID of the user who reacted.
+ */
+export interface Reaction {
+  emoji: string;
+  userId: ObjectId;
+}
+
+/**
  * Represents a message in a chat.
  * - `msg`: The text content of the message.
  * - `msgFrom`: The username of the user sending the message.
@@ -14,6 +24,7 @@ export interface Message {
   msgFrom: string;
   msgDateTime: Date;
   type: 'global' | 'direct';
+  reactions?: Reaction[];
   useMarkdown: boolean;
 }
 

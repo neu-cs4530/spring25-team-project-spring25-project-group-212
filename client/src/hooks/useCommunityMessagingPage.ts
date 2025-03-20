@@ -158,8 +158,8 @@ const useCommunityMessagingPage = () => {
 
   return {
     messages,
-    handleTyping, // Return handleTyping so it's available in the component
-    typingUsers, // Return typingUsers so it's available in the component
+    handleTyping,
+    typingUsers,
     currentCommunity,
     communityChat,
     newMessage,

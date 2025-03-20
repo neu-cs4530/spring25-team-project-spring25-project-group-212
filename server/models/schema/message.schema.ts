@@ -35,6 +35,15 @@ const messageSchema: Schema = new Schema(
       default: false,
       required: true,
     },
+    reactions: [
+      {
+        emoji: String,
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: 'User',
+        },
+      },
+    ],
   },
   { collection: 'Message' },
 );

@@ -1,7 +1,14 @@
 import { ObjectId } from 'mongodb';
 import ChatModel from '../models/chat.model';
 import UserModel from '../models/users.model';
-import { Chat, ChatResponse, DatabaseChat, MessageResponse, DatabaseUser } from '../types/types';
+import {
+  Chat,
+  ChatResponse,
+  DatabaseChat,
+  MessageResponse,
+  DatabaseUser,
+  PopulatedDatabaseChat,
+} from '../types/types';
 import { saveMessage } from './message.service';
 
 /**
@@ -26,6 +33,7 @@ export const saveChat = async (chatPayload: Chat): Promise<ChatResponse> => {
 
     // Create the chat using participant IDs and saved message IDs
     return await ChatModel.create({
+      name: chatPayload.name || '',
       participants: chatPayload.participants,
       messages: messageIds,
     });
@@ -132,4 +140,26 @@ export const addParticipantToChat = async (
   } catch (error) {
     return { error: `Error adding participant to chat: ${(error as Error).message}` };
   }
+};
+
+/**
+ * Renames a chat by updating its name.
+ * @param chatId - The ID of the chat to rename.
+ * @param newName - The new name to set for the chat.
+ * @returns {Promise<PopulatedDatabaseChat>} - The updated chat with populated messages or an error.
+ * @throws {Error} - Throws an error if the chat is not found.
+ */
+export const renameChat = async (
+  chatId: string,
+  newName: string,
+): Promise<PopulatedDatabaseChat> => {
+  const updatedChat = await ChatModel.findByIdAndUpdate(chatId, { name: newName }, { new: true })
+    .populate('messages')
+    .lean();
+
+  if (!updatedChat) {
+    throw new Error('Chat not found');
+  }
+
+  return updatedChat as unknown as PopulatedDatabaseChat;
 };

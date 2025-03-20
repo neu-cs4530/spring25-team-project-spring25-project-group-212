@@ -8,6 +8,7 @@
     "shared"
   ],
   "dependencies": {
+    "emoji-picker-react": "^4.12.2",
     "react-markdown": "^10.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
