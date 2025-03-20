@@ -1,7 +1,7 @@
 import React from 'react';
 import { PopulatedDatabaseCommunity } from '@fake-stack-overflow/shared';
 
-const CommunitiesListCard = ({
+const CommunitiesListCardJoin = ({
   community,
   handleCommunityJoin,
 }: {
@@ -19,4 +19,4 @@ const CommunitiesListCard = ({
   </div>
 );
 
-export default CommunitiesListCard;
+export default CommunitiesListCardJoin;
