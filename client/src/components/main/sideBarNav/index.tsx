@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './index.css';
 import { NavLink, useLocation } from 'react-router-dom';
+import Notifications from '../notificationsDialog';
 
 /**
  * The SideBarNav component has four menu items: "Questions", "Tags", "Messaging", and "Users".
@@ -71,6 +72,7 @@ const SideBarNav = () => {
         className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
         Communities
       </NavLink>
+      <Notifications />
     </div>
   );
 };
