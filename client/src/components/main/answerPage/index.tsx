@@ -30,6 +30,7 @@ const AnswerPage = () => {
         askby={question.askedBy}
         meta={getMetaData(new Date(question.askDateTime))}
         isMarkdown={question.useMarkdown}
+        anonymous={question.anonymous}
       />
       <CommentSection
         comments={question.comments}

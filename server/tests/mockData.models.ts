@@ -85,6 +85,7 @@ export const QUESTIONS: DatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b5a995b6c7045a30d823'),
@@ -99,6 +100,7 @@ export const QUESTIONS: DatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b9b44c052f0a08ecade0'),
@@ -113,6 +115,7 @@ export const QUESTIONS: DatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b716ff0e892116b2de09'),
@@ -127,6 +130,7 @@ export const QUESTIONS: DatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
 ];
 
@@ -147,6 +151,7 @@ export const POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b5a995b6c7045a30d823'),
@@ -165,6 +170,7 @@ export const POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b9b44c052f0a08ecade0'),
@@ -179,6 +185,7 @@ export const POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
   {
     _id: new ObjectId('65e9b716ff0e892116b2de09'),
@@ -193,6 +200,7 @@ export const POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
     downVotes: [],
     comments: [],
     useMarkdown: false,
+    anonymous: false,
   },
 ];
 

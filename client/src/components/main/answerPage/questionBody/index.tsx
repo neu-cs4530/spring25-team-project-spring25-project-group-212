@@ -11,6 +11,7 @@ import { handleHyperlink } from '../../../../tool';
  * - askby - The username of the user who asked the question.
  * - meta - Additional metadata related to the question, such as the date and time it was asked.
  * - isMarkdown - Boolean indicating if the text should be rendered as markdown.
+ * - anonymous - If the question should be rendered anonymous.
  */
 interface QuestionBodyProps {
   views: number;
@@ -18,6 +19,7 @@ interface QuestionBodyProps {
   askby: string;
   meta: string;
   isMarkdown?: boolean;
+  anonymous: boolean;
 }
 
 /**
@@ -30,15 +32,23 @@ interface QuestionBodyProps {
  * @param askby The username of the question's author.
  * @param meta Additional metadata related to the question.
  * @param isMarkdown Whether to render the text as markdown.
+ * @param anonymous If the question should be rendered anonymous.
  */
-const QuestionBody = ({ views, text, askby, meta, isMarkdown = false }: QuestionBodyProps) => (
+const QuestionBody = ({
+  views,
+  text,
+  askby,
+  meta,
+  isMarkdown = false,
+  anonymous,
+}: QuestionBodyProps) => (
   <div id='questionBody' className='questionBody right_padding'>
     <div className='bold_title answer_question_view'>{views} views</div>
     <div className='answer_question_text'>
       {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
     </div>
     <div className='answer_question_right'>
-      <div className='question_author'>{askby}</div>
+      <div className='question_author'>{anonymous ? <i>Anonymous</i> : askby}</div>
       <div className='answer_question_meta'>asked {meta}</div>
     </div>
   </div>
