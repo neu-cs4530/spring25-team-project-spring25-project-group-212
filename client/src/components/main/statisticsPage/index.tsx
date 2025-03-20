@@ -27,11 +27,6 @@ const StatisticsPage = () => {
 
   const navigate = useNavigate();
 
-  /**
-   * Handles the click event on the user card.
-   * If handleUserSelect is provided, it calls the handleUserSelect function.
-   * Otherwise, it navigates to the user's profile page.
-   */
   const handleUserCardViewClickHandler = (user: SafeDatabaseUser): void => {
     navigate(`/user/${user.username}`);
   };

@@ -63,7 +63,6 @@ const useProfileSettings = () => {
     fetchUserData();
   }, [username]);
 
-  // gets user questions statistics
   useEffect(() => {
     if (!username) {
       setTopVotedQuestion(null);
@@ -79,14 +78,12 @@ const useProfileSettings = () => {
 
       allQuestions.forEach(question => {
         if (question.askedBy === username || question.answers.some(ans => ans.ansBy === username)) {
-          // Calculate votes for the question
           const netVotes = question.upVotes.length - question.downVotes.length;
           if (netVotes > topVotedVotes) {
             topVotedVotes = netVotes;
             topVoted = question;
           }
 
-          // Calculate views for the question
           const viewsCount = question.views.length;
           if (viewsCount > topViewedViews) {
             topViewedViews = viewsCount;
