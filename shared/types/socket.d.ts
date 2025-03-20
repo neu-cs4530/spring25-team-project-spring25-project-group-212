@@ -53,7 +53,7 @@ export interface VoteUpdatePayload {
  */
 export interface ChatUpdatePayload {
   chat: PopulatedDatabaseChat;
-  type: 'created' | 'newMessage' | 'newParticipant';
+  type: 'created' | 'newMessage' | 'newParticipant' | 'renamed';
 }
 
 /**
@@ -94,6 +94,11 @@ export interface GameMovePayload {
   move: GameMove<BaseMove>;
 }
 
+export interface ReactionUpdatePayload {
+  messageId: string;
+  reactions?: { emoji: string; userId: string }[];
+}
+
 /**
  * Interface representing the events the client can emit to the server.
  * - `makeMove`: Client can emit a move in the game.
@@ -108,6 +113,8 @@ export interface ClientToServerEvents {
   leaveGame: (gameID: string) => void;
   joinChat: (chatID: string) => void;
   leaveChat: (chatID: string | undefined) => void;
+  userTyping: (username: string) => void;
+  userStoppedTyping: (username: string) => void;
   joinCommunity: (communityID: string) => void;
   leaveCommunity: (communityID: string) => void;
 }
@@ -146,5 +153,7 @@ export interface ServerToClientEvents {
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  reactionUpdate: (payload: ReactionUpdatePayload) => void;
+  typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
 }

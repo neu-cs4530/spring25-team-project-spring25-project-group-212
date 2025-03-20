@@ -30,6 +30,7 @@ describe('Chat service', () => {
           msgFrom: 'user1',
           msgDateTime: new Date('2025-01-01T00:00:00.000Z'),
           type: 'direct',
+          useMarkdown: false,
         },
       ],
     };
@@ -249,6 +250,7 @@ describe('Chat service', () => {
       const mockChats: DatabaseChat[] = [
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user2'],
           messages: [],
           createdAt: new Date(),
@@ -256,6 +258,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user3'],
           messages: [],
           createdAt: new Date(),
@@ -274,6 +277,7 @@ describe('Chat service', () => {
       const mockChats: DatabaseChat[] = [
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user2'],
           messages: [],
           createdAt: new Date(),
@@ -281,6 +285,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user3'],
           messages: [],
           createdAt: new Date(),
@@ -288,6 +293,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user2', 'user3'],
           messages: [],
           createdAt: new Date(),

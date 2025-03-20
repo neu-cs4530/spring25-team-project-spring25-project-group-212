@@ -12,6 +12,7 @@ import { addQuestion } from '../services/questionService';
  * @returns title - The current value of the title input.
  * @returns text - The current value of the text input.
  * @returns tagNames - The current value of the tags input.
+ * @returns anonymous - The current value of the anonymous input.
  * @returns titleErr - Error message for the title field, if any.
  * @returns textErr - Error message for the text field, if any.
  * @returns tagErr - Error message for the tag field, if any.
@@ -24,6 +25,7 @@ const useNewQuestionCommunity = () => {
   const [title, setTitle] = useState<string>('');
   const [text, setText] = useState<string>('');
   const [tagNames, setTagNames] = useState<string>('');
+  const [anonymous, setAnonymous] = useState<boolean>(false);
 
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
@@ -104,6 +106,8 @@ const useNewQuestionCommunity = () => {
       downVotes: [],
       views: [],
       comments: [],
+      useMarkdown: false,
+      anonymous,
     };
 
     // main change from useNewQuestion - instead of just adding the question to the question db, add its ID
@@ -125,6 +129,8 @@ const useNewQuestionCommunity = () => {
     setText,
     tagNames,
     setTagNames,
+    anonymous,
+    setAnonymous,
     titleErr,
     textErr,
     tagErr,

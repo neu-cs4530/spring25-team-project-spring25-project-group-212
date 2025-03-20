@@ -40,10 +40,12 @@ describe('Chat Controller', () => {
           type: 'direct',
           msgDateTime: message.msgDateTime.toISOString(),
         })),
+        name: '',
       };
 
       const chatResponse: DatabaseChat = {
         _id: new mongoose.Types.ObjectId(),
+        name: '',
         participants: ['user1', 'user2'],
         messages: [new mongoose.Types.ObjectId()],
         createdAt: new Date(),
@@ -52,6 +54,7 @@ describe('Chat Controller', () => {
 
       const populatedChatResponse: PopulatedDatabaseChat = {
         _id: new mongoose.Types.ObjectId(),
+        name: '',
         participants: ['user1', 'user2'],
         messages: [
           {
@@ -64,6 +67,7 @@ describe('Chat Controller', () => {
               username: 'user1',
             },
             type: 'direct',
+            useMarkdown: false,
           },
         ],
         createdAt: new Date(),
@@ -79,6 +83,7 @@ describe('Chat Controller', () => {
 
       expect(response.body).toMatchObject({
         _id: populatedChatResponse._id.toString(),
+        name: populatedChatResponse.name || '',
         participants: populatedChatResponse.participants.map(participant => participant.toString()),
         messages: populatedChatResponse.messages.map(message => ({
           ...message,
@@ -133,6 +138,7 @@ describe('Chat Controller', () => {
         msgFrom: 'user1',
         msgDateTime: new Date('2025-01-01'),
         type: 'direct',
+        useMarkdown: false,
       };
 
       const serializedPayload = {
@@ -151,6 +157,7 @@ describe('Chat Controller', () => {
 
       const chatResponse: DatabaseChat = {
         _id: chatId,
+        name: '',
         participants: ['user1', 'user2'],
         messages: [messageResponse._id],
         createdAt: new Date('2025-01-01'),
@@ -159,6 +166,7 @@ describe('Chat Controller', () => {
 
       const populatedChatResponse: PopulatedDatabaseChat = {
         _id: chatId,
+        name: '',
         participants: ['user1', 'user2'],
         messages: [messageResponse],
         createdAt: new Date('2025-01-01'),
@@ -174,6 +182,7 @@ describe('Chat Controller', () => {
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
         _id: populatedChatResponse._id.toString(),
+        name: populatedChatResponse.name || '',
         participants: populatedChatResponse.participants.map(participant => participant.toString()),
         messages: populatedChatResponse.messages.map(message => ({
           ...message,
@@ -226,6 +235,7 @@ describe('Chat Controller', () => {
         msgFrom: 'UserX',
         msgDateTime: new Date(),
         type: 'direct',
+        useMarkdown: false,
       });
 
       // 2) Mock `addMessageToChat` to return an error object
@@ -250,6 +260,7 @@ describe('Chat Controller', () => {
         msgFrom: 'User1',
         msgDateTime: new Date(),
         type: 'direct',
+        useMarkdown: false,
       };
 
       // Mock createMessageSpy to return an object with _id as undefined
@@ -267,6 +278,7 @@ describe('Chat Controller', () => {
       const mockMessage = {
         _id: new mongoose.Types.ObjectId(),
         type: 'direct' as 'direct' | 'global',
+        useMarkdown: false,
         ...messagePayload,
       };
 
@@ -349,6 +361,7 @@ describe('Chat Controller', () => {
               username: 'user1',
             },
             type: 'direct',
+            useMarkdown: false,
           },
         ],
         createdAt: new Date(),

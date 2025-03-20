@@ -5,6 +5,7 @@ import {
   getChat,
   addParticipantToChat,
   getChatsByParticipants,
+  renameChat,
 } from '../services/chat.service';
 import { populateDocument } from '../utils/database.util';
 import {
@@ -76,7 +77,7 @@ const chatController = (socket: FakeSOSocket) => {
     const formattedMessages = messages.map(m => ({ ...m, type: 'direct' as 'direct' | 'global' }));
 
     try {
-      const savedChat = await saveChat({ participants, messages: formattedMessages });
+      const savedChat = await saveChat({ name: '', participants, messages: formattedMessages });
 
       if ('error' in savedChat) {
         throw new Error(savedChat.error);
@@ -113,11 +114,17 @@ const chatController = (socket: FakeSOSocket) => {
     }
 
     const { chatId } = req.params;
-    const { msg, msgFrom, msgDateTime } = req.body;
+    const { msg, msgFrom, msgDateTime, useMarkdown } = req.body;
 
     try {
       // Create a new message in the DB
-      const newMessage = await saveMessage({ msg, msgFrom, msgDateTime, type: 'direct' });
+      const newMessage = await saveMessage({
+        msg,
+        msgFrom,
+        msgDateTime,
+        type: 'direct',
+        useMarkdown,
+      });
 
       if ('error' in newMessage) {
         throw new Error(newMessage.error);
@@ -242,6 +249,37 @@ const chatController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Renames an existing chat with the specified new name.
+   * @param req The request object containing the chat ID and new name.
+   * @param res The response object to send the result.
+   * @returns {Promise<void>} A promise that resolves when the chat is renamed.
+   * @throws {Error} Throws an error if renaming the chat fails.
+   */
+  const renameChatRoute = async (req: express.Request, res: Response): Promise<void> => {
+    const { chatId } = req.params;
+    const { newName } = req.body;
+
+    if (!newName) {
+      res.status(400).send('Chat name is required');
+      return;
+    }
+
+    try {
+      const updatedChat = await renameChat(chatId, newName);
+
+      if (!updatedChat) {
+        res.status(404).send('Chat not found');
+        return;
+      }
+
+      socket.emit('chatUpdate', { chat: updatedChat, type: 'renamed' });
+      res.json(updatedChat);
+    } catch (err) {
+      res.status(500).send(`Error renaming chat: ${(err as Error).message}`);
+    }
+  };
+
   socket.on('connection', conn => {
     conn.on('joinChat', (chatID: string) => {
       conn.join(chatID);
@@ -260,6 +298,7 @@ const chatController = (socket: FakeSOSocket) => {
   router.get('/:chatId', getChatRoute);
   router.post('/:chatId/addParticipant', addParticipantToChatRoute);
   router.get('/getChatsByUser/:username', getChatsByUserRoute);
+  router.put('/:chatId/rename', renameChatRoute);
 
   return router;
 };

@@ -9,6 +9,11 @@ import { Schema } from 'mongoose';
  */
 const chatSchema = new Schema(
   {
+    name: {
+      type: String,
+      required: false,
+      default: '',
+    },
     participants: [
       {
         type: String,

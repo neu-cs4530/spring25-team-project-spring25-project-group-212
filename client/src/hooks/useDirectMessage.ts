@@ -7,7 +7,13 @@ import {
   SafeDatabaseUser,
 } from '../types/types';
 import useUserContext from './useUserContext';
-import { createChat, getChatById, getChatsByUser, sendMessage } from '../services/chatService';
+import {
+  createChat,
+  getChatById,
+  getChatsByUser,
+  sendMessage,
+  renameChat,
+} from '../services/chatService';
 
 /**
  * useDirectMessage is a custom hook that provides state and functions for direct messaging between users.
@@ -22,6 +28,7 @@ const useDirectMessage = () => {
   const [chats, setChats] = useState<PopulatedDatabaseChat[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [useMarkdown, setUseMarkdown] = useState<boolean>(false);
 
   const handleJoinChat = (chatID: ObjectId) => {
     socket.emit('joinChat', String(chatID));
@@ -33,6 +40,7 @@ const useDirectMessage = () => {
         msg: newMessage,
         msgFrom: user.username,
         msgDateTime: new Date(),
+        useMarkdown,
       };
 
       const chat = await sendMessage(message, selectedChat._id);
@@ -103,6 +111,9 @@ const useDirectMessage = () => {
           }
           return;
         }
+        case 'renamed': {
+          return;
+        }
         default: {
           setError('Invalid chat update type');
         }
@@ -119,6 +130,25 @@ const useDirectMessage = () => {
     };
   }, [user.username, socket, selectedChat?._id]);
 
+  const handleRenameChat = async (newName: string) => {
+    if (!selectedChat) {
+      setError('No chat selected for renaming');
+      return;
+    }
+
+    try {
+      await renameChat(selectedChat._id, newName);
+      const updatedChat = await getChatById(selectedChat._id);
+      setSelectedChat(updatedChat);
+      setChats(prevChats =>
+        prevChats.map(chat => (chat._id === updatedChat._id ? updatedChat : chat)),
+      );
+      setError(null);
+    } catch (err) {
+      setError('Failed to rename chat');
+    }
+  };
+
   return {
     selectedChat,
     chatToCreate,
@@ -131,7 +161,10 @@ const useDirectMessage = () => {
     handleChatSelect,
     handleUserSelect,
     handleCreateChat,
+    handleRenameChat,
     error,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 

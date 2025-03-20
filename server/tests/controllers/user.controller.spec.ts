@@ -8,18 +8,21 @@ const mockUser: User = {
   username: 'user1',
   password: 'password',
   dateJoined: new Date('2024-12-03'),
+  savedQuestions: [],
 };
 
 const mockSafeUser: SafeDatabaseUser = {
   _id: new mongoose.Types.ObjectId(),
   username: 'user1',
   dateJoined: new Date('2024-12-03'),
+  savedQuestions: [],
 };
 
 const mockUserJSONResponse = {
   _id: mockSafeUser._id.toString(),
   username: 'user1',
   dateJoined: new Date('2024-12-03').toISOString(),
+  savedQuestions: [],
 };
 
 const saveUserSpy = jest.spyOn(util, 'saveUser');
@@ -36,6 +39,7 @@ describe('Test userController', () => {
         username: mockUser.username,
         password: mockUser.password,
         biography: 'This is a test biography',
+        savedQuestions: [],
       };
 
       saveUserSpy.mockResolvedValueOnce({ ...mockSafeUser, biography: mockReqBody.biography });

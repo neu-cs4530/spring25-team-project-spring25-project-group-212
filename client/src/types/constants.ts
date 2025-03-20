@@ -4,4 +4,5 @@ export const orderTypeDisplayName = {
   unanswered: 'Unanswered',
   active: 'Active',
   mostViewed: 'Most Viewed',
+  saved: 'Saved',
 } as const;
