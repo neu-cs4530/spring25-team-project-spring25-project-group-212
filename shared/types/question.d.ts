@@ -11,7 +11,7 @@ import { Comment, DatabaseComment } from './comment';
  * - `active`: Sort by questions with recent activity (views, answers, votes).
  * - `mostViewed`: Sort by the most viewed questions.
  */
-export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed';
+export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed' | 'saved';
 
 /**
  * Represents a question.
@@ -93,12 +93,14 @@ export type VoteResponse = VoteInterface | { error: string };
  * - `order`: The order in which to sort the questions.
  * - `search`: The search string used to find questions.
  * - `askedBy`: The username of the user who asked the question.
+ * - `username`: The username of the user making the request.
  */
 export interface FindQuestionRequest extends Request {
   query: {
     order: OrderType;
     search: string;
     askedBy: string;
+    username: string;
   };
 }
 

@@ -26,6 +26,12 @@ const userSchema: Schema = new Schema(
       type: String,
       default: '',
     },
+    savedQuestions: [
+      {
+        type: String,
+        ref: 'Question',
+      },
+    ],
   },
   { collection: 'User' },
 );
