@@ -4,7 +4,8 @@ import CommunitiesListCardJoin from './communitiesListCardJoin';
 import CommunitiesListCardView from './communitiesListCardView';
 
 const CommunitiesListPage = () => {
-  const { communities, error, handleJoin, fetchCommunities } = useCommunitiesListPage();
+  const { communities, error, handleJoin, fetchCommunities, handleCreateCommunity } =
+    useCommunitiesListPage();
   const { user } = useUserContext();
 
   const joinedCommunities = communities.filter(c => c.members.includes(user.username));
@@ -15,6 +16,7 @@ const CommunitiesListPage = () => {
       {error && <div>{error}</div>}
       <h2>Communities</h2>
       <button onClick={fetchCommunities}>Refresh List</button>
+      <button onClick={handleCreateCommunity}>Create Community</button>
       <div>
         <strong>Joined Communities: </strong>
         {joinedCommunities.map(c => (
