@@ -20,6 +20,19 @@ export const getUserNotifications = async (
 };
 
 /**
+ * Function to clear all notifications for a user.
+ *
+ * @param username - The username to clear notifications for
+ * @throws Error if there is an issue clearing notifications
+ */
+export const clearUserNotifications = async (username: string): Promise<void> => {
+  const res = await api.delete(`${NOTIFICATION_API_URL}/clearNotifications?username=${username}`);
+  if (res.status !== 200) {
+    throw new Error('Error when clearing notifications');
+  }
+};
+
+/**
  * Function to create a notification for a new answer.
  *
  * @param questionId - The ID of the question that was answered

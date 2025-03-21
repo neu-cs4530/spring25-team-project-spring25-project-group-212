@@ -1,7 +1,11 @@
 import express, { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { FakeSOSocket } from '../types/types';
-import { createAnswerNotification, getUserNotifications } from '../services/notification.service';
+import {
+  createAnswerNotification,
+  getUserNotifications,
+  clearNotifications,
+} from '../services/notification.service';
 
 const notificationController = (socket: FakeSOSocket) => {
   const router = express.Router();
@@ -34,6 +38,38 @@ const notificationController = (socket: FakeSOSocket) => {
         res.status(500).send(`Error when fetching notifications: ${err.message}`);
       } else {
         res.status(500).send('Error when fetching notifications');
+      }
+    }
+  };
+
+  /**
+   * Clears all notifications for a specific user.
+   * If there is an error, the HTTP response's status is updated.
+   *
+   * @param req The request object containing the username as a query parameter.
+   * @param res The HTTP response object used to send back the success status.
+   *
+   * @returns A Promise that resolves to void.
+   */
+  const clearUserNotifications = async (
+    req: { query: { username: string } },
+    res: Response,
+  ): Promise<void> => {
+    const { username } = req.query;
+
+    if (!username) {
+      res.status(400).send('Username is required');
+      return;
+    }
+
+    try {
+      await clearNotifications(username);
+      res.status(200).send('Notifications cleared successfully');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send(`Error when clearing notifications: ${err.message}`);
+      } else {
+        res.status(500).send('Error when clearing notifications');
       }
     }
   };
@@ -92,6 +128,7 @@ const notificationController = (socket: FakeSOSocket) => {
 
   // add appropriate HTTP verbs and their endpoints to the router
   router.get('/getNotifications', getNotifications);
+  router.delete('/clearNotifications', clearUserNotifications);
   router.post('/createNotification', createNotification);
 
   return router;

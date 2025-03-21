@@ -60,3 +60,16 @@ export const getUserNotifications = async (
     throw new Error('Error fetching notifications');
   }
 };
+
+/**
+ * Clears all notifications for a specific user.
+ * @param {string} username - The username to clear notifications for
+ * @returns {Promise<void>}
+ */
+export const clearNotifications = async (username: string): Promise<void> => {
+  try {
+    await NotificationModel.deleteMany({ recipient: username });
+  } catch (error) {
+    throw new Error('Error clearing notifications');
+  }
+};
