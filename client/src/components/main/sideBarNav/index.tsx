@@ -71,7 +71,7 @@ const SideBarNav = () => {
         id='menu_communities'
         className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
         Communities
-      </NavLink>      
+      </NavLink>
       <NavLink
         to='/statistics'
         id='menu_statistics'
