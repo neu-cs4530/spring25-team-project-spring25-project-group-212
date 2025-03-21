@@ -5,6 +5,7 @@ import { PopulatedDatabaseQuestion } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
 import { PopulatedDatabaseCommunity } from './community';
+import { DatabaseNotification } from './notification';
 
 /**
  * Payload for an answer update event.
@@ -106,6 +107,8 @@ export interface ReactionUpdatePayload {
  * - `leaveGame`: Client can leave a game.
  * - `joinChat`: Client can join a chat.
  * - `leaveChat`: Client can leave a chat.
+ * - `joinUser`: Client can join a user.
+ * - `leaveUser`: Client can leave a user.
  */
 export interface ClientToServerEvents {
   makeMove: (move: GameMovePayload) => void;
@@ -117,6 +120,8 @@ export interface ClientToServerEvents {
   userStoppedTyping: (username: string) => void;
   joinCommunity: (communityID: string) => void;
   leaveCommunity: (communityID: string) => void;
+  joinUser: (userId: string) => void;
+  leaveUser: (userId: string) => void;
 }
 
 /**
@@ -127,6 +132,14 @@ export interface ClientToServerEvents {
 export interface CommunityUpdatePayload {
   community: PopulatedDatabaseCommunity;
   type: 'created' | 'deleted' | 'updated';
+}
+
+/**
+ * Payload for a notification update event.
+ * - `notification`: The updated notification object.
+ */
+export interface NotificationUpdatePayload {
+  notification: DatabaseNotification;
 }
 
 /**
@@ -141,6 +154,9 @@ export interface CommunityUpdatePayload {
  * - `gameUpdate`: Server sends updated game state.
  * - `gameError`: Server sends error message related to game operation.
  * - `chatUpdate`: Server sends updated chat.
+ * - `typingUpdate`: Server sends updated typing users.
+ * - `communityUpdate`: Server sends updated community.
+ * - `notificationUpdate`: Server sends updated notification.
  */
 export interface ServerToClientEvents {
   questionUpdate: (question: PopulatedDatabaseQuestion) => void;
@@ -156,4 +172,5 @@ export interface ServerToClientEvents {
   reactionUpdate: (payload: ReactionUpdatePayload) => void;
   typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
+  notificationUpdate: (notification: NotificationUpdatePayload) => void;
 }
