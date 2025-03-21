@@ -1,5 +1,6 @@
 import React from 'react';
 import './index.css';
+import { useNavigate } from 'react-router-dom';
 import useProfileSettings from '../../hooks/useProfileSettings';
 
 const ProfileSettings: React.FC = () => {
@@ -32,7 +33,14 @@ const ProfileSettings: React.FC = () => {
     handleUpdateBiography,
     handleUpdateEmail,
     handleDeleteUser,
+
+    topVotedQuestion,
+    topVotedCount,
+    topViewedQuestion,
+    topViewedCount,
   } = useProfileSettings();
+
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -147,6 +155,42 @@ const ProfileSettings: React.FC = () => {
             <p>
               <strong>Date Joined:</strong>{' '}
               {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
+            </p>
+
+            <p>
+              <div>
+                <strong>Top Voted Question: </strong>
+                {topVotedQuestion === null ? <></> : <>{topVotedCount}</>}
+              </div>
+              {topVotedQuestion === null ? (
+                <>No Questions asked yet</>
+              ) : (
+                <div
+                  className='postTitle'
+                  onClick={e => {
+                    navigate(`/question/${topVotedQuestion._id}`);
+                  }}>
+                  {topVotedQuestion.title}
+                </div>
+              )}
+            </p>
+
+            <p>
+              <div>
+                <strong>Top Viewed Question: </strong>
+                {topViewedQuestion === null ? <></> : <>{topViewedCount} views</>}
+              </div>
+              {topViewedQuestion === null ? (
+                <>No Questions asked yet</>
+              ) : (
+                <div
+                  className='postTitle'
+                  onClick={e => {
+                    navigate(`/question/${topViewedQuestion._id}`);
+                  }}>
+                  {topViewedQuestion.title}
+                </div>
+              )}
             </p>
 
             {/* ---- Reset Password Section ---- */}

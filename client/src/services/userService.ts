@@ -125,6 +125,24 @@ const updateBiography = async (
 };
 
 /**
+ * Toggles the whether a user has a question saved
+ * @param username The unique username of the user
+ * @param qid The id of the question to be toggled as a string
+ * @returns A promise resolving to the updated user
+ * @throws Error if the request fails
+ */
+const toggleSaveQuestion = async (username: string, qid: string): Promise<SafeDatabaseUser> => {
+  const res = await api.patch(`${USER_API_URL}/toggleSaveQuestion`, {
+    username,
+    qid,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error when toggling save Question');
+  }
+  return res.data;
+};
+
+/**
  * Updates the user's email.
  * @param username The unique username of the user
  * @param newEmail The new biography to set for this user
@@ -150,5 +168,6 @@ export {
   deleteUser,
   resetPassword,
   updateBiography,
+  toggleSaveQuestion,
   updateEmail,
 };

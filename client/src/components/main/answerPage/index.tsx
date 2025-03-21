@@ -29,6 +29,9 @@ const AnswerPage = () => {
         text={question.text}
         askby={question.askedBy}
         meta={getMetaData(new Date(question.askDateTime))}
+        isMarkdown={question.useMarkdown}
+        qid={questionID}
+        anonymous={question.anonymous}
       />
       <CommentSection
         comments={question.comments}
@@ -41,6 +44,7 @@ const AnswerPage = () => {
           ansBy={a.ansBy}
           meta={getMetaData(new Date(a.ansDateTime))}
           comments={a.comments}
+          isMarkdown={a.useMarkdown}
           handleAddComment={(comment: Comment) =>
             handleNewComment(comment, 'answer', String(a._id))
           }

@@ -16,6 +16,7 @@ describe('POST /addMessage', () => {
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const message: DatabaseMessage = {
@@ -36,6 +37,7 @@ describe('POST /addMessage', () => {
       msgFrom: message.msgFrom,
       msgDateTime: message.msgDateTime.toISOString(),
       type: 'global',
+      useMarkdown: false,
     });
   });
 
@@ -51,6 +53,7 @@ describe('POST /addMessage', () => {
       msg: '',
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
+      useMarkdown: false,
     };
 
     const response = await supertest(app)
@@ -65,6 +68,7 @@ describe('POST /addMessage', () => {
     const badMessage = {
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
+      useMarkdown: false,
     };
 
     const response = await supertest(app)
@@ -80,6 +84,7 @@ describe('POST /addMessage', () => {
       msg: 'Hello',
       msgFrom: '',
       msgDateTime: new Date('2024-06-04'),
+      useMarkdown: false,
     };
 
     const response = await supertest(app)
@@ -94,6 +99,7 @@ describe('POST /addMessage', () => {
     const badMessage = {
       msg: 'Hello',
       msgDateTime: new Date('2024-06-04'),
+      useMarkdown: false,
     };
 
     const response = await supertest(app)
@@ -108,6 +114,7 @@ describe('POST /addMessage', () => {
     const badMessage = {
       msg: 'Hello',
       msgFrom: 'User1',
+      useMarkdown: false,
     };
 
     const response = await supertest(app)
@@ -140,6 +147,7 @@ describe('POST /addMessage', () => {
       msg: 'Hello',
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
+      useMarkdown: false,
     };
 
     saveMessageSpy.mockResolvedValue({ error: 'Error saving document' });
@@ -160,6 +168,7 @@ describe('GET /getMessages', () => {
       msgFrom: 'User1',
       msgDateTime: new Date('2024-06-04'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const message2: Message = {
@@ -167,6 +176,7 @@ describe('GET /getMessages', () => {
       msgFrom: 'User2',
       msgDateTime: new Date('2024-06-05'),
       type: 'global',
+      useMarkdown: false,
     };
 
     const dbMessage1: DatabaseMessage = {

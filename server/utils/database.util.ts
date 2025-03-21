@@ -86,6 +86,7 @@ const populateChat = async (chatID: string): Promise<PopulatedDatabaseChat | nul
         msgFrom: messageDoc.msgFrom,
         msgDateTime: messageDoc.msgDateTime,
         type: messageDoc.type,
+        useMarkdown: messageDoc.useMarkdown,
         user: userDoc
           ? {
               _id: userDoc._id!,

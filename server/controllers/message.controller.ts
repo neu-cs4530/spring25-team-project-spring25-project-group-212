@@ -1,9 +1,16 @@
 import express, { Response, Request } from 'express';
 import { FakeSOSocket, AddMessageRequest, Message } from '../types/types';
-import { saveMessage, getMessages } from '../services/message.service';
+import {
+  saveMessage,
+  getMessages,
+  addReactionToMessage,
+  removeReactionFromMessage,
+  getReactions,
+} from '../services/message.service';
 
 const messageController = (socket: FakeSOSocket) => {
   const router = express.Router();
+  const typingUsers: Set<string> = new Set();
 
   /**
    * Checks if the provided message request contains the required fields.
@@ -78,9 +85,60 @@ const messageController = (socket: FakeSOSocket) => {
     res.json(messages);
   };
 
+  const addReaction = async (req: Request, res: Response) => {
+    const { messageId, emoji, username } = req.body;
+
+    if (!username) {
+      res.status(400).json({ error: 'Username is required' });
+      return;
+    }
+
+    const result = await addReactionToMessage(messageId, username, emoji, socket);
+    res.json(result);
+  };
+
+  const removeReaction = async (req: Request, res: Response) => {
+    const { messageId, emoji, username } = req.body;
+
+    if (!username) {
+      res.status(400).json({ error: 'Username is required' });
+      return;
+    }
+
+    const result = await removeReactionFromMessage(messageId, username, emoji, socket);
+    res.json(result);
+  };
+
+  const getReactionsRoute = async (req: Request, res: Response) => {
+    const { messageId } = req.params;
+
+    if (!messageId) {
+      res.status(400).json({ error: 'Message ID is required' });
+      return;
+    }
+    const reactions = await getReactions(messageId);
+    res.json(reactions);
+  };
+  socket.on('connection', clientSocket => {
+    clientSocket.on('userTyping', (username: string) => {
+      typingUsers.add(username);
+      clientSocket.broadcast.emit('typingUpdate', Array.from(typingUsers));
+    });
+
+    clientSocket.on('userStoppedTyping', (username: string) => {
+      typingUsers.delete(username);
+      clientSocket.broadcast.emit('typingUpdate', Array.from(typingUsers));
+    });
+
+    clientSocket.on('disconnect', () => {});
+  });
+
   // Add appropriate HTTP verbs and their endpoints to the router
   router.post('/addMessage', addMessageRoute);
   router.get('/getMessages', getMessagesRoute);
+  router.post('/addReaction', addReaction);
+  router.post('/removeReaction', removeReaction);
+  router.get('/getReactions/:messageId', getReactionsRoute);
 
   return router;
 };

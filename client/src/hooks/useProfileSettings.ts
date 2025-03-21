@@ -7,8 +7,9 @@ import {
   updateBiography,
   updateEmail,
 } from '../services/userService';
-import { SafeDatabaseUser } from '../types/types';
+import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
+import { getQuestionsByFilter } from '../services/questionService';
 
 /**
  * A custom hook to encapsulate all logic/state for the ProfileSettings component.
@@ -36,6 +37,13 @@ const useProfileSettings = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [topVotedQuestion, setTopVotedQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
+  const [topVotedCount, setTopVotedCount] = useState(0);
+  const [topViewedQuestion, setTopViewedQuestion] = useState<PopulatedDatabaseQuestion | null>(
+    null,
+  );
+  const [topViewedCount, setTopViewedCount] = useState(0);
+
   const canEditProfile =
     currentUser.username && userData?.username ? currentUser.username === userData.username : false;
 
@@ -56,6 +64,47 @@ const useProfileSettings = () => {
     };
 
     fetchUserData();
+  }, [username]);
+
+  useEffect(() => {
+    if (!username) {
+      setTopVotedQuestion(null);
+      setTopViewedQuestion(null);
+    }
+
+    const fetchQuestions = async () => {
+      const allQuestions = await getQuestionsByFilter();
+      let topVoted = null;
+      let topVotedVotes = -Infinity;
+      let topViewed = null;
+      let topViewedViews = -Infinity;
+
+      allQuestions.forEach(question => {
+        if (
+          (question.askedBy === username && question.anonymous === false) ||
+          question.answers.some(ans => ans.ansBy === username)
+        ) {
+          const netVotes = question.upVotes.length - question.downVotes.length;
+          if (netVotes > topVotedVotes) {
+            topVotedVotes = netVotes;
+            topVoted = question;
+          }
+
+          const viewsCount = question.views.length;
+          if (viewsCount > topViewedViews) {
+            topViewedViews = viewsCount;
+            topViewed = question;
+          }
+        }
+      });
+
+      setTopVotedQuestion(topVoted);
+      setTopVotedCount(topVotedVotes);
+      setTopViewedQuestion(topViewed);
+      setTopViewedCount(topViewedViews);
+    };
+
+    fetchQuestions();
   }, [username]);
 
   /**
@@ -194,6 +243,10 @@ const useProfileSettings = () => {
     handleUpdateBiography,
     handleUpdateEmail,
     handleDeleteUser,
+    topVotedQuestion,
+    topVotedCount,
+    topViewedQuestion,
+    topViewedCount,
   };
 };
 
