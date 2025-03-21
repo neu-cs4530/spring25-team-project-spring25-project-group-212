@@ -250,6 +250,7 @@ describe('Chat service', () => {
       const mockChats: DatabaseChat[] = [
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user2'],
           messages: [],
           createdAt: new Date(),
@@ -257,6 +258,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user3'],
           messages: [],
           createdAt: new Date(),
@@ -275,6 +277,7 @@ describe('Chat service', () => {
       const mockChats: DatabaseChat[] = [
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user2'],
           messages: [],
           createdAt: new Date(),
@@ -282,6 +285,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user1', 'user3'],
           messages: [],
           createdAt: new Date(),
@@ -289,6 +293,7 @@ describe('Chat service', () => {
         },
         {
           _id: new mongoose.Types.ObjectId(),
+          name: '',
           participants: ['user2', 'user3'],
           messages: [],
           createdAt: new Date(),

@@ -54,7 +54,7 @@ export interface VoteUpdatePayload {
  */
 export interface ChatUpdatePayload {
   chat: PopulatedDatabaseChat;
-  type: 'created' | 'newMessage' | 'newParticipant';
+  type: 'created' | 'newMessage' | 'newParticipant' | 'renamed';
 }
 
 /**
@@ -93,6 +93,11 @@ export interface UserUpdatePayload {
 export interface GameMovePayload {
   gameID: GameInstanceID;
   move: GameMove<BaseMove>;
+}
+
+export interface ReactionUpdatePayload {
+  messageId: string;
+  reactions?: { emoji: string; userId: string }[];
 }
 
 /**
@@ -164,6 +169,7 @@ export interface ServerToClientEvents {
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  reactionUpdate: (payload: ReactionUpdatePayload) => void;
   typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
   notificationUpdate: (notification: NotificationUpdatePayload) => void;

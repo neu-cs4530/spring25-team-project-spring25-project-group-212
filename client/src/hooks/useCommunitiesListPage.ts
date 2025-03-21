@@ -21,6 +21,10 @@ const useCommunitiesListPage = () => {
     navigate(`/community/${communityId}`);
   };
 
+  const handleCreateCommunity = async () => {
+    navigate(`/new/community`);
+  };
+
   useEffect(() => {
     fetchCommunities();
   }, []);
@@ -30,6 +34,7 @@ const useCommunitiesListPage = () => {
     error,
     handleJoin,
     fetchCommunities,
+    handleCreateCommunity,
   };
 };
 

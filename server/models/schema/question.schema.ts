@@ -41,6 +41,9 @@ const questionSchema: Schema = new Schema(
       default: false,
       required: true,
     },
+    anonymous: {
+      type: Boolean,
+    },
   },
   { collection: 'Question' },
 );

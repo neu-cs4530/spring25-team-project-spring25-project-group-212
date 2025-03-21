@@ -4,11 +4,12 @@ import useNewQuestion from '../../../hooks/useNewQuestion';
 import Form from '../baseComponents/form';
 import Input from '../baseComponents/input';
 import TextArea from '../baseComponents/textarea';
+import Checkbox from '../baseComponents/checkbox';
 import './index.css';
 
 /**
  * NewQuestionPage component allows users to submit a new question with a title,
- * description, tags, and username.
+ * description, tags, username, and anonymous setting.
  */
 const NewQuestionPage = () => {
   const {
@@ -18,6 +19,8 @@ const NewQuestionPage = () => {
     setText,
     tagNames,
     setTagNames,
+    anonymous,
+    setAnonymous,
     titleErr,
     textErr,
     tagErr,
@@ -69,6 +72,13 @@ const NewQuestionPage = () => {
         val={tagNames}
         setState={setTagNames}
         err={tagErr}
+      />
+      <Checkbox
+        title={'Anonymous'}
+        hint={'Check if the question should be displayed anonymous'}
+        id={'formAnonymousInpus'}
+        val={anonymous}
+        setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
         <button

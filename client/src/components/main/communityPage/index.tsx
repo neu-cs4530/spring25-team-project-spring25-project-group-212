@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import EmojiPicker from 'emoji-picker-react';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
@@ -7,6 +8,7 @@ import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
 import { joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
+import { renameChat } from '../../../services/chatService';
 import './index.css';
 
 const CommunityPage = () => {
@@ -14,12 +16,14 @@ const CommunityPage = () => {
     currentCommunity,
     communityChat,
     newMessage,
+    setNewMessage,
     handleSendMessage,
     handleTyping,
     typingUsers,
   } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const {
     community,
@@ -36,11 +40,35 @@ const CommunityPage = () => {
   } = useCommunityNameAboutRules();
 
   const { user } = useUserContext();
+  const [chatName, setChatName] = useState(community?.groupChat?.name || '');
+
   useEffect(() => {
     if (currentCommunity && user) {
       joinCommunity(currentCommunity._id.toString(), user.username);
     }
   }, [currentCommunity, user]);
+
+  useEffect(() => {
+    if (community?.groupChat?.name) {
+      setChatName(community.groupChat.name);
+    }
+  }, [community]);
+
+  const handleEmojiSelect = (emojiObject: { emoji: string }) => {
+    setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleRenameChat = async () => {
+    if (!community || !community.groupChat?._id || !chatName.trim()) return;
+
+    try {
+      await renameChat(community.groupChat._id, chatName);
+      setChatName(chatName);
+    } catch (error) {
+      throw Error('Failed to rename the chat');
+    }
+  };
 
   if (!currentCommunity || !community) {
     return <div>Community not found</div>;
@@ -128,6 +156,23 @@ const CommunityPage = () => {
             <div className='bold_title right_padding'>No Questions Found</div>
           )}
         </div>
+        <div className='rename-chat'>
+          <input
+            className='custom-input'
+            type='text'
+            value={chatName}
+            onChange={e => setChatName(e.target.value)}
+            placeholder='Enter new chat name'
+          />
+          <button className='custom-button' onClick={handleRenameChat}>
+            Rename
+          </button>
+        </div>
+        <p>
+          <strong>Current Chat Name: </strong>
+          {chatName}
+        </p>
+
         <div className='direct-message-container'>
           <div id='community-chat' className='chat-container'>
             <div className='chat-messages'>
@@ -149,17 +194,30 @@ const CommunityPage = () => {
               </div>
             )}
 
-            <div className='message-input'>
-              <input
-                className='custom-input'
-                type='text'
-                value={newMessage}
-                onChange={handleTyping}
-                placeholder='Type a message...'
-              />
-              <button className='custom-button' onClick={handleSendMessage}>
-                Send
-              </button>
+            <div className='message-input-container'>
+              <div className='message-input'>
+                <input
+                  className='custom-input'
+                  type='text'
+                  value={newMessage}
+                  onChange={handleTyping}
+                  placeholder='Type a message...'
+                />
+                <button
+                  className='emoji-button'
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                  😀
+                </button>
+                <button className='custom-button' onClick={handleSendMessage}>
+                  Send
+                </button>
+              </div>
+
+              {showEmojiPicker && (
+                <div className='emoji-picker-container'>
+                  <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                </div>
+              )}
             </div>
           </div>
         </div>

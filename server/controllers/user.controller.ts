@@ -6,6 +6,7 @@ import {
   UserByUsernameRequest,
   FakeSOSocket,
   UpdateBiographyRequest,
+  UpdateSavedQuestionsRequest,
 } from '../types/types';
 import {
   deleteUserByUsername,
@@ -60,6 +61,7 @@ const userController = (socket: FakeSOSocket) => {
       ...requestUser,
       dateJoined: new Date(),
       biography: requestUser.biography ?? '',
+      savedQuestions: [],
     };
 
     try {
@@ -236,6 +238,51 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Toggles save question for a user.
+   * @param req The request containing the username and questionId in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
+  const toggleSaveQuestion = async (
+    req: UpdateSavedQuestionsRequest,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const { username, qid } = req.body;
+
+      const user = await getUserByUsername(username);
+
+      if ('error' in user) {
+        throw Error(user.error);
+      }
+
+      let updatedUser;
+      if (user.savedQuestions.some(q => q === qid)) {
+        updatedUser = await updateUser(username, {
+          savedQuestions: user.savedQuestions.filter(q => q !== qid),
+        });
+      } else {
+        updatedUser = await updateUser(username, {
+          savedQuestions: [...user.savedQuestions, qid],
+        });
+      }
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating user biography: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -244,6 +291,7 @@ const userController = (socket: FakeSOSocket) => {
   router.get('/getUsers', getUsers);
   router.delete('/deleteUser/:username', deleteUser);
   router.patch('/updateBiography', updateBiography);
+  router.patch('/toggleSaveQuestion', toggleSaveQuestion);
   return router;
 };
 

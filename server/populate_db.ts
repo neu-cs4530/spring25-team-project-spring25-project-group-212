@@ -58,6 +58,7 @@ import {
 } from './data/posts_strings';
 import CommentModel from './models/comments.model';
 import UserModel from './models/users.model';
+import { ObjectId } from 'mongodb';
 
 // Pass URL of your mongoDB instance as first argument(e.g., mongodb://127.0.0.1:27017/fake_so)
 const userArgs = process.argv.slice(2);
@@ -149,6 +150,7 @@ async function answerCreate(
  * @param askDateTime The date and time when the question was asked.
  * @param views An array of usernames who have viewed the question.
  * @param comments An array of comments associated with the question.
+ * @param anonymous A boolen representing if the question is anonymous.
  * @returns A Promise that resolves to the created Question document.
  * @throws An error if any of the parameters are invalid.
  */
@@ -161,6 +163,7 @@ async function questionCreate(
   askDateTime: Date,
   views: string[],
   comments: Comment[],
+  anonymous: boolean,
 ): Promise<DatabaseQuestion> {
   if (
     title === '' ||
@@ -182,6 +185,7 @@ async function questionCreate(
     upVotes: [],
     downVotes: [],
     comments: comments,
+    anonymous: anonymous,
   });
 }
 
@@ -189,6 +193,7 @@ async function userCreate(
   username: string,
   password: string,
   dateJoined: Date,
+  savedQuestions: string[],
   biography?: string,
 ): Promise<DatabaseUser> {
   if (username === '' || password === '' || dateJoined === null) {
@@ -200,6 +205,7 @@ async function userCreate(
     password,
     dateJoined,
     biography: biography ?? '',
+    savedQuestions,
   };
 
   return await UserModel.create(userDetail);
@@ -215,62 +221,72 @@ const populate = async () => {
       'sana',
       'sanaPassword',
       new Date('2023-12-11T03:30:00'),
+      [],
       'I am a software engineer.',
     );
     await userCreate(
       'ihba001',
       'SomePassword#123',
       new Date('2022-12-11T03:30:00'),
+      [],
       'I am a student.',
     );
     await userCreate(
       'saltyPeter',
       'VeryStrongPassword#!@',
       new Date('2023-12-11T03:30:00'),
+      [],
       'I am a chef.',
     );
-    await userCreate('monkeyABC', 'password', new Date('2023-11-11T03:30:00'), 'I am a monkey.');
-    await userCreate('hamkalo', 'redapplecar', new Date('2023-12-02T03:30:00'), 'I am a hamster.');
+    await userCreate('monkeyABC', 'password', new Date('2023-11-11T03:30:00'), [], 'I am a monkey.');
+    await userCreate('hamkalo', 'redapplecar', new Date('2023-12-02T03:30:00'), [], 'I am a hamster.');
     await userCreate(
       'azad',
       'treeorangeBike',
       new Date('2023-06-11T03:30:00'),
+      [],
       'I am a free spirit.',
     );
     await userCreate(
       'abhi3241',
       '112@realpassword',
       new Date('2023-01-12T03:30:00'),
+      [],
       'I am a student.',
     );
     await userCreate(
       'Joji John',
       'jurassicPark#12',
       new Date('2023-10-11T03:30:00'),
+      [],
       'I like Jurassic Park.',
     );
     await userCreate(
       'abaya',
       'letmein',
       new Date('2023-04-20T03:30:00'),
+      [],
       'I like fashion designing.',
     );
     await userCreate(
       'mackson3332',
       'TrIcKyPhRaSe',
       new Date('2023-07-26T03:30:00'),
+      [],
       'I am a magician.',
     );
     await userCreate(
       'alia',
       'correcthorsebatterystaple',
       new Date('2023-03-19T03:30:00'),
+      [],
       'I am an actress.',
     );
     await userCreate(
       'elephantCDE',
       'ElephantPass123',
       new Date('2023-05-10T14:28:01'),
+      [],
       'I am an elephant lover.',
     );
 
@@ -312,6 +328,7 @@ const populate = async () => {
       new Date('2022-01-20T03:00:00'),
       ['sana', 'abaya', 'alia'],
       [c9],
+      false,
     );
     await questionCreate(
       Q2_DESC,
@@ -322,6 +339,7 @@ const populate = async () => {
       new Date('2023-01-10T11:24:30'),
       ['mackson3332'],
       [c10],
+      false,
     );
     await questionCreate(
       Q3_DESC,
@@ -332,6 +350,7 @@ const populate = async () => {
       new Date('2023-02-18T01:02:15'),
       ['monkeyABC', 'elephantCDE'],
       [c11],
+      true,
     );
     await questionCreate(
       Q4_DESC,
@@ -342,6 +361,7 @@ const populate = async () => {
       new Date('2023-03-10T14:28:01'),
       [],
       [c12],
+      false,
     );
 
     console.log('Database populated');
