@@ -77,7 +77,10 @@ const useProfileSettings = () => {
       let topViewedViews = -Infinity;
 
       allQuestions.forEach(question => {
-        if (question.askedBy === username || question.answers.some(ans => ans.ansBy === username)) {
+        if (
+          (question.askedBy === username && question.anonymous === false) ||
+          question.answers.some(ans => ans.ansBy === username)
+        ) {
           const netVotes = question.upVotes.length - question.downVotes.length;
           if (netVotes > topVotedVotes) {
             topVotedVotes = netVotes;
