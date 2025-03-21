@@ -1,36 +1,60 @@
+import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
+import useNotifications from '../../../hooks/useNotifications';
 import './index.css';
 
-const Notifications = () => (
-  <div className='notifications-container'>
-    <h3 className='notifications-heading'>Notifications</h3>
-    <div className='notifications-scroll'>
-      <div className='notification-item'>
-        <p>New message from John Doe</p>
-        <span className='notification-time'>2m ago</span>
+const Notifications = () => {
+  const { notifications, loading, error } = useNotifications();
+
+  if (loading) {
+    return (
+      <div className='notifications-container'>
+        <h3 className='notifications-heading'>Notifications</h3>
+        <div className='notifications-scroll'>
+          <div className='notification-item'>
+            <p>Loading notifications...</p>
+          </div>
+        </div>
       </div>
-      <div className='notification-item'>
-        <p>Your question received 3 new answers</p>
-        <span className='notification-time'>15m ago</span>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='notifications-container'>
+        <h3 className='notifications-heading'>Notifications</h3>
+        <div className='notifications-scroll'>
+          <div className='notification-item'>
+            <p>Error: {error}</p>
+          </div>
+        </div>
       </div>
-      <div className='notification-item'>
-        <p>New community post in Game Development</p>
-        <span className='notification-time'>1h ago</span>
-      </div>
-      <div className='notification-item'>
-        <p>Your answer was marked as accepted</p>
-        <span className='notification-time'>2h ago</span>
-      </div>
-      <div className='notification-item'>
-        <p>New follower: Jane Smith</p>
-        <span className='notification-time'>3h ago</span>
-      </div>
-      <div className='notification-item'>
-        <p>New follower: Jane Smith</p>
-        <span className='notification-time'>3h ago</span>
+    );
+  }
+
+  return (
+    <div className='notifications-container'>
+      <h3 className='notifications-heading'>Notifications</h3>
+      <div className='notifications-scroll'>
+        {notifications.length === 0 ? (
+          <div className='notification-item'>
+            <p>No notifications</p>
+          </div>
+        ) : (
+          notifications.map(notification => (
+            <div
+              key={notification._id.toString()}
+              className={`notification-item ${!notification.read ? 'unread' : ''}`}>
+              <p>{`${notification.answeredBy} answered your question "${notification.questionId.title}"`}</p>
+              <span className='notification-time'>
+                {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Notifications;
