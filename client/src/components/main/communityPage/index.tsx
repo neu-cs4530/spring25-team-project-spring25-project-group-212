@@ -20,6 +20,8 @@ const CommunityPage = () => {
     handleSendMessage,
     handleTyping,
     typingUsers,
+    useMarkdown,
+    setUseMarkdown,
   } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
@@ -210,6 +212,13 @@ const CommunityPage = () => {
                 </button>
                 <button className='custom-button' onClick={handleSendMessage}>
                   Send
+                </button>
+                <button
+                  type='button'
+                  className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                  onClick={() => setUseMarkdown(!useMarkdown)}
+                  title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                  MD
                 </button>
               </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import useNewQuestionCommunity from '../../../../hooks/useNewQuestionCommunity';
 import Form from '../../baseComponents/form';
 import Input from '../../baseComponents/input';
@@ -23,6 +24,8 @@ const NewQuestionInCommunityPage = () => {
     textErr,
     tagErr,
     postQuestion,
+    useMarkdown,
+    setUseMarkdown,
   } = useNewQuestionCommunity();
 
   return (
@@ -43,6 +46,24 @@ const NewQuestionInCommunityPage = () => {
         setState={setText}
         err={textErr}
       />
+      <div className='toggle-container'>
+        <label>
+          <input
+            type='checkbox'
+            checked={useMarkdown}
+            onChange={() => setUseMarkdown(!useMarkdown)}
+          />
+          Enable Markdown
+        </label>
+      </div>
+      {useMarkdown && text && (
+        <div className='markdown-preview' style={{ marginBottom: '20px' }}>
+          <h3>Markdown Preview:</h3>
+          <div className='markdown-box'>
+            <ReactMarkdown>{text}</ReactMarkdown>
+          </div>
+        </div>
+      )}
       <Input
         title={'Tags'}
         hint={'Add keywords separated by whitespace'}
