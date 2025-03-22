@@ -30,6 +30,7 @@ const useNewQuestionCommunity = () => {
   const [titleErr, setTitleErr] = useState<string>('');
   const [textErr, setTextErr] = useState<string>('');
   const [tagErr, setTagErr] = useState<string>('');
+  const [useMarkdown, setUseMarkdown] = useState(false);
 
   /**
    * Function to validate the form before submitting the question.
@@ -106,7 +107,7 @@ const useNewQuestionCommunity = () => {
       downVotes: [],
       views: [],
       comments: [],
-      useMarkdown: false,
+      useMarkdown,
       anonymous,
     };
 
@@ -135,6 +136,8 @@ const useNewQuestionCommunity = () => {
     textErr,
     tagErr,
     postQuestion,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 

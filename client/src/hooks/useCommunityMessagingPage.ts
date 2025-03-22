@@ -29,6 +29,7 @@ const useCommunityMessagingPage = () => {
   const [error, setError] = React.useState<string>('');
   const [typingUsers, setTypingUsers] = React.useState<string[]>([]); // Add typingUsers state
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [useMarkdown, setUseMarkdown] = React.useState<boolean>(false);
 
   useEffect(() => {
     socket.on('typingUpdate', (users: string[]) => {
@@ -146,7 +147,7 @@ const useCommunityMessagingPage = () => {
       msg: newMessage,
       msgFrom: user.username,
       msgDateTime: new Date(),
-      useMarkdown: false,
+      useMarkdown,
     };
 
     if (communityChat) {
@@ -166,6 +167,8 @@ const useCommunityMessagingPage = () => {
     setNewMessage,
     handleSendMessage,
     error,
+    useMarkdown,
+    setUseMarkdown,
   };
 };
 
