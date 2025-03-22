@@ -10,6 +10,7 @@ import { joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import { renameChat } from '../../../services/chatService';
 import './index.css';
+import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
 
 const CommunityPage = () => {
   const {
@@ -39,6 +40,7 @@ const CommunityPage = () => {
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
 
+  const { handleBulletinBoardTabClick } = useCommunityTabsHeader();
   const { user } = useUserContext();
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
 
@@ -71,7 +73,7 @@ const CommunityPage = () => {
   };
 
   if (!currentCommunity || !community) {
-    return <div>Community not found</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -102,7 +104,11 @@ const CommunityPage = () => {
           )}
         </div>
       )}
-
+      <div id='community-header'>
+        <button className='login-button' onClick={handleBulletinBoardTabClick}>
+          Bulletin Board
+        </button>
+      </div>
       {editMode && canEditNameAboutRules && (
         <div>
           <input
@@ -141,7 +147,7 @@ const CommunityPage = () => {
         </div>
       )}
       <div id='community-content'>
-        <div id='community-questions'>
+        <div id='community-questions' style={{ marginBottom: 20 }}>
           <CommunityQuestionHeader
             titleText={titleText}
             qcnt={qlist.length}
@@ -156,7 +162,7 @@ const CommunityPage = () => {
             <div className='bold_title right_padding'>No Questions Found</div>
           )}
         </div>
-        <div className='rename-chat'>
+        <div className='rename-chat' style={{ marginTop: 20 }}>
           <input
             className='custom-input'
             type='text'

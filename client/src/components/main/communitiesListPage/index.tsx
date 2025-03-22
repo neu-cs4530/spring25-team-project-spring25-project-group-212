@@ -37,7 +37,6 @@ const CommunitiesListPage = () => {
           />
         ))}
       </div>
-      <div></div>
     </div>
   );
 };
