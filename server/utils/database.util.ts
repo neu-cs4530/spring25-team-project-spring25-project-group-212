@@ -93,6 +93,7 @@ const populateChat = async (chatID: string): Promise<PopulatedDatabaseChat | nul
               username: userDoc.username,
             }
           : null,
+        seenBy: [],
       };
     }),
   );

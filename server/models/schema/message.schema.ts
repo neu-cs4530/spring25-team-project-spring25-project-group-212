@@ -44,6 +44,7 @@ const messageSchema: Schema = new Schema(
         },
       },
     ],
+    seenBy: [{ type: Schema.Types.String, ref: 'User', default: [] }],
   },
   { collection: 'Message' },
 );

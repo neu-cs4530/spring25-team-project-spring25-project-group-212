@@ -67,4 +67,22 @@ const getReactions = async (messageId: string) => {
   return res.data;
 };
 
-export { addMessage, getMessages, addReaction, getReactions };
+/**
+ * Marks a message as seen by a user.
+ *
+ * @param messageId - The ID of the message being marked as seen.
+ * @param userId - The ID of the user who saw the message.
+ * @throws Error if the request fails or the response status is not 200.
+ */
+const markMessageAsSeen = async (messageId: string, userId: string) => {
+  const res = await api.post(`${MESSAGE_API_URL}/messages/${messageId}/seen`, {
+    userId,
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error marking message as seen');
+  }
+  return res.data;
+};
+
+export { addMessage, getMessages, addReaction, getReactions, markMessageAsSeen };

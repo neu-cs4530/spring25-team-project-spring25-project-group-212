@@ -6,6 +6,7 @@ import {
   addReactionToMessage,
   removeReactionFromMessage,
   getReactions,
+  markMessageAsSeen,
 } from '../services/message.service';
 
 const messageController = (socket: FakeSOSocket) => {
@@ -133,12 +134,49 @@ const messageController = (socket: FakeSOSocket) => {
     clientSocket.on('disconnect', () => {});
   });
 
+  const markMessageAsSeenRoute = async (req: Request, res: Response) => {
+    const { messageId } = req.params;
+    const { userId } = req.body;
+
+    try {
+      const updatedMessage = await markMessageAsSeen(messageId, userId, socket);
+
+      if ('message' in updatedMessage && typeof updatedMessage.message === 'string') {
+        return res.status(200).json({
+          success: false,
+          message: updatedMessage.message,
+        });
+      }
+
+      if (!updatedMessage || !('_id' in updatedMessage) || !('seenBy' in updatedMessage)) {
+        return res.status(500).json({
+          success: false,
+          message: 'Invalid response from markMessageAsSeen',
+        });
+      }
+
+      socket.to(updatedMessage._id.toString()).emit('readReceiptUpdate', {
+        messageId: updatedMessage._id.toString(),
+        seenBy: updatedMessage.seenBy.map(id => id.toString()),
+        seenAt: new Date().toISOString(),
+      });
+
+      return res.status(200).json({ success: true, seenBy: updatedMessage.seenBy });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Mark messages as seen is not working: ${(error as Error).message}`,
+      });
+    }
+  };
+
   // Add appropriate HTTP verbs and their endpoints to the router
   router.post('/addMessage', addMessageRoute);
   router.get('/getMessages', getMessagesRoute);
   router.post('/addReaction', addReaction);
   router.post('/removeReaction', removeReaction);
   router.get('/getReactions/:messageId', getReactionsRoute);
+  router.post('/messages/:messageId/seen', markMessageAsSeenRoute);
 
   return router;
 };

@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
-import { DatabaseMessage, ReactionUpdatePayload } from '../../../types/types';
-import { addReaction, getReactions } from '../../../services/messageService';
+import { DatabaseMessage, ReactionUpdatePayload, ReadReceiptPayload } from '../../../types/types';
+import { addReaction, getReactions, markMessageAsSeen } from '../../../services/messageService';
 import useUserContext from '../../../hooks/useUserContext';
 import { getMetaData } from '../../../tool';
 
@@ -14,10 +14,11 @@ import { getMetaData } from '../../../tool';
  * @param message: The message object to display.
  */
 
-const MessageCard = ({ message }: { message: DatabaseMessage }) => {
+const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalUsers: number }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [reactions, setReactions] = useState<string[]>([]);
-  const { socket } = useUserContext();
+  const [seenBy, setSeenBy] = useState<string[]>([]);
+  const { user: currentUser, socket } = useUserContext();
 
   useEffect(() => {
     const fetchReactions = async () => {
@@ -32,6 +33,33 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
     fetchReactions();
   }, [message._id]);
 
+  useEffect(() => {
+    if (!socket) return () => {};
+
+    const handleSeenUpdate = (payload: ReadReceiptPayload) => {
+      if (payload.messageId === message._id.toString()) {
+        setSeenBy(payload.seenBy);
+      }
+    };
+
+    socket.on('readReceiptUpdate', handleSeenUpdate);
+    return () => {
+      socket.off('readReceiptUpdate', handleSeenUpdate);
+    };
+  }, [socket, message._id]);
+
+  useEffect(() => {
+    const markAsSeen = async () => {
+      try {
+        await markMessageAsSeen(message._id.toString(), currentUser.username);
+      } catch (error) {
+        throw Error('Error marking the message as seen');
+      }
+    };
+
+    markAsSeen();
+  }, [message._id, currentUser.username]);
+
   const handleAddReaction = async (emojiObject: EmojiClickData) => {
     setReactions(prev => [...prev, emojiObject.emoji]);
     setShowEmojiPicker(false);
@@ -41,6 +69,15 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
     const updatedReactions: { emoji: string }[] = await getReactions(message._id.toString());
     setReactions(updatedReactions.map(r => r.emoji));
   };
+
+  const seenPercentage = (seenBy.length / totalUsers) * 100;
+  let readReceipt = '';
+
+  if (seenPercentage === 100) {
+    readReceipt = '✔️✔️';
+  } else if (seenPercentage > 50) {
+    readReceipt = '✔️';
+  }
 
   useEffect(() => {
     if (!socket) return undefined;
@@ -73,19 +110,22 @@ const MessageCard = ({ message }: { message: DatabaseMessage }) => {
           )}
         </div>
         <div className='message-actions'>
+          <div className='reactions-container'>
+            <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
+            <div className='reactions'>
+              {reactions.map((emoji, index) => (
+                <span key={index}>{emoji}</span>
+              ))}
+            </div>
+          </div>
           {showEmojiPicker && (
             <div>
               <EmojiPicker onEmojiClick={handleAddReaction} />
             </div>
           )}
-          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
-          <div className='reactions'>
-            {reactions.map((emoji, index) => (
-              <span key={index}>{emoji}</span>
-            ))}
-          </div>
         </div>
       </div>
+      <div className='read-receipt'>{readReceipt}</div>
     </div>
   );
 };

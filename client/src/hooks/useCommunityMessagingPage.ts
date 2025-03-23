@@ -10,6 +10,7 @@ import {
 } from '../types/types';
 import { sendMessage } from '../services/chatService';
 import { getCommunityById } from '../services/communityService';
+import { markMessageAsSeen } from '../services/messageService';
 
 /**
  * Custom hook that handles the logic for the messaging page for the community.
@@ -27,7 +28,7 @@ const useCommunityMessagingPage = () => {
   const [communityChat, setCommunityChat] = React.useState<PopulatedDatabaseChat | null>(null);
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
-  const [typingUsers, setTypingUsers] = React.useState<string[]>([]); // Add typingUsers state
+  const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [useMarkdown, setUseMarkdown] = React.useState<boolean>(false);
 
@@ -77,36 +78,6 @@ const useCommunityMessagingPage = () => {
     fetchChatId();
   }, [id]);
 
-  const handleChatUpdate = (chatUpdate: ChatUpdatePayload) => {
-    const { chat, type } = chatUpdate;
-    switch (type) {
-      case 'newMessage': {
-        setCommunityChat(prevChat => {
-          if (!prevChat) return chat;
-
-          const existingMessageIds = new Set(prevChat.messages?.map(msg => msg._id));
-          const newMessages = chat.messages.filter(msg => !existingMessageIds.has(msg._id));
-
-          const updatedMessages = [...(prevChat.messages ?? []), ...newMessages];
-          setMessages(updatedMessages);
-
-          return {
-            ...prevChat,
-            messages: updatedMessages,
-          };
-        });
-        return;
-      }
-      case 'newParticipant': {
-        setCommunityChat(chat);
-        return;
-      }
-      default: {
-        setError('Invalid chat update type');
-      }
-    }
-  };
-
   useEffect(() => {
     if (!communityChat || !socket) return undefined;
     socket.emit('joinChat', String(communityChat._id));
@@ -119,15 +90,51 @@ const useCommunityMessagingPage = () => {
   useEffect(() => {
     if (!socket) return undefined;
 
-    const handleUpdate = (chatUpdate: ChatUpdatePayload) => {
-      handleChatUpdate(chatUpdate);
+    const handleChatUpdate = (chatUpdate: ChatUpdatePayload) => {
+      const { chat, type } = chatUpdate;
+      switch (type) {
+        case 'newMessage': {
+          setCommunityChat(prevChat => {
+            if (!prevChat) return chat;
+
+            const existingMessageIds = new Set(prevChat.messages?.map(msg => msg._id));
+            const newMessages = chat.messages.filter(msg => !existingMessageIds.has(msg._id));
+
+            const updatedMessages = [...(prevChat.messages ?? []), ...newMessages];
+            setMessages(updatedMessages);
+
+            return {
+              ...prevChat,
+              messages: updatedMessages,
+            };
+          });
+
+          chat.messages.forEach(async msg => {
+            await markMessageAsSeen(msg._id.toString(), user._id.toString());
+            socket.emit('messageSeen', {
+              messageId: msg._id.toString(),
+              seenBy: [user._id.toString()],
+              seenAt: new Date().toISOString(),
+            });
+          });
+
+          return;
+        }
+        case 'newParticipant': {
+          setCommunityChat(chat);
+          return;
+        }
+        default: {
+          setError('Invalid chat update type');
+        }
+      }
     };
 
-    socket.on('chatUpdate', handleUpdate);
+    socket.on('chatUpdate', handleChatUpdate);
     return () => {
-      socket.off('chatUpdate', handleUpdate);
+      socket.off('chatUpdate', handleChatUpdate);
     };
-  }, [socket]);
+  }, [socket, user._id]);
 
   /**
    * Handles sending a new message.

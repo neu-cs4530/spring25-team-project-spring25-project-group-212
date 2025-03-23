@@ -153,6 +153,8 @@ describe('populateDocument', () => {
             _id: 'userId',
             username: 'user1',
           },
+          seenBy: [],
+          useMarkdown: undefined,
         },
       ],
     });
