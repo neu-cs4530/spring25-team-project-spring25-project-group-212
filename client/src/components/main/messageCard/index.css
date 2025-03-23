@@ -38,10 +38,17 @@
   color: #333;
 }
 
-.message-actions {
+.reactions-container {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.message-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
 
 .emoji-button {
@@ -58,13 +65,9 @@
   color: #555;
 }
 
-.emoji-picker {
-  position: absolute;
-  right: 10px;
-  bottom: 40px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.read-receipt {
+  font-size: 0.9rem;
+  color: gray;
+  display: flex;
+  justify-content: flex-end;
 }

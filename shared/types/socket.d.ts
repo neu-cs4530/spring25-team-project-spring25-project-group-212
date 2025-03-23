@@ -100,6 +100,12 @@ export interface ReactionUpdatePayload {
   reactions?: { emoji: string; userId: string }[];
 }
 
+export interface ReadReceiptPayload {
+  messageId: string;
+  seenBy: string[];
+  seenAt: string;
+}
+
 /**
  * Interface representing the events the client can emit to the server.
  * - `makeMove`: Client can emit a move in the game.
@@ -122,6 +128,8 @@ export interface ClientToServerEvents {
   leaveCommunity: (communityID: string) => void;
   joinUser: (userId: string) => void;
   leaveUser: (userId: string) => void;
+  messageSeen: (payload: ReadReceiptPayload) => void;
+  requestUserCount: () => void;
 }
 
 /**
@@ -173,4 +181,6 @@ export interface ServerToClientEvents {
   typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
   notificationUpdate: (notification: NotificationUpdatePayload) => void;
+  readReceiptUpdate: (payload: ReadReceiptPayload) => void;
+  userCountUpdate: (count: number) => void;
 }

@@ -10,6 +10,7 @@ import {
 } from '../types/types';
 import { sendMessage } from '../services/chatService';
 import { getCommunityById } from '../services/communityService';
+import { markMessageAsSeen } from '../services/messageService';
 
 /**
  * Custom hook that handles the logic for the messaging page for the community.
@@ -27,7 +28,7 @@ const useCommunityMessagingPage = () => {
   const [communityChat, setCommunityChat] = React.useState<PopulatedDatabaseChat | null>(null);
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
-  const [typingUsers, setTypingUsers] = React.useState<string[]>([]); // Add typingUsers state
+  const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -94,6 +95,16 @@ const useCommunityMessagingPage = () => {
             messages: updatedMessages,
           };
         });
+
+        chat.messages.forEach(async msg => {
+          await markMessageAsSeen(msg._id.toString(), user._id.toString());
+          socket.emit('messageSeen', {
+            messageId: msg._id.toString(),
+            seenBy: [user._id.toString()],
+            seenAt: new Date().toISOString(),
+          });
+        });
+
         return;
       }
       case 'newParticipant': {

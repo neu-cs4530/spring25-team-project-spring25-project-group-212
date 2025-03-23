@@ -178,7 +178,11 @@ const CommunityPage = () => {
             <div className='chat-messages'>
               {communityChat?.messages && communityChat.messages.length > 0 ? (
                 communityChat.messages.map(message => (
-                  <MessageCard key={String(message._id)} message={message} />
+                  <MessageCard
+                    key={String(message._id)}
+                    message={message}
+                    totalUsers={currentCommunity?.members.length || 1}
+                  />
                 ))
               ) : (
                 <div>No messages yet.</div>

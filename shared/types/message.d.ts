@@ -39,6 +39,7 @@ export interface Message {
  */
 export interface DatabaseMessage extends Message {
   _id: ObjectId;
+  seenBy: ObjectId[];
 }
 
 /**

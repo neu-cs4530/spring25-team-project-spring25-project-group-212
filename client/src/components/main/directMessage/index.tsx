@@ -27,6 +27,7 @@ const DirectMessage = () => {
     error,
     useMarkdown,
     setUseMarkdown,
+    totalUsers,
   } = useDirectMessage();
 
   const [newChatName, setNewChatName] = useState('');
@@ -94,7 +95,11 @@ const DirectMessage = () => {
               <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
               <div className='chat-messages'>
                 {selectedChat.messages.map(message => (
-                  <MessageCard key={String(message._id)} message={message} />
+                  <MessageCard
+                    key={String(message._id)}
+                    message={message}
+                    totalUsers={totalUsers}
+                  />
                 ))}
               </div>
               <div className='message-input-container'>
