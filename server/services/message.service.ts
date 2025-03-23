@@ -35,6 +35,7 @@ export const saveMessage = async (message: Message): Promise<MessageResponse> =>
 export const getMessages = async (): Promise<DatabaseMessage[]> => {
   try {
     const messages: DatabaseMessage[] = await MessageModel.find({ type: 'global' })
+      .populate('msgFrom', 'username')
       .populate('reactions.userId', 'username')
       .lean();
 
@@ -153,5 +154,39 @@ export const getReactions = async (messageId: string) => {
     return message.reactions || [];
   } catch (error) {
     return { error: `Error fetching reactions: ${(error as Error).message}` };
+  }
+};
+
+export const markMessageAsSeen = async (
+  messageId: string,
+  userId: string,
+  socket: FakeSOSocket,
+) => {
+  try {
+    const message = await MessageModel.findById(messageId);
+
+    if (!message) {
+      throw new Error('Message not found');
+    }
+
+    const updatedMessage = await MessageModel.findByIdAndUpdate(
+      messageId,
+      { $addToSet: { seenBy: userId } },
+      { new: true },
+    );
+
+    if (!updatedMessage) {
+      throw new Error('Message not found after update');
+    }
+
+    socket.emit('readReceiptUpdate', {
+      messageId,
+      seenBy: updatedMessage.seenBy.map(id => id.toString()),
+      seenAt: new Date().toISOString(),
+    });
+
+    return updatedMessage;
+  } catch (error) {
+    return { error: `Error marking message as seen: ${(error as Error).message}` };
   }
 };

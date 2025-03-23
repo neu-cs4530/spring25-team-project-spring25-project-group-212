@@ -68,6 +68,7 @@ describe('Chat Controller', () => {
             },
             type: 'direct',
             useMarkdown: false,
+            seenBy: [],
           },
         ],
         createdAt: new Date(),
@@ -153,6 +154,7 @@ describe('Chat Controller', () => {
           _id: new mongoose.Types.ObjectId(),
           username: 'user1',
         },
+        seenBy: [],
       };
 
       const chatResponse: DatabaseChat = {
@@ -236,6 +238,7 @@ describe('Chat Controller', () => {
         msgDateTime: new Date(),
         type: 'direct',
         useMarkdown: false,
+        seenBy: [],
       });
 
       // 2) Mock `addMessageToChat` to return an error object
@@ -279,6 +282,7 @@ describe('Chat Controller', () => {
         _id: new mongoose.Types.ObjectId(),
         type: 'direct' as 'direct' | 'global',
         useMarkdown: false,
+        seenBy: [],
         ...messagePayload,
       };
 
@@ -362,6 +366,7 @@ describe('Chat Controller', () => {
             },
             type: 'direct',
             useMarkdown: false,
+            seenBy: [],
           },
         ],
         createdAt: new Date(),
