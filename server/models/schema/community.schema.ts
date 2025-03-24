@@ -13,6 +13,7 @@ import { Schema } from 'mongoose';
  * - `createdBy`: The username of the user who created the community.
  * - `createdAt`: The date and time when the community was created.
  * - `groupChatId`: The id of the community's group chat.
+ * - `pendingInvites`: Usernames of users that have invites for this community
  * TODO: NEED TO ADD:
  * - bulletin board
  * - visibility
@@ -53,6 +54,7 @@ const communitySchema: Schema = new Schema(
       type: [Schema.Types.ObjectId],
       required: true,
     },
+    pendingInvites: { type: [String], default: [], required: true },
   },
   { collection: 'Community', timestamps: true },
 );

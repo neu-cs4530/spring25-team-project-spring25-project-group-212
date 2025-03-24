@@ -33,6 +33,8 @@ const ProfileSettings: React.FC = () => {
     topVotedCount,
     topViewedQuestion,
     topViewedCount,
+
+    handleUserInvites,
   } = useProfileSettings();
 
   const navigate = useNavigate();
@@ -141,6 +143,14 @@ const ProfileSettings: React.FC = () => {
                 </div>
               )}
             </p>
+            {canEditProfile && (
+              <button
+                className='login-button'
+                style={{ marginTop: 20, marginLeft: 0 }}
+                onClick={handleUserInvites}>
+                View Community Invites
+              </button>
+            )}
 
             {/* ---- Reset Password Section ---- */}
             {canEditProfile && (

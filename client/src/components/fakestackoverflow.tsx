@@ -23,6 +23,8 @@ import NewQuestionInCommunityPage from './main/communityPage/newQuestionInCommun
 import CommunitiesListPage from './main/communitiesListPage';
 import StatisticsPage from './main/statisticsPage';
 import BulletinBoardPage from './main/communityPage/bulletinBoardPage';
+import UserCommunityInvitesPage from './profileSettings/userCommunityInvitesPage';
+import CommunityInvitesPage from './main/communityPage/communityInvitesPage';
 
 const ProtectedRoute = ({
   user,
@@ -78,6 +80,8 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
             <Route path='/communityList' element={<CommunitiesListPage />} />
             <Route path='/statistics' element={<StatisticsPage />} />
             <Route path='/community/:id/bulletinBoard' element={<BulletinBoardPage />} />
+            <Route path='/user/:username/communityInvites' element={<UserCommunityInvitesPage />} />
+            <Route path='/community/:id/invites' element={<CommunityInvitesPage />} />
           </Route>
         }
       </Routes>
