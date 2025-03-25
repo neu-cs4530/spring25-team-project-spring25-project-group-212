@@ -37,6 +37,7 @@ export const getMessages = async (): Promise<DatabaseMessage[]> => {
     const messages: DatabaseMessage[] = await MessageModel.find({ type: 'global' })
       .populate('msgFrom', 'username')
       .populate('reactions.userId', 'username')
+      .populate('deletedAt', 'deletedMessage')
       .lean();
 
     messages.sort((a, b) => a.msgDateTime.getTime() - b.msgDateTime.getTime());
@@ -188,5 +189,69 @@ export const markMessageAsSeen = async (
     return updatedMessage;
   } catch (error) {
     return { error: `Error marking message as seen: ${(error as Error).message}` };
+  }
+};
+
+export const deleteMessage = async (messageId: string, username: string, socket: FakeSOSocket) => {
+  try {
+    const message = await MessageModel.findById(messageId);
+
+    if (!message) {
+      throw new Error('Message not found');
+    }
+    if (message.msgFrom !== username) {
+      throw new Error('You can only delete your own messages');
+    }
+
+    const updatedMessage = await MessageModel.findByIdAndUpdate(
+      messageId,
+      {
+        deletedAt: new Date(),
+        deletedMessage: message.msg,
+        msg: 'Message has been deleted',
+      },
+      { new: true },
+    );
+
+    socket.emit('messageDeleted', { messageId, deletedMessage: updatedMessage?.msg });
+
+    return updatedMessage;
+  } catch (error) {
+    return { error: `Error deleting message: ${(error as Error).message}` };
+  }
+};
+
+export const restoreMessage = async (messageId: string, socket: FakeSOSocket) => {
+  try {
+    const message = await MessageModel.findById(messageId);
+
+    if (!message || !message.deletedAt) {
+      throw new Error('Message not found or not deleted');
+    }
+
+    const elapsedTime = (new Date().getTime() - new Date(message.deletedAt).getTime()) / 60000;
+    if (elapsedTime > 15) {
+      throw new Error('Restoration window expired');
+    }
+
+    const updatedMessage = await MessageModel.findByIdAndUpdate(
+      messageId,
+      {
+        msg: message.deletedMessage || '',
+        deletedMessage: null,
+        deletedAt: null,
+      },
+      { new: true },
+    );
+
+    if (!updatedMessage) {
+      throw new Error('Message not found after update');
+    }
+
+    socket.emit('messageRestored', { updatedMessage });
+
+    return updatedMessage;
+  } catch (error) {
+    return { error: `Error restoring message: ${(error as Error).message}` };
   }
 };

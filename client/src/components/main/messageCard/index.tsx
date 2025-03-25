@@ -3,7 +3,13 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
 import { DatabaseMessage, ReactionUpdatePayload, ReadReceiptPayload } from '../../../types/types';
-import { addReaction, getReactions, markMessageAsSeen } from '../../../services/messageService';
+import {
+  addReaction,
+  getReactions,
+  markMessageAsSeen,
+  deleteMessage,
+  restoreMessage,
+} from '../../../services/messageService';
 import useUserContext from '../../../hooks/useUserContext';
 import { getMetaData } from '../../../tool';
 
@@ -18,7 +24,14 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [reactions, setReactions] = useState<string[]>([]);
   const [seenBy, setSeenBy] = useState<string[]>([]);
+  const [delMessage, setDelMessage] = useState<DatabaseMessage>(message);
   const { user: currentUser, socket } = useUserContext();
+
+  console.log('is there a deleted at?', message.deletedAt);
+
+  useEffect(() => {
+    setDelMessage(message);
+  }, [message]);
 
   useEffect(() => {
     const fetchReactions = async () => {
@@ -79,6 +92,8 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
     readReceipt = '✔️';
   }
 
+  // console.log('Read receipt', readReceipt, seenPercentage, seenBy.length, totalUsers);
+
   useEffect(() => {
     if (!socket) return undefined;
 
@@ -95,6 +110,84 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
     };
   }, [socket, message._id]);
 
+  const handleDeleteMessage = async () => {
+    try {
+      console.log('Message id is', message._id.toString());
+      console.log('username', currentUser.username);
+      const updatedMessage = await deleteMessage(message._id.toString(), currentUser.username);
+      // setDeletedAt(updatedMessage.deletedAt);
+      setDelMessage(updatedMessage.deletedMessage);
+      console.log('The del message is', delMessage);
+    } catch (error) {
+      throw Error('Error deleting message');
+    }
+  };
+
+  // useEffect(() => {
+  //   if (!socket) return undefined;
+
+  //   socket.on('messageDeleted', handleDeleteMessage);
+
+  //   return () => {
+  //     socket.off('messageDeleted', handleDeleteMessage);
+  //   };
+  // }, [handleDeleteMessage, socket]);
+
+  const handleRestoreMessage = async () => {
+    console.log('Entering restore');
+    if (!delMessage.deletedAt) return;
+
+    console.log('Restore message of del message', delMessage);
+
+    const elapsedTime = (new Date().getTime() - new Date(delMessage.deletedAt).getTime()) / 60000;
+    if (elapsedTime > 15) {
+      alert('Restoration window expired.');
+      return;
+    }
+
+    console.log('Elapsed time', elapsedTime);
+
+    try {
+      const updatedMessage = await restoreMessage(delMessage._id.toString());
+      // setDeletedAt(null);
+      console.log('Updated restored message', updatedMessage.restoredMessage);
+      setDelMessage(updatedMessage.restoredMessage);
+    } catch (error) {
+      throw Error('Error restoring message');
+    }
+  };
+
+  // useEffect(() => {
+  //   if (!socket) return undefined;
+
+  //   socket.on('messageRestored', handleRestoreMessage);
+
+  //   return () => {
+  //     socket.off('messageRestored', handleRestoreMessage);
+  //   };
+  // }, [handleRestoreMessage, socket]);
+
+  useEffect(() => {
+    console.log('Updated mmmm');
+    // setDeletedAt(delMessage.deletedAt || null);
+    setDelMessage(delMessage);
+    // console.log('Updated madam:', deletedAt);
+  }, [delMessage]);
+
+  let messageContent;
+  // console.log('The message deleted at frontend', delMessage.deletedMessage);
+  console.log('delMessage.deletedAt', delMessage.deletedAt);
+  if (delMessage.deletedAt || message.deletedAt) {
+    messageContent = <p className='deleted-message'>Message has been deleted</p>;
+  } else if ('useMarkdown' in message && message.useMarkdown) {
+    messageContent = <ReactMarkdown>{delMessage.msg}</ReactMarkdown>;
+  } else {
+    messageContent = <p>{delMessage.msg}</p>;
+  }
+
+  console.log('Message object', message);
+  console.log('Del message', delMessage);
+
   return (
     <div className='message'>
       <div className='message-header'>
@@ -102,13 +195,7 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
         <div className='message-time'>{getMetaData(new Date(message.msgDateTime))}</div>
       </div>
       <div className='message-content'>
-        <div className='message-body'>
-          {'useMarkdown' in message && message.useMarkdown ? (
-            <ReactMarkdown>{message.msg}</ReactMarkdown>
-          ) : (
-            <p>{message.msg}</p>
-          )}
-        </div>
+        <div className='message-body'>{messageContent}</div>
         <div className='message-actions'>
           <div className='reactions-container'>
             <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
@@ -122,6 +209,19 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
             <div>
               <EmojiPicker onEmojiClick={handleAddReaction} />
             </div>
+          )}
+          {message.msgFrom === currentUser.username && (
+            <>
+              {!delMessage.deletedAt ? (
+                <button className='delete-btn' onClick={handleDeleteMessage}>
+                  Delete
+                </button>
+              ) : (
+                <button className='restore-btn' onClick={handleRestoreMessage}>
+                  Restore
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
