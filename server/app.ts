@@ -20,6 +20,7 @@ import chatController from './controllers/chat.controller';
 import gameController from './controllers/game.controller';
 import communityController from './controllers/community.controller';
 import notificationController from './controllers/notification.controller';
+import emailController from './controllers/email.controller';
 
 dotenv.config();
 
@@ -89,3 +90,11 @@ app.use('/notification', notificationController(socket));
 
 // Export the app instance
 export { app, server, startServer };
+
+const cron = require('node-cron');
+const { handleSendDigestEmail } = emailController();
+
+cron.schedule('0 8 * * *', async () => {
+  console.log('Running a task every minute');
+  await handleSendDigestEmail();
+});
