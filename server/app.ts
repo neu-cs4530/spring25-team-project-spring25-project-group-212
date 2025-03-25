@@ -94,7 +94,9 @@ export { app, server, startServer };
 const cron = require('node-cron');
 const { handleSendDigestEmail } = emailController();
 
-cron.schedule('0 8 * * *', async () => {
-  console.log('Running a task every minute');
-  await handleSendDigestEmail();
-});
+if (process.env.NODE_ENV !== 'test') {
+  cron.schedule('0 8 * * *', async () => {
+    console.log('Running a task every minute');
+    await handleSendDigestEmail();
+  });
+}
