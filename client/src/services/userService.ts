@@ -45,7 +45,6 @@ const createUser = async (user: UserCredentials): Promise<SafeDatabaseUser> => {
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(`Error while signing up: ${error.response.data}`);
     } else {
-      console.log('didnt work');
       throw new Error('Error while signing up');
     }
   }
