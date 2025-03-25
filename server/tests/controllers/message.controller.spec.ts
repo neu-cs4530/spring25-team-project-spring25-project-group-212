@@ -21,6 +21,7 @@ describe('POST /addMessage', () => {
 
     const message: DatabaseMessage = {
       ...requestMessage,
+      seenBy: [],
       _id: validId,
     };
 
@@ -38,6 +39,7 @@ describe('POST /addMessage', () => {
       msgDateTime: message.msgDateTime.toISOString(),
       type: 'global',
       useMarkdown: false,
+      seenBy: [],
     });
   });
 
@@ -181,11 +183,13 @@ describe('GET /getMessages', () => {
 
     const dbMessage1: DatabaseMessage = {
       ...message1,
+      seenBy: [],
       _id: new mongoose.Types.ObjectId(),
     };
 
     const dbMessage2: DatabaseMessage = {
       ...message2,
+      seenBy: [],
       _id: new mongoose.Types.ObjectId(),
     };
 

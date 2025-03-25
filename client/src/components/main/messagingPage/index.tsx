@@ -15,6 +15,7 @@ const MessagingPage = () => {
     error,
     useMarkdown,
     setUseMarkdown,
+    totalUsers,
   } = useMessagingPage();
 
   return (
@@ -24,7 +25,7 @@ const MessagingPage = () => {
       </div>
       <div className='chat-messages'>
         {messages.map(message => (
-          <MessageCard key={String(message._id)} message={message} />
+          <MessageCard key={String(message._id)} message={message} totalUsers={totalUsers} />
         ))}
       </div>
       <div className='message-input'>

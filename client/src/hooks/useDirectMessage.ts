@@ -29,10 +29,21 @@ const useDirectMessage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [useMarkdown, setUseMarkdown] = useState<boolean>(false);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
 
   const handleJoinChat = (chatID: ObjectId) => {
     socket.emit('joinChat', String(chatID));
   };
+
+  useEffect(() => {
+    socket.on('userCountUpdate', (userCount: number) => {
+      setTotalUsers(userCount);
+    });
+
+    return () => {
+      socket.off('userCountUpdate');
+    };
+  }, [socket]);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() && selectedChat?._id) {
@@ -165,6 +176,7 @@ const useDirectMessage = () => {
     error,
     useMarkdown,
     setUseMarkdown,
+    totalUsers,
   };
 };
 

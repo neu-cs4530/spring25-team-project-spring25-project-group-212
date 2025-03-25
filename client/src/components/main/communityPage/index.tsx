@@ -20,6 +20,8 @@ const CommunityPage = () => {
     handleSendMessage,
     handleTyping,
     typingUsers,
+    useMarkdown,
+    setUseMarkdown,
   } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
@@ -178,7 +180,11 @@ const CommunityPage = () => {
             <div className='chat-messages'>
               {communityChat?.messages && communityChat.messages.length > 0 ? (
                 communityChat.messages.map(message => (
-                  <MessageCard key={String(message._id)} message={message} />
+                  <MessageCard
+                    key={String(message._id)}
+                    message={message}
+                    totalUsers={currentCommunity?.members.length || 1}
+                  />
                 ))
               ) : (
                 <div>No messages yet.</div>
@@ -210,6 +216,13 @@ const CommunityPage = () => {
                 </button>
                 <button className='custom-button' onClick={handleSendMessage}>
                   Send
+                </button>
+                <button
+                  type='button'
+                  className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                  onClick={() => setUseMarkdown(!useMarkdown)}
+                  title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                  MD
                 </button>
               </div>
 
