@@ -53,7 +53,7 @@ const userController = (socket: FakeSOSocket) => {
     if (req.body === undefined || req.body.username === undefined) return false;
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(req.body.email) || req.body.email === '';
-  }
+  };
 
   /**
    * Handles the creation of a new user account.
