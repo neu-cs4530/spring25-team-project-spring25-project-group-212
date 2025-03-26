@@ -227,7 +227,7 @@ const CommunityPage = () => {
               </div>
 
               {showEmojiPicker && (
-                <div className='emoji-picker-container'>
+                <div style={{ height: '300px', overflowY: 'auto' }}>
                   <EmojiPicker onEmojiClick={handleEmojiSelect} />
                 </div>
               )}
