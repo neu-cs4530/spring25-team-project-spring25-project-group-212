@@ -11,7 +11,7 @@ import {
   PopulatedDatabaseChat,
   DatabaseCommunity,
   AddQuestionToCommunityRequest,
-  UserJoinCommunityRequest,
+  UserCommunityRequest,
   UpdateCommunityNameAboutRulesRequest,
 } from '../types/types';
 import {
@@ -201,7 +201,7 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
-  const joinCommunity = async (req: UserJoinCommunityRequest, res: Response): Promise<void> => {
+  const joinCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
     try {
       const communityId: string = req.params.id;
       const { username } = req.body;
@@ -251,6 +251,60 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  const inviteUserToCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
+    try {
+      const communityId = req.params.id;
+      const { username } = req.body;
+
+      const community = await getCommunityById(communityId);
+      if ('error' in community) {
+        throw new Error(community.error);
+      }
+
+      if (community.members.includes(username)) {
+        throw new Error('User already in community');
+      }
+
+      if (community.pendingInvites.includes(username)) {
+        throw new Error('User already invited to community');
+      }
+
+      const updatedPendingInvites: string[] = [...community.pendingInvites, username];
+      const updatedCommunity = await updateCommunity(communityId, {
+        pendingInvites: updatedPendingInvites,
+      });
+      res.status(200).send(updatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error when inviting user to community: ${(err as Error).message}`);
+    }
+  };
+
+  const removeInvite = async (req: UserCommunityRequest, res: Response): Promise<void> => {
+    try {
+      const communityId = req.params.id;
+      const { username } = req.body;
+      const community = await getCommunityById(communityId);
+      if ('error' in community) {
+        throw new Error(community.error);
+      }
+
+      if (!community.pendingInvites.includes(username)) {
+        throw new Error('No pending invites for this user');
+      }
+
+      // get all invites except for the one that contains the given username (removing it)
+      const updatedPendingInvites: string[] = community.pendingInvites.filter(u => u !== username);
+      const updatedCommunity = await updateCommunity(communityId, {
+        pendingInvites: updatedPendingInvites,
+      });
+      res.status(200).send(updatedCommunity);
+    } catch (err: unknown) {
+      res
+        .status(500)
+        .send(`Error when handling declined invite to community: ${(err as Error).message}`);
+    }
+  };
+
   socket.on('connection', conn => {
     conn.on('joinCommunity', (communityID: string) => {
       conn.join(communityID);
@@ -270,6 +324,8 @@ const communityController = (socket: FakeSOSocket) => {
   router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
   router.post('/join/:id', joinCommunity);
   router.patch('/updateCommunityNameAboutRules/:id', updateCommunityNameAboutRules);
+  router.patch('/inviteUserToCommunity/:id', inviteUserToCommunity);
+  router.patch('/removeInvite/:id', removeInvite);
 
   return router;
 };

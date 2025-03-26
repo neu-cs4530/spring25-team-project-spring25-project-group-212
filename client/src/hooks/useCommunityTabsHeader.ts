@@ -39,9 +39,14 @@ const useCommunityTabsHeader = () => {
     navigate(`/community/${id}/bulletinBoard`);
   };
 
+  const handleInvitesTabClick = async () => {
+    navigate(`/community/${id}/invites`);
+  };
+
   return {
     handleQuestionsAndChatTabClick,
     handleBulletinBoardTabClick,
+    handleInvitesTabClick,
     community,
     error,
   };
