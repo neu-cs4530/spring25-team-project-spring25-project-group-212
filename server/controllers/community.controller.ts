@@ -22,11 +22,15 @@ import {
   saveQuestionToCommunity,
   joinCommunityService,
   updateCommunity,
+  addOnlineUser,
+  removeOnlineUser,
+  getOnlineUsers,
 } from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
+  const onlineUsers: Record<string, Set<string>> = {};
 
   /**
    * Validates that the request body contains all required fields for a community.
@@ -252,16 +256,30 @@ const communityController = (socket: FakeSOSocket) => {
   };
 
   socket.on('connection', conn => {
-    conn.on('joinCommunity', (communityID: string) => {
+    conn.on('joinCommunity', (communityID: string, username: string) => {
       conn.join(communityID);
+      addOnlineUser(communityID, username);
+      socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
     });
 
-    conn.on('leaveCommunity', (communityID: string | undefined) => {
-      if (communityID !== undefined) {
+    conn.on('leaveCommunity', (communityID: string, username: string) => {
+      if (communityID) {
         conn.leave(communityID);
+        removeOnlineUser(communityID, username);
+        socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
       }
     });
   });
+
+  const getOnlineUsersForCommunity = async (req: Request, res: Response): Promise<void> => {
+    const communityID = req.params.id;
+    try {
+      const onlineUsersList = getOnlineUsers(communityID);
+      res.status(200).json({ onlineUsers: onlineUsersList });
+    } catch (err: unknown) {
+      res.status(500).send(`Error while retrieving online users: ${(err as Error).message}`);
+    }
+  };
 
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
@@ -270,6 +288,7 @@ const communityController = (socket: FakeSOSocket) => {
   router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
   router.post('/join/:id', joinCommunity);
   router.patch('/updateCommunityNameAboutRules/:id', updateCommunityNameAboutRules);
+  router.get('/onlineUsers/:id', getOnlineUsersForCommunity);
 
   return router;
 };

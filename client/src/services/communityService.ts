@@ -106,6 +106,14 @@ const updateCommunityNameAboutRules = async (
   return res.data;
 };
 
+const getOnlineUsersForCommunity = async (id: string): Promise<{ onlineUsers: string[] }> => {
+  const res = await api.get(`${COMMUNITY_API_URL}/onlineUsers/${id}`);
+  if (res.status !== 200) {
+    throw new Error('Error while fetching online users');
+  }
+  return res.data;
+};
+
 export {
   getCommunities,
   getCommunityById,
@@ -114,4 +122,5 @@ export {
   addQuestionToCommunity,
   joinCommunity,
   updateCommunityNameAboutRules,
+  getOnlineUsersForCommunity,
 };
