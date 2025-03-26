@@ -30,7 +30,6 @@ import { populateDocument } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
-  const onlineUsers: Record<string, Set<string>> = {};
 
   /**
    * Validates that the request body contains all required fields for a community.
