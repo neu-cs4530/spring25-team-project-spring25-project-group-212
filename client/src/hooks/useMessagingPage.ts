@@ -19,6 +19,19 @@ const useMessagingPage = () => {
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
   const [useMarkdown, setUseMarkdown] = React.useState<boolean>(false);
+  const [totalUsers, setTotalUsers] = React.useState<number>(0);
+
+  useEffect(() => {
+    const handleUserCountUpdate = (count: number) => {
+      setTotalUsers(count);
+    };
+
+    socket.on('userCountUpdate', handleUserCountUpdate);
+
+    return () => {
+      socket.off('userCountUpdate', handleUserCountUpdate);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -74,6 +87,7 @@ const useMessagingPage = () => {
     error,
     useMarkdown,
     setUseMarkdown,
+    totalUsers,
   };
 };
 

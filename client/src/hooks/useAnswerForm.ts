@@ -4,6 +4,10 @@ import { validateHyperlink } from '../tool';
 import addAnswer from '../services/answerService';
 import useUserContext from './useUserContext';
 import { Answer } from '../types/types';
+import { createAnswerNotification } from '../services/notificationService';
+import api from '../services/config';
+
+const QUESTION_API_URL = `${process.env.REACT_APP_SERVER_URL}/question`;
 
 /**
  * Custom hook for managing the state and logic of an answer submission form.
@@ -65,11 +69,30 @@ const useAnswerForm = () => {
       useMarkdown,
     };
 
-    const res = await addAnswer(questionID, answer);
+    try {
+      const res = await addAnswer(questionID, answer);
+      if (res && res._id) {
+        // Get the question to find the owner's username
+        const questionRes = await api.get(
+          `${QUESTION_API_URL}/getQuestionById/${questionID}?username=${user.username}`,
+        );
+        if (questionRes.status === 200) {
+          const question = questionRes.data;
+          // Create notification for the question owner
+          await createAnswerNotification(
+            questionID,
+            res._id.toString(),
+            user.username,
+            question.askedBy,
+            `${user.username} answered your question`,
+          );
+        }
 
-    if (res && res._id) {
-      // navigate to the question that was answered
-      navigate(`/question/${questionID}`);
+        // navigate to the question that was answered
+        navigate(`/question/${questionID}`);
+      }
+    } catch (error) {
+      setTextErr('Failed to post answer. Please try again.');
     }
   };
 
