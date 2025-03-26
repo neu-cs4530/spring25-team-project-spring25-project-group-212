@@ -3,6 +3,7 @@ export * from './chat';
 export * from './comment';
 export * from './game';
 export * from './message';
+export * from './notification';
 export * from './question';
 export * from './socket';
 export * from './tag';

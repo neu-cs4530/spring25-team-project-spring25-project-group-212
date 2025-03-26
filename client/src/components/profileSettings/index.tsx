@@ -9,6 +9,8 @@ const ProfileSettings: React.FC = () => {
     loading,
     editBioMode,
     newBio,
+    editEmailMode,
+    newEmail,
     newPassword,
     confirmNewPassword,
     successMessage,
@@ -19,14 +21,17 @@ const ProfileSettings: React.FC = () => {
     showPassword,
     togglePasswordVisibility,
 
+    setEditEmailMode,
     setEditBioMode,
     setNewBio,
+    setNewEmail,
     setNewPassword,
     setConfirmNewPassword,
     setShowConfirmation,
 
     handleResetPassword,
     handleUpdateBiography,
+    handleUpdateEmail,
     handleDeleteUser,
 
     topVotedQuestion,
@@ -81,7 +86,8 @@ const ProfileSettings: React.FC = () => {
             )}
 
             {editBioMode && canEditProfile && (
-              <div style={{ margin: '1rem 0' }}>
+              <p style={{ margin: '1rem 0' }}>
+                <strong>Biography:</strong>
                 <input
                   className='input-text'
                   type='text'
@@ -100,7 +106,52 @@ const ProfileSettings: React.FC = () => {
                   onClick={() => setEditBioMode(false)}>
                   Cancel
                 </button>
-              </div>
+              </p>
+            )}
+
+            {!editEmailMode && canEditProfile && (
+              <p>
+                <strong>Email:</strong> {userData.email || 'No email provided.'}
+                {canEditProfile && (
+                  <button
+                    className='login-button'
+                    style={{ marginLeft: '1rem' }}
+                    onClick={() => {
+                      setEditEmailMode(true);
+                      setNewEmail(userData.email || '');
+                    }}>
+                    Edit
+                  </button>
+                )}
+              </p>
+            )}
+
+            {editEmailMode && canEditProfile && (
+              <p style={{ margin: '1rem 0' }}>
+                <strong>Email:</strong>
+                <input
+                  className='input-text'
+                  type='text'
+                  value={newEmail}
+                  onChange={e => setNewEmail(e.target.value)}
+                />
+                <div>
+                  By providing your email you agree to receiving daily emails from
+                  Fake-Stack-Overflow
+                </div>
+                <button
+                  className='login-button'
+                  style={{ marginLeft: '1rem' }}
+                  onClick={handleUpdateEmail}>
+                  Save
+                </button>
+                <button
+                  className='delete-button'
+                  style={{ marginLeft: '1rem' }}
+                  onClick={() => setEditEmailMode(false)}>
+                  Cancel
+                </button>
+              </p>
             )}
 
             <p>

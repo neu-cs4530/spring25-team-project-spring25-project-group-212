@@ -5,6 +5,7 @@ import { PopulatedDatabaseQuestion } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
 import { PopulatedDatabaseCommunity } from './community';
+import { DatabaseNotification } from './notification';
 
 /**
  * Payload for an answer update event.
@@ -99,6 +100,12 @@ export interface ReactionUpdatePayload {
   reactions?: { emoji: string; userId: string }[];
 }
 
+export interface ReadReceiptPayload {
+  messageId: string;
+  seenBy: string[];
+  seenAt: string;
+}
+
 /**
  * Interface representing the events the client can emit to the server.
  * - `makeMove`: Client can emit a move in the game.
@@ -106,6 +113,8 @@ export interface ReactionUpdatePayload {
  * - `leaveGame`: Client can leave a game.
  * - `joinChat`: Client can join a chat.
  * - `leaveChat`: Client can leave a chat.
+ * - `joinUser`: Client can join a user.
+ * - `leaveUser`: Client can leave a user.
  */
 export interface ClientToServerEvents {
   makeMove: (move: GameMovePayload) => void;
@@ -115,8 +124,12 @@ export interface ClientToServerEvents {
   leaveChat: (chatID: string | undefined) => void;
   userTyping: (username: string) => void;
   userStoppedTyping: (username: string) => void;
-  joinCommunity: (communityID: string) => void;
-  leaveCommunity: (communityID: string) => void;
+  joinCommunity: (communityID: string, username: string) => void;
+  leaveCommunity: (communityID: string, username: string) => void;
+  joinUser: (userId: string) => void;
+  leaveUser: (userId: string) => void;
+  messageSeen: (payload: ReadReceiptPayload) => void;
+  requestUserCount: () => void;
 }
 
 /**
@@ -127,6 +140,22 @@ export interface ClientToServerEvents {
 export interface CommunityUpdatePayload {
   community: PopulatedDatabaseCommunity;
   type: 'created' | 'deleted' | 'updated';
+}
+
+/**
+ * Payload for a notification update event.
+ * - `notification`: The updated notification object.
+ */
+export interface NotificationUpdatePayload {
+  notification: DatabaseNotification;
+}
+
+/**
+ * Payload for an online users update event.
+ * - `users`: An array of usernames representing the online users.
+ */
+export interface OnlineUsersUpdatePayload {
+  users: string[];
 }
 
 /**
@@ -141,6 +170,12 @@ export interface CommunityUpdatePayload {
  * - `gameUpdate`: Server sends updated game state.
  * - `gameError`: Server sends error message related to game operation.
  * - `chatUpdate`: Server sends updated chat.
+ * - `typingUpdate`: Server sends updated typing users.
+ * - `communityUpdate`: Server sends updated community.
+ * - `notificationUpdate`: Server sends updated notification.
+ * - `readReceiptUpdate`: Server sends updated read receipt for a message.
+ * - `userCountUpdate`: Server sends updated user count.
+ * - `onlineUsersUpdate`: Server sends the list of online users.
  */
 export interface ServerToClientEvents {
   questionUpdate: (question: PopulatedDatabaseQuestion) => void;
@@ -156,4 +191,8 @@ export interface ServerToClientEvents {
   reactionUpdate: (payload: ReactionUpdatePayload) => void;
   typingUpdate: (typingUsers: string[]) => void;
   communityUpdate: (community: CommunityUpdatePayload) => void;
+  notificationUpdate: (notification: NotificationUpdatePayload) => void;
+  readReceiptUpdate: (payload: ReadReceiptPayload) => void;
+  userCountUpdate: (count: number) => void;
+  onlineUsersUpdate: (payload: OnlineUsersUpdatePayload) => void;
 }
