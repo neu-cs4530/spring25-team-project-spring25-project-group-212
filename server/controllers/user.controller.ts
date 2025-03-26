@@ -308,17 +308,14 @@ const userController = (socket: FakeSOSocket) => {
         return;
       }
 
-      // Validate that request has username and biography
       const { username, email } = req.body;
 
-      // Call the same updateUser(...) service used by resetPassword
       const updatedUser = await updateUser(username, { email });
 
       if ('error' in updatedUser) {
         throw new Error(updatedUser.error);
       }
 
-      // Emit socket event for real-time updates
       socket.emit('userUpdate', {
         user: updatedUser,
         type: 'updated',

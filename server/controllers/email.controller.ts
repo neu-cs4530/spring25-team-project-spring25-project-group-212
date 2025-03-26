@@ -51,7 +51,6 @@ const emailController = () => {
       if (category === 'voted') {
         currentValue = question.upVotes.length - question.downVotes.length;
       } else {
-        // 'viewed'
         currentValue = question.views.length;
       }
 

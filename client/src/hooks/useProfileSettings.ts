@@ -176,14 +176,12 @@ const useProfileSettings = () => {
   const handleUpdateEmail = async () => {
     if (!username) return;
     try {
-      // Await the async call to update the email
       const updatedUser = await updateEmail(username, newEmail);
 
-      // Ensure state updates occur sequentially after the API call completes
       await new Promise(resolve => {
-        setUserData(updatedUser); // Update the user data
-        setEditEmailMode(false); // Exit edit mode
-        resolve(null); // Resolve the promise
+        setUserData(updatedUser);
+        setEditEmailMode(false);
+        resolve(null);
       });
 
       setSuccessMessage('Email updated!');
