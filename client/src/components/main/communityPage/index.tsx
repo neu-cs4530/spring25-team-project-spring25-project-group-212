@@ -6,7 +6,7 @@ import MessageCard from '../messageCard';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
-import { joinCommunity } from '../../../services/communityService';
+import { getOnlineUsersForCommunity, joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import { renameChat } from '../../../services/chatService';
 import './index.css';
@@ -26,6 +26,7 @@ const CommunityPage = () => {
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const {
     community,
@@ -41,20 +42,41 @@ const CommunityPage = () => {
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
 
-  const { user } = useUserContext();
+  const { user, socket } = useUserContext();
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
 
   useEffect(() => {
-    if (currentCommunity && user) {
-      joinCommunity(currentCommunity._id.toString(), user.username);
-    }
-  }, [currentCommunity, user]);
+    if (!currentCommunity || !user || !socket) return undefined;
+
+    socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
+    joinCommunity(currentCommunity._id.toString(), user.username);
+
+    return () => {
+      socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
+    };
+  }, [currentCommunity, user, socket]);
 
   useEffect(() => {
     if (community?.groupChat?.name) {
       setChatName(community.groupChat.name);
     }
   }, [community]);
+
+  useEffect(() => {
+    if (!socket || !currentCommunity) {
+      return undefined;
+    }
+
+    const updateOnlineUsers = async () => {
+      const data = await getOnlineUsersForCommunity(currentCommunity._id.toString());
+      setOnlineUsers(data.onlineUsers);
+    };
+
+    socket.on('onlineUsersUpdate', updateOnlineUsers);
+    return () => {
+      socket.off('onlineUsersUpdate', updateOnlineUsers);
+    };
+  }, [socket, currentCommunity]);
 
   const handleEmojiSelect = (emojiObject: { emoji: string }) => {
     setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
@@ -158,6 +180,16 @@ const CommunityPage = () => {
             <div className='bold_title right_padding'>No Questions Found</div>
           )}
         </div>
+
+        <div className='online-users'>
+          <strong>Online Users:</strong>
+          <ul>
+            {onlineUsers.map((username, index) => (
+              <li key={index}>{username}</li>
+            ))}
+          </ul>
+        </div>
+
         <div className='rename-chat'>
           <input
             className='custom-input'
@@ -174,7 +206,6 @@ const CommunityPage = () => {
           <strong>Current Chat Name: </strong>
           {chatName}
         </p>
-
         <div className='direct-message-container'>
           <div id='community-chat' className='chat-container'>
             <div className='chat-messages'>

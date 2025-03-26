@@ -124,8 +124,8 @@ export interface ClientToServerEvents {
   leaveChat: (chatID: string | undefined) => void;
   userTyping: (username: string) => void;
   userStoppedTyping: (username: string) => void;
-  joinCommunity: (communityID: string) => void;
-  leaveCommunity: (communityID: string) => void;
+  joinCommunity: (communityID: string, username: string) => void;
+  leaveCommunity: (communityID: string, username: string) => void;
   joinUser: (userId: string) => void;
   leaveUser: (userId: string) => void;
   messageSeen: (payload: ReadReceiptPayload) => void;
@@ -151,6 +151,14 @@ export interface NotificationUpdatePayload {
 }
 
 /**
+ * Payload for an online users update event.
+ * - `users`: An array of usernames representing the online users.
+ */
+export interface OnlineUsersUpdatePayload {
+  users: string[];
+}
+
+/**
  * Interface representing the events the server can emit to the client.
  * - `questionUpdate`: Server sends updated question.
  * - `answerUpdate`: Server sends updated answer.
@@ -165,6 +173,9 @@ export interface NotificationUpdatePayload {
  * - `typingUpdate`: Server sends updated typing users.
  * - `communityUpdate`: Server sends updated community.
  * - `notificationUpdate`: Server sends updated notification.
+ * - `readReceiptUpdate`: Server sends updated read receipt for a message.
+ * - `userCountUpdate`: Server sends updated user count.
+ * - `onlineUsersUpdate`: Server sends the list of online users.
  */
 export interface ServerToClientEvents {
   questionUpdate: (question: PopulatedDatabaseQuestion) => void;
@@ -183,4 +194,5 @@ export interface ServerToClientEvents {
   notificationUpdate: (notification: NotificationUpdatePayload) => void;
   readReceiptUpdate: (payload: ReadReceiptPayload) => void;
   userCountUpdate: (count: number) => void;
+  onlineUsersUpdate: (payload: OnlineUsersUpdatePayload) => void;
 }
