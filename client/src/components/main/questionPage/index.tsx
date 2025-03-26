@@ -32,7 +32,7 @@ const QuestionPage = () => {
       <Popup open={emailPopUpOpen} onClose={() => setEmailPopUpOpen(false)}>
         <div className='email_popup'>
           <h2>Your Email is missing!</h2>
-          <div>Add youre email to receive daily emails from Fake Stack Overflow</div>
+          <div>Add your email to receive daily emails from Fake Stack Overflow</div>
           <button className='btn' onClick={() => setEmailPopUpOpen(false)}>
             Ignore
           </button>
