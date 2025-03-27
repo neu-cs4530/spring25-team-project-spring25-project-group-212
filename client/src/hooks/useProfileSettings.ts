@@ -213,6 +213,14 @@ const useProfileSettings = () => {
     });
   };
 
+  /**
+   * Handler for navigating to invites list page
+   */
+  const handleUserInvites = () => {
+    if (!username) return;
+    navigate(`/user/${username}/communityInvites`);
+  };
+
   return {
     userData,
     newPassword,
@@ -245,6 +253,7 @@ const useProfileSettings = () => {
     topVotedCount,
     topViewedQuestion,
     topViewedCount,
+    handleUserInvites,
   };
 };
 

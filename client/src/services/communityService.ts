@@ -106,6 +106,40 @@ const updateCommunityNameAboutRules = async (
   return res.data;
 };
 
+const inviteUserToCommunity = async (
+  communityId: string,
+  username: string,
+): Promise<PopulatedDatabaseCommunity> => {
+  const res = await api.patch(`${COMMUNITY_API_URL}/inviteUserToCommunity/${communityId}`, {
+    username,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error while inviting user to community');
+  }
+  return res.data;
+};
+
+const removeInvite = async (
+  communityId: string,
+  username: string,
+): Promise<PopulatedDatabaseCommunity> => {
+  const res = await api.patch(`${COMMUNITY_API_URL}/removeInvite/${communityId}`, {
+    username,
+  });
+  if (res.status !== 200) {
+    throw new Error('Error while handling declined invite to community');
+  }
+  return res.data;
+};
+
+const getOnlineUsersForCommunity = async (id: string): Promise<{ onlineUsers: string[] }> => {
+  const res = await api.get(`${COMMUNITY_API_URL}/onlineUsers/${id}`);
+  if (res.status !== 200) {
+    throw new Error('Error while fetching online users');
+  }
+  return res.data;
+};
+
 export {
   getCommunities,
   getCommunityById,
@@ -114,4 +148,7 @@ export {
   addQuestionToCommunity,
   joinCommunity,
   updateCommunityNameAboutRules,
+  inviteUserToCommunity,
+  removeInvite,
+  getOnlineUsersForCommunity,
 };

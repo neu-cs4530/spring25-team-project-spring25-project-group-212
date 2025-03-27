@@ -122,7 +122,7 @@ const DirectMessage = () => {
                 </div>
 
                 {showEmojiPicker && (
-                  <div className='emoji-picker-container'>
+                  <div style={{ height: '200px', overflowY: 'auto' }}>
                     <EmojiPicker onEmojiClick={handleEmojiSelect} />
                   </div>
                 )}

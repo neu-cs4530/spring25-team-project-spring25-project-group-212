@@ -71,7 +71,7 @@ export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
     const communities: DatabaseCommunity[] = await CommunityModel.find().lean();
     return communities;
   } catch (error) {
-    return { error: `Error retrieving communities: ${error}` };
+    return [];
   }
 };
 
@@ -185,3 +185,39 @@ export const updateCommunity = async (
     return { error: `Error when updating community: ${(error as Error).message}` };
   }
 };
+
+const onlineUsers: Record<string, Set<string>> = {};
+
+/**
+ * Adds a user to the online users set for a given community.
+ * @param communityID - The ID of the community.
+ * @param username - The username of the user to add.
+ */
+export const addOnlineUser = (communityID: string, username: string): void => {
+  if (!onlineUsers[communityID]) {
+    onlineUsers[communityID] = new Set();
+  }
+  onlineUsers[communityID].add(username);
+};
+
+/**
+ * Removes a user from the online users set for a given community.
+ * @param communityID - The ID of the community.
+ * @param username - The username of the user to remove.
+ */
+export const removeOnlineUser = (communityID: string, username: string): void => {
+  if (onlineUsers[communityID]) {
+    onlineUsers[communityID].delete(username);
+    if (onlineUsers[communityID].size === 0) {
+      delete onlineUsers[communityID];
+    }
+  }
+};
+
+/**
+ * Gets the list of online users for a specific community.
+ * @param communityID - The ID of the community.
+ * @returns An array of online users or an empty array if none.
+ */
+export const getOnlineUsers = (communityID: string): string[] =>
+  onlineUsers[communityID] ? Array.from(onlineUsers[communityID]) : [];
