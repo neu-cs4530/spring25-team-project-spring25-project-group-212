@@ -106,7 +106,6 @@ const updateCommunityNameAboutRules = async (
   return res.data;
 };
 
-
 const inviteUserToCommunity = async (
   communityId: string,
   username: string,

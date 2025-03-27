@@ -42,7 +42,7 @@ const CommunityPage = () => {
     handleEditNameAboutRules,
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
-  
+
   const { handleBulletinBoardTabClick, handleInvitesTabClick } = useCommunityTabsHeader();
   const { user, socket } = useUserContext();
 
