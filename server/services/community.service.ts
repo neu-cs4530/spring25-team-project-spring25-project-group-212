@@ -71,7 +71,7 @@ export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
     const communities: DatabaseCommunity[] = await CommunityModel.find().lean();
     return communities;
   } catch (error) {
-    return { error: `Error retrieving communities: ${error}` };
+    return [];
   }
 };
 

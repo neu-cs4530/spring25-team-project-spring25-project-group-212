@@ -78,6 +78,7 @@ const useNewCommunity = () => {
       rules,
       members: [user.username],
       admins: [user.username],
+      pendingInvites: [],
       createdBy: user.username,
     };
 

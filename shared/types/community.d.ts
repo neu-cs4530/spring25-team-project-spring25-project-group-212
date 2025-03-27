@@ -23,6 +23,7 @@ export interface Community {
   createdBy: string;
   groupChat: Chat;
   questions: Question[];
+  pendingInvites: string[];
 }
 
 export interface DatabaseCommunity {
@@ -35,6 +36,7 @@ export interface DatabaseCommunity {
   createdBy: string;
   groupChatId: ObjectId;
   questions: ObjectId[];
+  pendingInvites: string[];
 }
 
 /**
@@ -59,6 +61,7 @@ export interface PopulatedDatabaseCommunity {
   createdBy: string;
   groupChat: PopulatedDatabaseChat;
   questions: PopulatedDatabaseQuestion[];
+  pendingInvites: string[];
 }
 
 /**
@@ -84,9 +87,9 @@ export interface AddQuestionToCommunityRequest extends Request {
 }
 
 /**
- * Interface extending the request body for a user joining a community
+ * Interface extending the request body for a user interacting with a community
  */
-export interface UserJoinCommunityRequest extends Request {
+export interface UserCommunityRequest extends Request {
   params: {
     id: string;
   };

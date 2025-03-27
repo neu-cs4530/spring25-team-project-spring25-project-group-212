@@ -10,6 +10,7 @@ import { getOnlineUsersForCommunity, joinCommunity } from '../../../services/com
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import { renameChat } from '../../../services/chatService';
 import './index.css';
+import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
 
 const CommunityPage = () => {
   const {
@@ -42,7 +43,9 @@ const CommunityPage = () => {
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
 
+  const { handleBulletinBoardTabClick, handleInvitesTabClick } = useCommunityTabsHeader();
   const { user, socket } = useUserContext();
+
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
 
   useEffect(() => {
@@ -95,7 +98,7 @@ const CommunityPage = () => {
   };
 
   if (!currentCommunity || !community) {
-    return <div>Community not found</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -126,7 +129,14 @@ const CommunityPage = () => {
           )}
         </div>
       )}
-
+      <div id='community-header'>
+        <button className='login-button' onClick={handleBulletinBoardTabClick}>
+          Bulletin Board
+        </button>
+        <button className='login-button' onClick={handleInvitesTabClick}>
+          Invite Users to Community
+        </button>
+      </div>
       {editMode && canEditNameAboutRules && (
         <div>
           <input
@@ -165,7 +175,7 @@ const CommunityPage = () => {
         </div>
       )}
       <div id='community-content'>
-        <div id='community-questions'>
+        <div id='community-questions' style={{ marginBottom: 20 }}>
           <CommunityQuestionHeader
             titleText={titleText}
             qcnt={qlist.length}
