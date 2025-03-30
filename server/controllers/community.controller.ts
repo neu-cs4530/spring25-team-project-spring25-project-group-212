@@ -208,11 +208,22 @@ const communityController = (socket: FakeSOSocket) => {
     try {
       const communityId: string = req.params.id;
       const { username } = req.body;
-      const updatedCommunity = await joinCommunityService(communityId, username);
+      const joinedCommunity = await joinCommunityService(communityId, username);
+      if ('error' in joinedCommunity) {
+        throw new Error(joinedCommunity.error);
+      }
+      const updatedCommunity = await updateCommunity(communityId, {
+        memberHistory: [
+          ...joinedCommunity.memberHistory.filter(
+            entry => new Date(entry.date).toDateString() !== new Date().toDateString(),
+          ),
+          { date: new Date(), count: joinedCommunity.members.length },
+        ],
+      });
       if ('error' in updatedCommunity) {
         throw new Error(updatedCommunity.error);
       }
-      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(joinedCommunity);
       socket
         .to(communityId)
         .emit('communityUpdate', { community: populatedUpdatedCommunity, type: 'updated' });
