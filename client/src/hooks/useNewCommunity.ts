@@ -80,6 +80,7 @@ const useNewCommunity = () => {
       admins: [user.username],
       pendingInvites: [],
       createdBy: user.username,
+      memberHistory: [],
     };
 
     const response = await createCommunity(community);
