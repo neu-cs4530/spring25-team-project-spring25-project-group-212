@@ -27,8 +27,6 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   const [delMessage, setDelMessage] = useState<DatabaseMessage>(message);
   const { user: currentUser, socket } = useUserContext();
 
-  console.log('is there a deleted at?', message.deletedAt);
-
   useEffect(() => {
     setDelMessage(message);
   }, [message]);
@@ -92,8 +90,6 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
     readReceipt = '✔️';
   }
 
-  // console.log('Read receipt', readReceipt, seenPercentage, seenBy.length, totalUsers);
-
   useEffect(() => {
     if (!socket) return undefined;
 
@@ -112,71 +108,36 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
 
   const handleDeleteMessage = async () => {
     try {
-      console.log('Message id is', message._id.toString());
-      console.log('username', currentUser.username);
       const updatedMessage = await deleteMessage(message._id.toString(), currentUser.username);
-      // setDeletedAt(updatedMessage.deletedAt);
       setDelMessage(updatedMessage.deletedMessage);
-      console.log('The del message is', delMessage);
     } catch (error) {
       throw Error('Error deleting message');
     }
   };
 
-  // useEffect(() => {
-  //   if (!socket) return undefined;
-
-  //   socket.on('messageDeleted', handleDeleteMessage);
-
-  //   return () => {
-  //     socket.off('messageDeleted', handleDeleteMessage);
-  //   };
-  // }, [handleDeleteMessage, socket]);
-
   const handleRestoreMessage = async () => {
-    console.log('Entering restore');
     if (!delMessage.deletedAt) return;
-
-    console.log('Restore message of del message', delMessage);
 
     const elapsedTime = (new Date().getTime() - new Date(delMessage.deletedAt).getTime()) / 60000;
     if (elapsedTime > 15) {
+      // eslint-disable-next-line no-alert
       alert('Restoration window expired.');
       return;
     }
 
-    console.log('Elapsed time', elapsedTime);
-
     try {
       const updatedMessage = await restoreMessage(delMessage._id.toString());
-      // setDeletedAt(null);
-      console.log('Updated restored message', updatedMessage.restoredMessage);
       setDelMessage(updatedMessage.restoredMessage);
     } catch (error) {
       throw Error('Error restoring message');
     }
   };
 
-  // useEffect(() => {
-  //   if (!socket) return undefined;
-
-  //   socket.on('messageRestored', handleRestoreMessage);
-
-  //   return () => {
-  //     socket.off('messageRestored', handleRestoreMessage);
-  //   };
-  // }, [handleRestoreMessage, socket]);
-
   useEffect(() => {
-    console.log('Updated mmmm');
-    // setDeletedAt(delMessage.deletedAt || null);
     setDelMessage(delMessage);
-    // console.log('Updated madam:', deletedAt);
   }, [delMessage]);
 
   let messageContent;
-  // console.log('The message deleted at frontend', delMessage.deletedMessage);
-  console.log('delMessage.deletedAt', delMessage.deletedAt);
   if (delMessage.deletedAt || message.deletedAt) {
     messageContent = <p className='deleted-message'>Message has been deleted</p>;
   } else if ('useMarkdown' in message && message.useMarkdown) {
@@ -184,9 +145,6 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   } else {
     messageContent = <p>{delMessage.msg}</p>;
   }
-
-  console.log('Message object', message);
-  console.log('Del message', delMessage);
 
   return (
     <div className='message'>
