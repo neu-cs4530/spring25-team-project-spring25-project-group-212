@@ -6,10 +6,11 @@ import MessageCard from '../messageCard';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
-import { joinCommunity } from '../../../services/communityService';
+import { getOnlineUsersForCommunity, joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import { renameChat } from '../../../services/chatService';
 import './index.css';
+import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
 
 const CommunityPage = () => {
   const {
@@ -26,6 +27,7 @@ const CommunityPage = () => {
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const {
     community,
@@ -41,20 +43,43 @@ const CommunityPage = () => {
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
 
-  const { user } = useUserContext();
+  const { handleBulletinBoardTabClick, handleInvitesTabClick } = useCommunityTabsHeader();
+  const { user, socket } = useUserContext();
+
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
 
   useEffect(() => {
-    if (currentCommunity && user) {
-      joinCommunity(currentCommunity._id.toString(), user.username);
-    }
-  }, [currentCommunity, user]);
+    if (!currentCommunity || !user || !socket) return undefined;
+
+    socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
+    joinCommunity(currentCommunity._id.toString(), user.username);
+
+    return () => {
+      socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
+    };
+  }, [currentCommunity, user, socket]);
 
   useEffect(() => {
     if (community?.groupChat?.name) {
       setChatName(community.groupChat.name);
     }
   }, [community]);
+
+  useEffect(() => {
+    if (!socket || !currentCommunity) {
+      return undefined;
+    }
+
+    const updateOnlineUsers = async () => {
+      const data = await getOnlineUsersForCommunity(currentCommunity._id.toString());
+      setOnlineUsers(data.onlineUsers);
+    };
+
+    socket.on('onlineUsersUpdate', updateOnlineUsers);
+    return () => {
+      socket.off('onlineUsersUpdate', updateOnlineUsers);
+    };
+  }, [socket, currentCommunity]);
 
   const handleEmojiSelect = (emojiObject: { emoji: string }) => {
     setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
@@ -73,7 +98,7 @@ const CommunityPage = () => {
   };
 
   if (!currentCommunity || !community) {
-    return <div>Community not found</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -104,7 +129,14 @@ const CommunityPage = () => {
           )}
         </div>
       )}
-
+      <div id='community-header'>
+        <button className='login-button' onClick={handleBulletinBoardTabClick}>
+          Bulletin Board
+        </button>
+        <button className='login-button' onClick={handleInvitesTabClick}>
+          Invite Users to Community
+        </button>
+      </div>
       {editMode && canEditNameAboutRules && (
         <div>
           <input
@@ -143,7 +175,7 @@ const CommunityPage = () => {
         </div>
       )}
       <div id='community-content'>
-        <div id='community-questions'>
+        <div id='community-questions' style={{ marginBottom: 20 }}>
           <CommunityQuestionHeader
             titleText={titleText}
             qcnt={qlist.length}
@@ -158,6 +190,16 @@ const CommunityPage = () => {
             <div className='bold_title right_padding'>No Questions Found</div>
           )}
         </div>
+
+        <div className='online-users'>
+          <strong>Online Users:</strong>
+          <ul>
+            {onlineUsers.map((username, index) => (
+              <li key={index}>{username}</li>
+            ))}
+          </ul>
+        </div>
+
         <div className='rename-chat'>
           <input
             className='custom-input'
@@ -174,7 +216,6 @@ const CommunityPage = () => {
           <strong>Current Chat Name: </strong>
           {chatName}
         </p>
-
         <div className='direct-message-container'>
           <div id='community-chat' className='chat-container'>
             <div className='chat-messages'>
@@ -227,7 +268,7 @@ const CommunityPage = () => {
               </div>
 
               {showEmojiPicker && (
-                <div className='emoji-picker-container'>
+                <div style={{ height: '300px', overflowY: 'auto' }}>
                   <EmojiPicker onEmojiClick={handleEmojiSelect} />
                 </div>
               )}
