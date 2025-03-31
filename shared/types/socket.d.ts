@@ -166,7 +166,9 @@ export interface MessageRestoredPayload {
 export interface MessageDeletedPayload {
   messageId: string;
   deletedMessage?: string;
+}
 
+/**
  * Payload for an online users update event.
  * - `users`: An array of usernames representing the online users.
  */
