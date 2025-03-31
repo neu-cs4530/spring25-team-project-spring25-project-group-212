@@ -24,6 +24,10 @@ export interface Community {
   groupChat: Chat;
   questions: Question[];
   pendingInvites: string[];
+  memberHistory: {
+    date: Date;
+    count: number;
+  }[];
 }
 
 export interface DatabaseCommunity {
@@ -37,6 +41,10 @@ export interface DatabaseCommunity {
   groupChatId: ObjectId;
   questions: ObjectId[];
   pendingInvites: string[];
+  memberHistory: {
+    date: Date;
+    count: number;
+  }[];
 }
 
 /**
@@ -62,6 +70,10 @@ export interface PopulatedDatabaseCommunity {
   groupChat: PopulatedDatabaseChat;
   questions: PopulatedDatabaseQuestion[];
   pendingInvites: string[];
+  memberHistory: {
+    date: Date;
+    count: number;
+  }[];
 }
 
 /**

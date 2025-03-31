@@ -55,6 +55,18 @@ const communitySchema: Schema = new Schema(
       required: true,
     },
     pendingInvites: { type: [String], default: [], required: true },
+    memberHistory: [
+      {
+        date: {
+          type: Date,
+          required: true,
+        },
+        count: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   { collection: 'Community', timestamps: true },
 );

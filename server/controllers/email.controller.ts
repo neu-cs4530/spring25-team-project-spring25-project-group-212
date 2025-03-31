@@ -113,7 +113,7 @@ const emailController = () => {
                 `;
       }
       return `
-                    <h1> No questions were asked yesteday :( </h1>
+                    <h1> No questions were asked yesterday :( </h1>
                 `;
     } catch (error) {
       return 'An error occurred. Please contact the FakeStackoverflow Team';
