@@ -168,22 +168,22 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
               <EmojiPicker onEmojiClick={handleAddReaction} />
             </div>
           )}
+        </div>
+      </div>
+      <div className='message-footer'>
+        <div className='delete-buttons'>
           {message.msgFrom === currentUser.username && (
             <>
               {!delMessage.deletedAt ? (
-                <button className='delete-btn' onClick={handleDeleteMessage}>
-                  Delete
-                </button>
+                <button onClick={handleDeleteMessage}>Delete</button>
               ) : (
-                <button className='restore-btn' onClick={handleRestoreMessage}>
-                  Restore
-                </button>
+                <button onClick={handleRestoreMessage}>Restore</button>
               )}
             </>
           )}
         </div>
+        <div className='read-receipt'>{readReceipt}</div>
       </div>
-      <div className='read-receipt'>{readReceipt}</div>
     </div>
   );
 };
