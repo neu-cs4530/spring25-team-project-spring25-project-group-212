@@ -26,6 +26,8 @@ export interface Message {
   type: 'global' | 'direct';
   reactions?: Reaction[];
   useMarkdown: boolean;
+  deletedAt?: Date | null;
+  deletedMessage?: string | null;
 }
 
 /**
@@ -40,6 +42,8 @@ export interface Message {
 export interface DatabaseMessage extends Message {
   _id: ObjectId;
   seenBy: ObjectId[];
+  deletedAt?: Date | null;
+  deletedMessage?: string | null;
 }
 
 /**
