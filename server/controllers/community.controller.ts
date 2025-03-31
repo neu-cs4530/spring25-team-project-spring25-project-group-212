@@ -11,7 +11,7 @@ import {
   PopulatedDatabaseChat,
   DatabaseCommunity,
   AddQuestionToCommunityRequest,
-  UserJoinCommunityRequest,
+  UserCommunityRequest,
   UpdateCommunityNameAboutRulesRequest,
 } from '../types/types';
 import {
@@ -22,6 +22,9 @@ import {
   saveQuestionToCommunity,
   joinCommunityService,
   updateCommunity,
+  addOnlineUser,
+  removeOnlineUser,
+  getOnlineUsers,
 } from '../services/community.service';
 import { populateDocument } from '../utils/database.util';
 
@@ -201,7 +204,7 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
-  const joinCommunity = async (req: UserJoinCommunityRequest, res: Response): Promise<void> => {
+  const joinCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
     try {
       const communityId: string = req.params.id;
       const { username } = req.body;
@@ -251,17 +254,85 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  const inviteUserToCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
+    try {
+      const communityId = req.params.id;
+      const { username } = req.body;
+
+      const community = await getCommunityById(communityId);
+      if ('error' in community) {
+        throw new Error(community.error);
+      }
+
+      if (community.members.includes(username)) {
+        throw new Error('User already in community');
+      }
+
+      if (community.pendingInvites.includes(username)) {
+        throw new Error('User already invited to community');
+      }
+
+      const updatedPendingInvites: string[] = [...community.pendingInvites, username];
+      const updatedCommunity = await updateCommunity(communityId, {
+        pendingInvites: updatedPendingInvites,
+      });
+      res.status(200).send(updatedCommunity);
+    } catch (err: unknown) {
+      res.status(500).send(`Error when inviting user to community: ${(err as Error).message}`);
+    }
+  };
+
+  const removeInvite = async (req: UserCommunityRequest, res: Response): Promise<void> => {
+    try {
+      const communityId = req.params.id;
+      const { username } = req.body;
+      const community = await getCommunityById(communityId);
+      if ('error' in community) {
+        throw new Error(community.error);
+      }
+
+      if (!community.pendingInvites.includes(username)) {
+        throw new Error('No pending invites for this user');
+      }
+
+      // get all invites except for the one that contains the given username (removing it)
+      const updatedPendingInvites: string[] = community.pendingInvites.filter(u => u !== username);
+      const updatedCommunity = await updateCommunity(communityId, {
+        pendingInvites: updatedPendingInvites,
+      });
+      res.status(200).send(updatedCommunity);
+    } catch (err: unknown) {
+      res
+        .status(500)
+        .send(`Error when handling declined invite to community: ${(err as Error).message}`);
+    }
+  };
+
   socket.on('connection', conn => {
-    conn.on('joinCommunity', (communityID: string) => {
+    conn.on('joinCommunity', (communityID: string, username: string) => {
       conn.join(communityID);
+      addOnlineUser(communityID, username);
+      socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
     });
 
-    conn.on('leaveCommunity', (communityID: string | undefined) => {
-      if (communityID !== undefined) {
+    conn.on('leaveCommunity', (communityID: string, username: string) => {
+      if (communityID) {
         conn.leave(communityID);
+        removeOnlineUser(communityID, username);
+        socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
       }
     });
   });
+
+  const getOnlineUsersForCommunity = async (req: Request, res: Response): Promise<void> => {
+    const communityID = req.params.id;
+    try {
+      const onlineUsersList = getOnlineUsers(communityID);
+      res.status(200).json({ onlineUsers: onlineUsersList });
+    } catch (err: unknown) {
+      res.status(500).send(`Error while retrieving online users: ${(err as Error).message}`);
+    }
+  };
 
   router.post('/create', createCommunity);
   router.get('/getAll', getCommunities);
@@ -270,6 +341,9 @@ const communityController = (socket: FakeSOSocket) => {
   router.post('/addQuestionToCommunity/:id', addQuestionToCommunity);
   router.post('/join/:id', joinCommunity);
   router.patch('/updateCommunityNameAboutRules/:id', updateCommunityNameAboutRules);
+  router.patch('/inviteUserToCommunity/:id', inviteUserToCommunity);
+  router.patch('/removeInvite/:id', removeInvite);
+  router.get('/onlineUsers/:id', getOnlineUsersForCommunity);
 
   return router;
 };

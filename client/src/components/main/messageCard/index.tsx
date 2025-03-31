@@ -84,7 +84,7 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   const seenPercentage = (seenBy.length / totalUsers) * 100;
   let readReceipt = '';
 
-  if (seenPercentage === 100) {
+  if (seenPercentage >= 100) {
     readReceipt = '✔️✔️';
   } else if (seenPercentage > 50) {
     readReceipt = '✔️';
@@ -164,7 +164,7 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
             </div>
           </div>
           {showEmojiPicker && (
-            <div>
+            <div style={{ height: '125px', overflowY: 'auto' }}>
               <EmojiPicker onEmojiClick={handleAddReaction} />
             </div>
           )}

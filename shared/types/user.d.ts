@@ -22,6 +22,7 @@ export interface User extends UserCredentials {
   dateJoined: Date;
   biography?: string;
   savedQuestions: string[];
+  email?: string;
 }
 
 /**
@@ -47,6 +48,7 @@ export interface UserRequest extends Request {
     username: string;
     password: string;
     biography?: string;
+    email?: string;
   };
 }
 
@@ -100,5 +102,17 @@ export interface UpdateSavedQuestionsRequest extends Request {
   body: {
     username: string;
     qid: string;
+  };
+}
+
+/**
+ * Express request for updating a user's email.
+ * - `username`: The username whose biography is being updated (body).
+ * - `email`: The new email content to be set (body).
+ */
+export interface UpdateEmailRequest extends Request {
+  body: {
+    username: string;
+    email: string;
   };
 }

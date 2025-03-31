@@ -5,6 +5,7 @@ import {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateEmail,
 } from '../services/userService';
 import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
@@ -25,6 +26,8 @@ const useProfileSettings = () => {
   const [loading, setLoading] = useState(false);
   const [editBioMode, setEditBioMode] = useState(false);
   const [newBio, setNewBio] = useState('');
+  const [editEmailMode, setEditEmailMode] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -168,6 +171,28 @@ const useProfileSettings = () => {
   };
 
   /**
+   * Handler for update the user email
+   */
+  const handleUpdateEmail = async () => {
+    if (!username) return;
+    try {
+      const updatedUser = await updateEmail(username, newEmail);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditEmailMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Email updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update email.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -188,6 +213,14 @@ const useProfileSettings = () => {
     });
   };
 
+  /**
+   * Handler for navigating to invites list page
+   */
+  const handleUserInvites = () => {
+    if (!username) return;
+    navigate(`/user/${username}/communityInvites`);
+  };
+
   return {
     userData,
     newPassword,
@@ -199,6 +232,10 @@ const useProfileSettings = () => {
     setEditBioMode,
     newBio,
     setNewBio,
+    editEmailMode,
+    setEditEmailMode,
+    newEmail,
+    setNewEmail,
     successMessage,
     errorMessage,
     showConfirmation,
@@ -210,11 +247,13 @@ const useProfileSettings = () => {
     togglePasswordVisibility,
     handleResetPassword,
     handleUpdateBiography,
+    handleUpdateEmail,
     handleDeleteUser,
     topVotedQuestion,
     topVotedCount,
     topViewedQuestion,
     topViewedCount,
+    handleUserInvites,
   };
 };
 
