@@ -15,7 +15,9 @@ const useUserCommunityInvitesPage = () => {
     if (!user) return;
     const getCommunitiesInvitedTo = async () => {
       const allCommunities = await getCommunities();
-      const filtered = allCommunities.filter(c => c.pendingInvites.includes(user.username));
+      const filtered = (allCommunities || []).filter(
+        c => Array.isArray(c.pendingInvites) && c.pendingInvites.includes(user.username),
+      );
       setCommunitiesInvitedTo(filtered);
     };
 
