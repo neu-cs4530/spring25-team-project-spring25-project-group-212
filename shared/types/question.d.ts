@@ -10,8 +10,26 @@ import { Comment, DatabaseComment } from './comment';
  * - `unanswered`: Sort by questions with no answers.
  * - `active`: Sort by questions with recent activity (views, answers, votes).
  * - `mostViewed`: Sort by the most viewed questions.
+ * - `saved`: Sort by questions saved by the user.
+ * - `trendingInCommunity`: Sort by questions trending in a specific community.
  */
-export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed' | 'saved';
+export type OrderType =
+  | 'newest'
+  | 'unanswered'
+  | 'active'
+  | 'mostViewed'
+  | 'saved'
+  | 'trendingInCommunity';
+
+/**
+ * Represents a vote with a timestamp.
+ * - `username`: The username associated with the vote
+ * - `timestamp`: The datetime associated with the vote
+ */
+export interface Vote {
+  username: string;
+  timestamp: Date;
+}
 
 /**
  * Represents a question.
@@ -36,8 +54,8 @@ export interface Question {
   askDateTime: Date;
   answers: Answer[];
   views: string[];
-  upVotes: string[];
-  downVotes: string[];
+  upVotes: Vote[];
+  downVotes: Vote[];
   comments: Comment[];
   useMarkdown: boolean;
   anonymous: boolean;
@@ -50,11 +68,14 @@ export interface Question {
  * - `answers`: An array of ObjectIds referencing answers associated with the question.
  * - `comments`: An array of ObjectIds referencing comments associated with the question.
  */
-export interface DatabaseQuestion extends Omit<Question, 'tags' | 'answers' | 'comments'> {
+export interface DatabaseQuestion
+  extends Omit<Question, 'tags' | 'answers' | 'comments' | 'upVotes' | 'downVotes'> {
   _id: ObjectId;
   tags: ObjectId[];
   answers: ObjectId[];
   comments: ObjectId[];
+  upVotes: { username: string; timestamp: Date }[];
+  downVotes: { username: string; timestamp: Date }[];
 }
 
 /**
@@ -79,7 +100,7 @@ export type QuestionResponse = DatabaseQuestion | { error: string };
 /**
  * Type representing an object with the vote success message, updated upVotes,
  */
-export type VoteInterface = { msg: string; upVotes: string[]; downVotes: string[] };
+export type VoteInterface = { msg: string; upVotes: Vote[]; downVotes: Vote[] };
 
 /**
  * Type representing possible responses for a vote-related operation.

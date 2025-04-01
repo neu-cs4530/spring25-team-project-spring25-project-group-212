@@ -323,6 +323,7 @@ describe('Test questionController', () => {
   });
 
   describe('POST /upvoteQuestion', () => {
+    const now = new Date();
     it('should upvote a question successfully', async () => {
       const mockReqBody = {
         qid: '65e9b5a995b6c7045a30d823',
@@ -331,7 +332,7 @@ describe('Test questionController', () => {
 
       const mockResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
         downVotes: [],
       };
 
@@ -351,7 +352,7 @@ describe('Test questionController', () => {
 
       const mockFirstResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['some-user'],
+        upVotes: [{ username: 'some-user', timestamp: now }],
         downVotes: [],
       };
 
@@ -386,7 +387,7 @@ describe('Test questionController', () => {
       // First upvote the question
       let mockResponseWithBothVotes: VoteResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
         downVotes: [],
       };
 
@@ -400,7 +401,7 @@ describe('Test questionController', () => {
       // Now downvote the question
       mockResponseWithBothVotes = {
         msg: 'Question downvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
         upVotes: [],
       };
 
@@ -434,6 +435,7 @@ describe('Test questionController', () => {
   });
 
   describe('POST /downvoteQuestion', () => {
+    const now = new Date();
     it('should downvote a question successfully', async () => {
       const mockReqBody = {
         qid: '65e9b5a995b6c7045a30d823',
@@ -442,7 +444,7 @@ describe('Test questionController', () => {
 
       const mockResponse = {
         msg: 'Question upvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
         upVotes: [],
       };
 
@@ -463,7 +465,7 @@ describe('Test questionController', () => {
       const mockFirstResponse = {
         msg: 'Question downvoted successfully',
         upVotes: [],
-        downVotes: ['some-user'],
+        downVotes: [{ username: 'some-user', timestamp: now }],
       };
 
       const mockSecondResponse = {
@@ -499,7 +501,7 @@ describe('Test questionController', () => {
       // First downvote the question
       let mockResponse: VoteResponse = {
         msg: 'Question downvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
         upVotes: [],
       };
 
@@ -514,7 +516,7 @@ describe('Test questionController', () => {
       mockResponse = {
         msg: 'Question upvoted successfully',
         downVotes: [],
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
       };
 
       addVoteToQuestionSpy.mockResolvedValueOnce(mockResponse);

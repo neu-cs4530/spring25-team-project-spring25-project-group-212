@@ -24,6 +24,7 @@ import {
   sortQuestionsByNewest,
   sortQuestionsByUnanswered,
   sortQuestionsBySaved,
+  sortQuestionsByTrendingInCommunity,
 } from '../utils/sort.util';
 import UserModel from '../models/users.model';
 
@@ -45,10 +46,12 @@ const checkKeywordInQuestion = (q: Question, keywordlist: string[]): boolean => 
 /**
  * Retrieves questions ordered by specified criteria.
  * @param {OrderType} order - The order type to filter the questions
+ * @param {string} communityId -
  * @returns {Promise<Question[]>} - The ordered list of questions
  */
 export const getQuestionsByOrder = async (
   order: OrderType,
+  communityId?: string,
 ): Promise<PopulatedDatabaseQuestion[]> => {
   try {
     const qlist: PopulatedDatabaseQuestion[] = await QuestionModel.find().populate<{
@@ -68,6 +71,11 @@ export const getQuestionsByOrder = async (
         return sortQuestionsByUnanswered(qlist);
       case 'newest':
         return sortQuestionsByNewest(qlist);
+      case 'trendingInCommunity':
+        if (communityId) {
+          return sortQuestionsByTrendingInCommunity(qlist, communityId);
+        }
+        return sortQuestionsByMostViews(qlist);
       case 'saved':
         return [];
       case 'mostViewed':
@@ -210,49 +218,45 @@ export const addVoteToQuestion = async (
   voteType: 'upvote' | 'downvote',
 ): Promise<VoteResponse> => {
   let updateOperation: QueryOptions;
-
+  const now = new Date();
   if (voteType === 'upvote') {
-    updateOperation = [
-      {
-        $set: {
-          upVotes: {
-            $cond: [
-              { $in: [username, '$upVotes'] },
-              { $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u', username] } } },
-              { $concatArrays: ['$upVotes', [username]] },
-            ],
-          },
-          downVotes: {
-            $cond: [
-              { $in: [username, '$upVotes'] },
-              '$downVotes',
-              { $filter: { input: '$downVotes', as: 'd', cond: { $ne: ['$$d', username] } } },
-            ],
-          },
+    updateOperation = {
+      $set: {
+        upVotes: {
+          $cond: [
+            { $in: [username, { $map: { input: '$upVotes', as: 'u', in: '$$u.username' } }] },
+            {
+              $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u.username', username] } },
+            },
+            { $concatArrays: ['$upVotes', [{ username, timestamp: now }]] },
+          ],
+        },
+        downVotes: {
+          $filter: { input: '$downVotes', as: 'd', cond: { $ne: ['$$d.username', username] } },
         },
       },
-    ];
+    };
   } else {
-    updateOperation = [
-      {
-        $set: {
-          downVotes: {
-            $cond: [
-              { $in: [username, '$downVotes'] },
-              { $filter: { input: '$downVotes', as: 'd', cond: { $ne: ['$$d', username] } } },
-              { $concatArrays: ['$downVotes', [username]] },
-            ],
-          },
-          upVotes: {
-            $cond: [
-              { $in: [username, '$downVotes'] },
-              '$upVotes',
-              { $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u', username] } } },
-            ],
-          },
+    updateOperation = {
+      $set: {
+        downVotes: {
+          $cond: [
+            { $in: [username, { $map: { input: '$downVotes', as: 'd', in: '$$d.username' } }] },
+            {
+              $filter: {
+                input: '$downVotes',
+                as: 'd',
+                cond: { $ne: ['$$d.username', username] },
+              },
+            },
+            { $concatArrays: ['$downVotes', [{ username, timestamp: now }]] },
+          ],
+        },
+        upVotes: {
+          $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u.username', username] } },
         },
       },
-    ];
+    };
   }
 
   try {
@@ -269,11 +273,11 @@ export const addVoteToQuestion = async (
     let msg = '';
 
     if (voteType === 'upvote') {
-      msg = result.upVotes.includes(username)
+      msg = result.upVotes.some(vote => vote.username === username)
         ? 'Question upvoted successfully'
         : 'Upvote cancelled successfully';
     } else {
-      msg = result.downVotes.includes(username)
+      msg = result.downVotes.some(vote => vote.username === username)
         ? 'Question downvoted successfully'
         : 'Downvote cancelled successfully';
     }
