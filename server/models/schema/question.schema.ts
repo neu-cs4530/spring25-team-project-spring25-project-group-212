@@ -38,8 +38,8 @@ const questionSchema: Schema = new Schema(
       type: Date,
     },
     views: [{ type: String }],
-    upVotes: [voteSchema],
-    downVotes: [voteSchema],
+    upVotes: { type: [voteSchema], default: [] },
+    downVotes: { type: [voteSchema], default: [] },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     useMarkdown: {
       type: Boolean,

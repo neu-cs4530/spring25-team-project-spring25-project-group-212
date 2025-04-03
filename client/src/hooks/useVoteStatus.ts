@@ -27,10 +27,10 @@ const useVoteStatus = ({ question }: { question: PopulatedDatabaseQuestion }) =>
      * @returns The current vote value for the user in the question, 1 for upvote, -1 for downvote, 0 for no vote.
      */
     const getVoteValue = () => {
-      if (user.username && question?.upVotes?.includes(user.username)) {
+      if (user.username && question?.upVotes?.some(u => u.username === user.username)) {
         return 1;
       }
-      if (user.username && question?.downVotes?.includes(user.username)) {
+      if (user.username && question?.downVotes?.some(u => u.username === user.username)) {
         return -1;
       }
       return 0;

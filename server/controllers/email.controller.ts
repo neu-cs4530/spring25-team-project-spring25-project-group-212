@@ -1,7 +1,7 @@
-import { PopulatedDatabaseQuestion } from '@fake-stack-overflow/shared';
 import nodemailer from 'nodemailer';
 import { getQuestionsByOrder } from '../services/question.service';
 import { getUsersList } from '../services/user.service';
+import { PopulatedDatabaseQuestion } from '../types/types';
 
 const emailController = () => {
   const send = async (receivers: string[], subject: string, contents: string) => {

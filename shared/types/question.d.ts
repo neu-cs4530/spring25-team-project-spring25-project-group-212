@@ -68,14 +68,11 @@ export interface Question {
  * - `answers`: An array of ObjectIds referencing answers associated with the question.
  * - `comments`: An array of ObjectIds referencing comments associated with the question.
  */
-export interface DatabaseQuestion
-  extends Omit<Question, 'tags' | 'answers' | 'comments' | 'upVotes' | 'downVotes'> {
+export interface DatabaseQuestion extends Omit<Question, 'tags' | 'answers' | 'comments'> {
   _id: ObjectId;
   tags: ObjectId[];
   answers: ObjectId[];
   comments: ObjectId[];
-  upVotes: { username: string; timestamp: Date }[];
-  downVotes: { username: string; timestamp: Date }[];
 }
 
 /**
@@ -151,10 +148,12 @@ export interface AddQuestionRequest extends Request {
  * Interface for the request body when upvoting or downvoting a question.
  * - `qid`: The unique identifier of the question being voted on (body).
  * - `username`: The username of the user casting the vote (body).
+ * - `communityId`: Optional, in case the question was upvoted in a community (to track trending score)
  */
 export interface VoteRequest extends Request {
   body: {
     qid: string;
     username: string;
+    communityId?: string;
   };
 }
