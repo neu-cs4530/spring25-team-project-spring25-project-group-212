@@ -189,14 +189,11 @@ const questionController = (socket: FakeSOSocket) => {
     res: Response,
     type: 'upvote' | 'downvote',
   ): Promise<void> => {
-    console.log('in voteQuestion in controller');
     if (!req.body.qid || !req.body.username) {
       res.status(400).send('Invalid request');
       return;
     }
 
-    console.log('past if statement');
-    console.log(req.body);
     const { qid, username } = req.body;
 
     try {
