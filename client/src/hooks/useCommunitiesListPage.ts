@@ -10,10 +10,25 @@ const useCommunitiesListPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, socket } = useUserContext();
 
-  const fetchCommunities = async () => {
+  const sortCommunitiesBy = async (category: 'members' | 'content') => {
     try {
       const communitiesList = await getCommunities();
-      setCommunities(communitiesList);
+      let communitiesListSorted;
+      if (category === 'members') {
+        communitiesListSorted = communitiesList.sort((a, b) => b.members.length - a.members.length);
+      } else {
+        // content
+        communitiesListSorted = communitiesList.sort((a, b) => {
+          const countContentA =
+            a.questions.length +
+            a.questions.reduce((sum, current) => sum + current.answers.length, 0);
+          const countContentB =
+            b.questions.length +
+            b.questions.reduce((sum, current) => sum + current.answers.length, 0);
+          return countContentB - countContentA;
+        });
+      }
+      setCommunities(communitiesListSorted);
     } catch (getCommunitiesError) {
       setError('Error fetching communities');
     }
@@ -31,15 +46,15 @@ const useCommunitiesListPage = () => {
   };
 
   useEffect(() => {
-    fetchCommunities();
+    sortCommunitiesBy('members');
   }, []);
 
   return {
     communities,
     error,
     handleJoin,
-    fetchCommunities,
     handleCreateCommunity,
+    sortCommunitiesBy,
   };
 };
 
