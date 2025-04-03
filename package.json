@@ -19,5 +19,8 @@
   },
   "overrides": {
     "camelcase-css": "2.0.0"
+  },
+  "devDependencies": {
+    "camelcase": "^8.0.0"
   }
 }
