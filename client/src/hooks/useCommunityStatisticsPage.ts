@@ -133,8 +133,8 @@ const useCommunityStatisticsPage = () => {
           question.answers.forEach(answer => incrementUserCount(answer.ansBy));
         } else {
           // 'voted'
-          question.upVotes.forEach(incrementUserCount);
-          question.downVotes.forEach(incrementUserCount);
+          question.upVotes.map(vote => vote.username).forEach(incrementUserCount);
+          question.downVotes.map(vote => vote.username).forEach(incrementUserCount);
         }
       });
 
