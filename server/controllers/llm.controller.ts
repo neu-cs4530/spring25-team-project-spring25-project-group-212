@@ -25,7 +25,7 @@ export const runLLMCommunityTagging = async (): Promise<void> => {
     members: comm.members,
     admins: comm.admins,
     createdBy: comm.createdBy,
-    groupChat: {} as Chat, // Placeholder
+    groupChat: {} as Chat,
     questions: [],
   }));
 

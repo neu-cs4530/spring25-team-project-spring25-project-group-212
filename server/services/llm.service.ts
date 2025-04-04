@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Question, Community } from '../types/types';
 
-const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
+const API_KEY = process.env.GEMINI_API_KEY;
 const API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
@@ -13,6 +13,8 @@ const assignCommunityFromLLM = async (
 
   const prompt = `You are an expert at categorizing Stack Overflow questions into appropriate communities. 
 Given a question and a list of communities with descriptions, return ONLY the name of the most appropriate community (no extra text).
+
+If none of the communities are a good fit for the question, return "Uncategorized".
 
 Question:
 Title: "${question.title}"
@@ -32,10 +34,10 @@ Community:`;
       ],
     });
 
-    const llmText = response.data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const llmText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
     return llmText.trim();
   } catch (error) {
-    console.error('LLM tagging failed:', error);
+    // should it be like this?
     return 'Uncategorized';
   }
 };
