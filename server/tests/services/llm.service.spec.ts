@@ -7,6 +7,10 @@ import { Question, Community, Chat } from '../../types/types';
 dotenv.config();
 
 describe('assignCommunityFromLLM', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const sampleQuestion: Question = {
     title: 'How to fix CORS error in React app?',
     text: 'I am getting a CORS error when I try to fetch data from my Express backend...',
