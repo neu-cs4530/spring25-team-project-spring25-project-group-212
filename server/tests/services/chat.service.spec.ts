@@ -8,9 +8,11 @@ import {
   getChat,
   addParticipantToChat,
   getChatsByParticipants,
+  renameChat,
 } from '../../services/chat.service';
-import { Chat, DatabaseChat } from '../../types/types';
+import { Chat, DatabaseChat, PopulatedDatabaseChat } from '../../types/types';
 import { user } from '../mockData.models';
+import * as messageService from '../../services/message.service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mockingoose = require('mockingoose');
@@ -97,6 +99,15 @@ describe('Chat service', () => {
       if ('error' in result) {
         expect(result.error).toContain('Error saving chat:');
       }
+    });
+
+    it('should return an error if saving a message fails', async () => {
+      jest.spyOn(messageService, 'saveMessage').mockResolvedValueOnce({
+        error: 'Failed to save message',
+      });
+
+      const result = await saveChat(mockChatPayload);
+      expect(result).toHaveProperty('error');
     });
   });
 
@@ -328,5 +339,34 @@ describe('Chat service', () => {
       const result = await getChatsByParticipants(['user1']);
       expect(result).toHaveLength(0);
     });
+  });
+});
+
+describe('renameChat', () => {
+  it('should rename a chat successfully', async () => {
+    const chatId = new mongoose.Types.ObjectId();
+    const newName = 'New Chat Name';
+
+    const mockUpdatedChat: PopulatedDatabaseChat = {
+      _id: chatId,
+      name: newName,
+      participants: ['user1'],
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockingoose(ChatModel).toReturn(mockUpdatedChat, 'findOneAndUpdate');
+
+    const result = await renameChat(chatId.toString(), newName);
+
+    expect(result._id).toEqual(chatId);
+    expect(result.name).toEqual(newName);
+  });
+
+  it('should return an error if the chat is not found', async () => {
+    mockingoose(ChatModel).toReturn(null, 'findOneAndUpdate');
+
+    await expect(renameChat('invalidChatId', 'New Name')).rejects.toThrow('Chat not found');
   });
 });

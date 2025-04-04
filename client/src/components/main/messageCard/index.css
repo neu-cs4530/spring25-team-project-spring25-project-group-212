@@ -65,9 +65,19 @@
   color: #555;
 }
 
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.delete-buttons {
+  cursor: pointer;
+  display: flex-start;
+}
+
 .read-receipt {
   font-size: 0.9rem;
   color: gray;
-  display: flex;
-  justify-content: flex-end;
+  display: flex-end;
 }

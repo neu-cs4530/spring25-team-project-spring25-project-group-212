@@ -1,12 +1,11 @@
-import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import { useEffect, useState } from 'react';
-import { getQuestionsByFilter } from '../services/questionService';
+import { useParams } from 'react-router-dom';
+import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '@fake-stack-overflow/shared';
+import { getCommunityById, getQuestionsForCommunity } from '../services/communityService';
 import { getUsers } from '../services/userService';
 
-/**
- * A custom hook to encapsulate all state for the StatisticsPage component.
- */
-const useStatisticsPage = () => {
+const useCommunityStatisticsPage = () => {
+  const { id } = useParams();
   const [topVotedQuestions, setTopVotedQuestions] = useState<PopulatedDatabaseQuestion[]>([]);
   const [topViewedQuestions, setTopViewedQuestions] = useState<PopulatedDatabaseQuestion[]>([]);
 
@@ -22,12 +21,55 @@ const useStatisticsPage = () => {
   const [topVotedQuestionVotes, setTopVotedQuestionVotes] = useState(0);
   const [topViewedQuestionViews, setTopViewedQuestionViews] = useState(0);
 
+  const [questionData, setQuestionData] = useState<{
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      borderColor: string;
+      tension: number;
+    }>;
+  }>({
+    labels: [],
+    datasets: [
+      {
+        label: 'Number of Questions',
+        data: [],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+    ],
+  });
+
+  const [memberData, setMemberData] = useState<{
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      borderColor: string;
+      tension: number;
+    }>;
+  }>({
+    labels: [],
+    datasets: [
+      {
+        label: 'Number of Members',
+        data: [],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+    ],
+  });
+
   useEffect(() => {
     /**
      * Function to fetch the top questions based on the category.
      */
     const topQuestionFinder = async (category: 'voted' | 'viewed') => {
-      const questions = await getQuestionsByFilter();
+      if (!id) {
+        return [];
+      }
+      const questions = await getQuestionsForCommunity(id);
       let bestValue = -Infinity;
       let topQuestions: PopulatedDatabaseQuestion[] = [];
 
@@ -70,7 +112,10 @@ const useStatisticsPage = () => {
      * Function to fetch the top users based on the category.
      */
     const topUserFinder = async (category: 'asked' | 'answered' | 'viewed' | 'voted') => {
-      const questions = await getQuestionsByFilter();
+      if (!id) {
+        return [];
+      }
+      const questions = await getQuestionsForCommunity(id);
       const users = await getUsers();
 
       const userCount = new Map();
@@ -87,7 +132,7 @@ const useStatisticsPage = () => {
         } else if (category === 'answered') {
           question.answers.forEach(answer => incrementUserCount(answer.ansBy));
         } else {
-          // 'voted' - since upvotes and downvotes are now objects, we must make sure to map to user  names before incrementing.
+          // 'voted'
           question.upVotes.map(vote => vote.username).forEach(incrementUserCount);
           question.downVotes.map(vote => vote.username).forEach(incrementUserCount);
         }
@@ -132,7 +177,95 @@ const useStatisticsPage = () => {
     topUserFinder('answered').then(newTopAnsweringUser => {
       setTopAnsweringUsers(newTopAnsweringUser);
     });
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    const setNoData = () => {
+      setQuestionData({
+        labels: [],
+        datasets: [
+          {
+            label: 'Number of Questions',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+        ],
+      });
+    };
+    const loadQuestionData = async (): Promise<void> => {
+      if (!id) {
+        setNoData();
+        return;
+      }
+      try {
+        const questions = await getQuestionsForCommunity(id);
+        const questionCounts = questions.reduce((acc: { [key: string]: number }, question) => {
+          const date = new Date(question.askDateTime);
+          const dateString = date.toDateString();
+          acc[dateString] = (acc[dateString] || 0) + 1;
+          return acc;
+        }, {});
+
+        const labels = Object.keys(questionCounts).sort();
+        const counts = labels.map(label => questionCounts[label]);
+
+        setQuestionData({
+          labels,
+          datasets: [
+            {
+              ...questionData.datasets[0],
+              data: counts,
+            },
+          ],
+        });
+      } catch (error) {
+        setNoData();
+      }
+    };
+
+    loadQuestionData();
+  }, [id, questionData.datasets]);
+
+  useEffect(() => {
+    const setNoData = () => {
+      setMemberData({
+        labels: [],
+        datasets: [
+          {
+            label: 'Number of Questions',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+        ],
+      });
+    };
+    const loadMemberData = async () => {
+      if (!id) {
+        setNoData();
+        return;
+      }
+      try {
+        const community = await getCommunityById(id);
+        const labels = community.memberHistory.map(entry => new Date(entry.date).toDateString());
+        const counts = community.memberHistory.map(entry => entry.count);
+        setMemberData({
+          labels,
+          datasets: [
+            {
+              ...memberData.datasets[0],
+              data: counts,
+            },
+          ],
+        });
+      } catch (error) {
+        setNoData();
+      }
+    };
+
+    loadMemberData();
+  }, [id, memberData.datasets]);
 
   return {
     topVotedQuestions,
@@ -147,7 +280,9 @@ const useStatisticsPage = () => {
     topVoterCount,
     topAskerQuestionCount,
     topAnswererAnswerCount,
+    questionData,
+    memberData,
   };
 };
 
-export default useStatisticsPage;
+export default useCommunityStatisticsPage;

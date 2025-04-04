@@ -33,6 +33,12 @@ export const saveCommunity = async (
       ...communityPayload,
       groupChatId: chat._id,
       questions: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 1,
+        },
+      ],
     };
 
     const result = await CommunityModel.create(CommunityWithModel);
@@ -150,7 +156,6 @@ export const joinCommunityService = async (
     if (!updatedCommunity) {
       throw new Error('Community with given ID could not be found');
     }
-
     const result = await ChatModel.updateOne(
       { _id: updatedCommunity.groupChatId },
       { $addToSet: { participants: username } },

@@ -15,6 +15,13 @@
     "@tldraw/state": "^3.11.1",
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.12.2",
-    "react-markdown": "^10.1.0"
+    "react-markdown": "^10.1.0",
+    "tailwindcss": "^4.0.17"
+  },
+  "overrides": {
+    "camelcase-css": "2.0.0"
+  },
+  "devDependencies": {
+    "camelcase": "^8.0.0"
   }
 }
