@@ -91,7 +91,6 @@ describe('POST /llm/assignCommunity', () => {
     });
 
     const response = await supertest(app).post('/llm/assignCommunity');
-    console.log(response);
     expect(response.status).toBe(200);
     expect(response.body.msg).toBe(
       'Unassigned questions have been reviewed for community assignment.',

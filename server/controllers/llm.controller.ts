@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from 'express';
+import express, { Request, Response } from 'express';
 import { Chat } from '@fake-stack-overflow/shared/types/chat';
 import assignCommunityFromLLM from '../services/llm.service';
 import QuestionModel from '../models/questions.model';
