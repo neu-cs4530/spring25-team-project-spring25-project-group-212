@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PopulatedDatabaseCommunity } from '@fake-stack-overflow/shared';
-import { getCommunities, getCommunityById } from '../services/communityService';
+import { getCommunities } from '../services/communityService';
 import useUserContext from './useUserContext';
 
 const useCommunitiesListPage = () => {
@@ -30,7 +30,7 @@ const useCommunitiesListPage = () => {
       }
       setCommunities(communitiesListSorted);
     } catch (sortCommunitiesByError) {
-      setError('Error fetching communities');
+      setError(`Error fetching communities: ${sortCommunitiesByError}`);
     }
   };
 
