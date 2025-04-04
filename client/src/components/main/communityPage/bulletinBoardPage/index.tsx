@@ -1,16 +1,15 @@
-import { Tldraw, TLEditorSnapshot, useEditor } from 'tldraw';
+import { Tldraw, useEditor } from 'tldraw';
+import { useSyncDemo } from '@tldraw/sync';
 import 'tldraw/tldraw.css';
 import './index.css';
 import useCommunityTabsHeader from '../../../../hooks/useCommunityTabsHeader';
-import _jsonSnapshot from './snapshot.json';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
-
-const jsonSnapshot = _jsonSnapshot as never as TLEditorSnapshot;
 
 const BulletinBoardPage = () => {
   const { handleQuestionsAndChatTabClick, community } = useCommunityTabsHeader();
   const { handleBulletinBoardLoad, handleBulletinBoardSave, showCheckMark, setShowCheckMark } =
     useBulletinBoardPage();
+  const store = useSyncDemo({ roomId: `${community?._id.toString()}` });
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -42,11 +41,7 @@ const BulletinBoardPage = () => {
       </button>
       <div
         style={{ position: 'relative', width: '100%', height: '600px', border: '1px solid #ccc' }}>
-        <Tldraw
-          snapshot={jsonSnapshot}
-          persistenceKey={`${community?._id.toString()}-persistence-key`}
-          components={{ SharePanel: SnapshotToolbar }}
-        />
+        <Tldraw store={store} components={{ SharePanel: SnapshotToolbar }} />
       </div>
     </div>
   );
