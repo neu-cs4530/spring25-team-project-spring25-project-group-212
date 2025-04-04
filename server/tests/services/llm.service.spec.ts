@@ -1,14 +1,12 @@
 // tests/setup.ts or at the top of your test file
-import dotenv from 'dotenv';
 import axios from 'axios';
 import assignCommunityFromLLM from '../../services/llm.service';
 import { Question, Community, Chat } from '../../types/types';
 
-dotenv.config();
-
 describe('assignCommunityFromLLM', () => {
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
   });
 
   const sampleQuestion: Question = {
