@@ -64,6 +64,12 @@ describe('assignCommunityFromLLM', () => {
       groupChat: {} as Chat,
       questions: [],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 2,
+        },
+      ],
     },
     {
       name: 'Node.js',
@@ -75,6 +81,12 @@ describe('assignCommunityFromLLM', () => {
       groupChat: {} as Chat,
       questions: [],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 1,
+        },
+      ],
     },
     {
       name: 'Python',
@@ -86,6 +98,12 @@ describe('assignCommunityFromLLM', () => {
       groupChat: {} as Chat,
       questions: [],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 1,
+        },
+      ],
     },
   ];
 

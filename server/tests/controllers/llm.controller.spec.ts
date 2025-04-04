@@ -47,6 +47,12 @@ describe('POST /llm/assignCommunity', () => {
       groupChat: {} as Chat,
       questions: [],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 0,
+        },
+      ],
     };
     const mockGroupChatId = new ObjectId();
     // Mock getAllCommunities to return one React community
@@ -76,6 +82,12 @@ describe('POST /llm/assignCommunity', () => {
       groupChatId: new mongoose.Types.ObjectId(),
       questions: [new mongoose.Types.ObjectId()],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 0,
+        },
+      ],
     });
 
     const response = await supertest(app).post('/llm/assignCommunity');
@@ -121,6 +133,12 @@ describe('POST /llm/assignCommunity', () => {
       groupChatId: new ObjectId(),
       questions: [questionId],
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 0,
+        },
+      ],
     };
 
     getAllCommunitiesSpy.mockResolvedValue([mockCommunityWithQuestion]);
@@ -169,6 +187,12 @@ describe('POST /llm/assignCommunity', () => {
         groupChatId: new ObjectId(),
         questions: [],
         pendingInvites: [],
+        memberHistory: [
+          {
+            date: new Date(),
+            count: 0,
+          },
+        ],
       },
     ]);
 
@@ -187,6 +211,12 @@ describe('POST /llm/assignCommunity', () => {
       groupChatId: new ObjectId(),
       questions: questionIds,
       pendingInvites: [],
+      memberHistory: [
+        {
+          date: new Date(),
+          count: 0,
+        },
+      ],
     });
 
     const response = await supertest(app).post('/llm/assignCommunity');
