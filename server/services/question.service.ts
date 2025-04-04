@@ -24,7 +24,7 @@ import {
   sortQuestionsByNewest,
   sortQuestionsByUnanswered,
   sortQuestionsBySaved,
-  sortQuestionsByTrendingInCommunity,
+  sortQuestionsByTrending,
 } from '../utils/sort.util';
 import UserModel from '../models/users.model';
 
@@ -71,11 +71,8 @@ export const getQuestionsByOrder = async (
         return sortQuestionsByUnanswered(qlist);
       case 'newest':
         return sortQuestionsByNewest(qlist);
-      case 'trendingInCommunity':
-        if (communityId) {
-          return sortQuestionsByTrendingInCommunity(qlist, communityId);
-        }
-        return sortQuestionsByMostViews(qlist);
+      case 'trending':
+        return sortQuestionsByTrending(qlist);
       case 'saved':
         return [];
       case 'mostViewed':

@@ -5,5 +5,5 @@ export const orderTypeDisplayName = {
   active: 'Active',
   mostViewed: 'Most Viewed',
   saved: 'Saved',
-  trendingInCommunity: 'Trending In Community',
+  trending: 'Trending',
 } as const;

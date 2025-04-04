@@ -11,15 +11,9 @@ import { Comment, DatabaseComment } from './comment';
  * - `active`: Sort by questions with recent activity (views, answers, votes).
  * - `mostViewed`: Sort by the most viewed questions.
  * - `saved`: Sort by questions saved by the user.
- * - `trendingInCommunity`: Sort by questions trending in a specific community.
+ * - `trending`: Sort by questions trending in a specific community.
  */
-export type OrderType =
-  | 'newest'
-  | 'unanswered'
-  | 'active'
-  | 'mostViewed'
-  | 'saved'
-  | 'trendingInCommunity';
+export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed' | 'saved' | 'trending';
 
 /**
  * Represents a vote with a timestamp.
@@ -148,7 +142,7 @@ export interface AddQuestionRequest extends Request {
  * Interface for the request body when upvoting or downvoting a question.
  * - `qid`: The unique identifier of the question being voted on (body).
  * - `username`: The username of the user casting the vote (body).
- * - `communityId`: Optional, in case the question was upvoted in a community (to track trending score)
+ * - `communityId`: Optional, in case the question was upvoted in a community (to track trending score within that community)
  */
 export interface VoteRequest extends Request {
   body: {

@@ -122,6 +122,18 @@ const calculateTrendingScore = (
   return recentComments * 2 + recentAnswers * 3 + recentUpVotes * 1.5 - (recentDownVotes - 1);
 };
 
+export const sortQuestionsByTrending = (
+  qlist: PopulatedDatabaseQuestion[],
+  timeWindow: number = 2 * 24 * 60 * 60 * 1000, // last 2 days
+): PopulatedDatabaseQuestion[] => {
+  const questionsWithScores = qlist.map(question => ({
+    ques: question,
+    score: calculateTrendingScore(question, timeWindow),
+  }));
+  questionsWithScores.sort((a, b) => b.score - a.score);
+  return questionsWithScores.map(q => q.ques);
+};
+
 export const sortQuestionsByTrendingInCommunity = (
   qlist: PopulatedDatabaseQuestion[],
   communityId: string,
