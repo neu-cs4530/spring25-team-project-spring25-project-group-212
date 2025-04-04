@@ -1,4 +1,3 @@
-// tests/setup.ts or at the top of your test file
 import axios from 'axios';
 import assignCommunityFromLLM from '../../services/llm.service';
 import { Question, Community, Chat } from '../../types/types';
@@ -90,16 +89,28 @@ describe('assignCommunityFromLLM', () => {
     },
   ];
 
-  it('should make a real API call and return a community', async () => {
+  it('should return React when appropriate', async () => {
+    const spy = jest.spyOn(axios, 'post').mockResolvedValue({
+      data: {
+        candidates: [{ content: { parts: [{ text: 'React' }] } }],
+      },
+    });
+
     const result = await assignCommunityFromLLM(sampleQuestion, sampleCommunities);
-    expect(typeof result).toBe('string');
-    expect(result).toMatch('React');
+    expect(result).toBe('React');
+    spy.mockRestore();
   });
 
-  it('should make a real API call and return a community', async () => {
+  it('should return Python when appropriate', async () => {
+    const spy = jest.spyOn(axios, 'post').mockResolvedValue({
+      data: {
+        candidates: [{ content: { parts: [{ text: 'Python' }] } }],
+      },
+    });
+
     const result = await assignCommunityFromLLM(sampleQuestion2, sampleCommunities);
-    expect(typeof result).toBe('string');
-    expect(result).toMatch('Python');
+    expect(result).toBe('Python');
+    spy.mockRestore();
   });
 
   it('should return "Uncategorized" when LLM selects it', async () => {
