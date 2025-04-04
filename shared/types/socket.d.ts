@@ -1,7 +1,7 @@
 import { PopulatedDatabaseAnswer } from './answer';
 import { PopulatedDatabaseChat } from './chat';
 import { DatabaseMessage } from './message';
-import { PopulatedDatabaseQuestion } from './question';
+import { PopulatedDatabaseQuestion, Vote } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
 import { PopulatedDatabaseCommunity } from './community';
@@ -43,8 +43,8 @@ export interface GameErrorPayload {
  */
 export interface VoteUpdatePayload {
   qid: string;
-  upVotes: string[];
-  downVotes: string[];
+  upVotes: Vote[];
+  downVotes: Vote[];
 }
 
 /**

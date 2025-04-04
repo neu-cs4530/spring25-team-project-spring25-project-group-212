@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import QuestionModel from '../../models/questions.model';
 import {
   filterQuestionsBySearch,
@@ -317,6 +318,7 @@ describe('Question model', () => {
   });
 
   describe('addVoteToQuestion', () => {
+    const now = new Date();
     test('addVoteToQuestion should upvote a question', async () => {
       const mockQuestion = {
         _id: 'someQuestionId',
@@ -325,7 +327,11 @@ describe('Question model', () => {
       };
 
       mockingoose(QuestionModel).toReturn(
-        { ...mockQuestion, upVotes: ['testUser'], downVotes: [] },
+        {
+          ...mockQuestion,
+          upVotes: [{ _id: new ObjectId(), username: 'testUser', timestamp: now }],
+          downVotes: [],
+        },
         'findOneAndUpdate',
       );
 
@@ -333,7 +339,7 @@ describe('Question model', () => {
 
       expect(result).toEqual({
         msg: 'Question upvoted successfully',
-        upVotes: ['testUser'],
+        upVotes: [{ username: 'testUser', timestamp: now }],
         downVotes: [],
       });
     });
@@ -342,11 +348,15 @@ describe('Question model', () => {
       const mockQuestion = {
         _id: 'someQuestionId',
         upVotes: [],
-        downVotes: ['testUser'],
+        downVotes: [{ username: 'testUser', timestamp: now }],
       };
 
       mockingoose(QuestionModel).toReturn(
-        { ...mockQuestion, upVotes: ['testUser'], downVotes: [] },
+        {
+          ...mockQuestion,
+          upVotes: [{ _id: new ObjectId(), username: 'testUser', timestamp: now }],
+          downVotes: [],
+        },
         'findOneAndUpdate',
       );
 
@@ -354,7 +364,7 @@ describe('Question model', () => {
 
       expect(result).toEqual({
         msg: 'Question upvoted successfully',
-        upVotes: ['testUser'],
+        upVotes: [{ username: 'testUser', timestamp: now }],
         downVotes: [],
       });
     });
@@ -362,7 +372,7 @@ describe('Question model', () => {
     test('should cancel the upvote if already upvoted', async () => {
       const mockQuestion = {
         _id: 'someQuestionId',
-        upVotes: ['testUser'],
+        upVotes: [{ username: 'testUser', timestamp: now }],
         downVotes: [],
       };
 
@@ -404,7 +414,11 @@ describe('Question model', () => {
       };
 
       mockingoose(QuestionModel).toReturn(
-        { ...mockQuestion, upVotes: [], downVotes: ['testUser'] },
+        {
+          ...mockQuestion,
+          upVotes: [],
+          downVotes: [{ _id: new ObjectId(), username: 'testUser', timestamp: now }],
+        },
         'findOneAndUpdate',
       );
 
@@ -413,19 +427,23 @@ describe('Question model', () => {
       expect(result).toEqual({
         msg: 'Question downvoted successfully',
         upVotes: [],
-        downVotes: ['testUser'],
+        downVotes: [{ username: 'testUser', timestamp: now }],
       });
     });
 
     test('If an upvoter downvotes, add them to downvotes and remove them from upvotes', async () => {
       const mockQuestion = {
         _id: 'someQuestionId',
-        upVotes: ['testUser'],
+        upVotes: [{ username: 'testUser', timestamp: now }],
         downVotes: [],
       };
 
       mockingoose(QuestionModel).toReturn(
-        { ...mockQuestion, upVotes: [], downVotes: ['testUser'] },
+        {
+          ...mockQuestion,
+          upVotes: [],
+          downVotes: [{ _id: new ObjectId(), username: 'testUser', timestamp: now }],
+        },
         'findOneAndUpdate',
       );
 
@@ -434,7 +452,7 @@ describe('Question model', () => {
       expect(result).toEqual({
         msg: 'Question downvoted successfully',
         upVotes: [],
-        downVotes: ['testUser'],
+        downVotes: [{ username: 'testUser', timestamp: now }],
       });
     });
 
@@ -442,7 +460,7 @@ describe('Question model', () => {
       const mockQuestion = {
         _id: 'someQuestionId',
         upVotes: [],
-        downVotes: ['testUser'],
+        downVotes: [{ username: 'testUser', timestamp: now }],
       };
 
       mockingoose(QuestionModel).toReturn(

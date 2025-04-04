@@ -32,6 +32,7 @@ const notificationController = (socket: FakeSOSocket) => {
 
     try {
       const notifications = await getUserNotifications(username);
+
       res.json(notifications);
     } catch (err: unknown) {
       if (err instanceof Error) {
