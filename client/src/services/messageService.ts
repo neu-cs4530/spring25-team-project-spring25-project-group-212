@@ -85,4 +85,31 @@ const markMessageAsSeen = async (messageId: string, userId: string) => {
   return res.data;
 };
 
-export { addMessage, getMessages, addReaction, getReactions, markMessageAsSeen };
+const deleteMessage = async (messageId: string, username: string) => {
+  const res = await api.delete(`${MESSAGE_API_URL}/messages/${messageId}/delete`, {
+    data: { username },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error deleting the message');
+  }
+  return res.data;
+};
+
+const restoreMessage = async (messageId: string) => {
+  const res = await api.put(`${MESSAGE_API_URL}/messages/${messageId}/restore`);
+  if (res.status !== 200) {
+    throw new Error('Error restoring the message');
+  }
+  return res.data;
+};
+
+export {
+  addMessage,
+  getMessages,
+  addReaction,
+  getReactions,
+  markMessageAsSeen,
+  deleteMessage,
+  restoreMessage,
+};

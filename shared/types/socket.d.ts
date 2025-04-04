@@ -151,6 +151,24 @@ export interface NotificationUpdatePayload {
 }
 
 /**
+ * Payload for a message restored event.
+ * - `message`: The restored message.
+ */
+export interface MessageRestoredPayload {
+  updatedMessage?: DatabaseMessage;
+}
+
+/**
+ * Payload for a message deleted event.
+ * - `messageId`: The ID of the deleted message.
+ * - `deletedMessage`: The string of the deleted message.
+ */
+export interface MessageDeletedPayload {
+  messageId: string;
+  deletedMessage?: string;
+}
+
+/**
  * Payload for an online users update event.
  * - `users`: An array of usernames representing the online users.
  */
@@ -184,6 +202,8 @@ export interface ServerToClientEvents {
   voteUpdate: (vote: VoteUpdatePayload) => void;
   commentUpdate: (comment: CommentUpdatePayload) => void;
   messageUpdate: (message: MessageUpdatePayload) => void;
+  messageRestored: (payload: MessageRestoredPayload) => void;
+  messageDeleted: (payload: MessageDeletedPayload) => void;
   userUpdate: (user: UserUpdatePayload) => void;
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
