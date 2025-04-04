@@ -43,7 +43,8 @@ const CommunityPage = () => {
     canEditNameAboutRules,
   } = useCommunityNameAboutRules();
 
-  const { handleBulletinBoardTabClick, handleInvitesTabClick } = useCommunityTabsHeader();
+  const { handleBulletinBoardTabClick, handleInvitesTabClick, handleStatisticsClick } =
+    useCommunityTabsHeader();
   const { user, socket } = useUserContext();
 
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
@@ -135,6 +136,9 @@ const CommunityPage = () => {
         </button>
         <button className='login-button' onClick={handleInvitesTabClick}>
           Invite Users to Community
+        </button>
+        <button className='login-button' onClick={handleStatisticsClick}>
+          Community Statistics
         </button>
       </div>
       {editMode && canEditNameAboutRules && (

@@ -45,6 +45,8 @@ const messageSchema: Schema = new Schema(
       },
     ],
     seenBy: [{ type: Schema.Types.String, ref: 'User', default: [] }],
+    deletedAt: { type: Date, default: null },
+    deletedMessage: { type: String, default: '' },
   },
   { collection: 'Message' },
 );
