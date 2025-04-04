@@ -12,6 +12,7 @@
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.5",
     "@mui/material": "^6.4.7",
+    "@tldraw/state": "^3.11.1",
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.12.2",
     "react-markdown": "^10.1.0",

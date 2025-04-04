@@ -54,7 +54,8 @@ const useCommunityQuestionPage = () => {
       try {
         if (id) {
           const allQuestionsWithOrder = await getQuestionsByFilter(questionOrder);
-          const unfilteredCommunityQuestions = await getQuestionsForCommunity(id);
+          const unfilteredCommunityQuestions: PopulatedDatabaseQuestion[] =
+            await getQuestionsForCommunity(id);
           const unfilteredCommunityQuestionsIds = new Set(
             [...unfilteredCommunityQuestions].map(q => q._id.toString()),
           );
