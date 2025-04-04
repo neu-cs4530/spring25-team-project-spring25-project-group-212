@@ -3,7 +3,13 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
 import { DatabaseMessage, ReactionUpdatePayload, ReadReceiptPayload } from '../../../types/types';
-import { addReaction, getReactions, markMessageAsSeen } from '../../../services/messageService';
+import {
+  addReaction,
+  getReactions,
+  markMessageAsSeen,
+  deleteMessage,
+  restoreMessage,
+} from '../../../services/messageService';
 import useUserContext from '../../../hooks/useUserContext';
 import { getMetaData } from '../../../tool';
 
@@ -18,7 +24,12 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [reactions, setReactions] = useState<string[]>([]);
   const [seenBy, setSeenBy] = useState<string[]>([]);
+  const [delMessage, setDelMessage] = useState<DatabaseMessage>(message);
   const { user: currentUser, socket } = useUserContext();
+
+  useEffect(() => {
+    setDelMessage(message);
+  }, [message]);
 
   useEffect(() => {
     const fetchReactions = async () => {
@@ -95,6 +106,46 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
     };
   }, [socket, message._id]);
 
+  const handleDeleteMessage = async () => {
+    try {
+      const updatedMessage = await deleteMessage(message._id.toString(), currentUser.username);
+      setDelMessage(updatedMessage.deletedMessage);
+    } catch (error) {
+      throw Error('Error deleting message');
+    }
+  };
+
+  const handleRestoreMessage = async () => {
+    if (!delMessage.deletedAt) return;
+
+    const elapsedTime = (new Date().getTime() - new Date(delMessage.deletedAt).getTime()) / 60000;
+    if (elapsedTime > 15) {
+      // eslint-disable-next-line no-alert
+      alert('Restoration window expired.');
+      return;
+    }
+
+    try {
+      const updatedMessage = await restoreMessage(delMessage._id.toString());
+      setDelMessage(updatedMessage.restoredMessage);
+    } catch (error) {
+      throw Error('Error restoring message');
+    }
+  };
+
+  useEffect(() => {
+    setDelMessage(delMessage);
+  }, [delMessage]);
+
+  let messageContent;
+  if (delMessage.deletedAt || message.deletedAt) {
+    messageContent = <p className='deleted-message'>Message has been deleted</p>;
+  } else if ('useMarkdown' in message && message.useMarkdown) {
+    messageContent = <ReactMarkdown>{delMessage.msg}</ReactMarkdown>;
+  } else {
+    messageContent = <p>{delMessage.msg}</p>;
+  }
+
   return (
     <div className='message'>
       <div className='message-header'>
@@ -102,13 +153,7 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
         <div className='message-time'>{getMetaData(new Date(message.msgDateTime))}</div>
       </div>
       <div className='message-content'>
-        <div className='message-body'>
-          {'useMarkdown' in message && message.useMarkdown ? (
-            <ReactMarkdown>{message.msg}</ReactMarkdown>
-          ) : (
-            <p>{message.msg}</p>
-          )}
-        </div>
+        <div className='message-body'>{messageContent}</div>
         <div className='message-actions'>
           <div className='reactions-container'>
             <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
@@ -125,7 +170,20 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
           )}
         </div>
       </div>
-      <div className='read-receipt'>{readReceipt}</div>
+      <div className='message-footer'>
+        <div className='delete-buttons'>
+          {message.msgFrom === currentUser.username && (
+            <>
+              {!delMessage.deletedAt ? (
+                <button onClick={handleDeleteMessage}>Delete</button>
+              ) : (
+                <button onClick={handleRestoreMessage}>Restore</button>
+              )}
+            </>
+          )}
+        </div>
+        <div className='read-receipt'>{readReceipt}</div>
+      </div>
     </div>
   );
 };

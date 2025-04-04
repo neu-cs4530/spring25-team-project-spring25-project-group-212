@@ -7,6 +7,8 @@ import {
   removeReactionFromMessage,
   getReactions,
   markMessageAsSeen,
+  deleteMessage,
+  restoreMessage,
 } from '../services/message.service';
 
 const messageController = (socket: FakeSOSocket) => {
@@ -170,6 +172,33 @@ const messageController = (socket: FakeSOSocket) => {
     }
   };
 
+  const deleteMessageRoute = async (req: Request, res: Response) => {
+    try {
+      const { messageId } = req.params;
+      const { username } = req.body;
+      const result = await deleteMessage(messageId, username, socket);
+
+      return res.json({ message: 'Message deleted successfully.', deletedMessage: result });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: 'Error deleting message.', error: (error as Error).message });
+    }
+  };
+
+  const restoreMessageRoute = async (req: Request, res: Response) => {
+    try {
+      const { messageId } = req.params;
+      const result = await restoreMessage(messageId, socket);
+
+      return res.json({ message: 'Message restored successfully.', restoredMessage: result });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: 'Error restoring message.', error: (error as Error).message });
+    }
+  };
+
   // Add appropriate HTTP verbs and their endpoints to the router
   router.post('/addMessage', addMessageRoute);
   router.get('/getMessages', getMessagesRoute);
@@ -177,6 +206,8 @@ const messageController = (socket: FakeSOSocket) => {
   router.post('/removeReaction', removeReaction);
   router.get('/getReactions/:messageId', getReactionsRoute);
   router.post('/messages/:messageId/seen', markMessageAsSeenRoute);
+  router.delete('/messages/:messageId/delete', deleteMessageRoute);
+  router.put('/messages/:messageId/restore', restoreMessageRoute);
 
   return router;
 };
