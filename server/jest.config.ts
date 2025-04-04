@@ -5,5 +5,6 @@ module.exports = {
   transform: {
     '^.+.tsx?$': ['ts-jest', {}],
   },
-  setupFilesAfterEnv: ['./jest.setup.ts'],
+  setupFiles: ['./jest.env.setup.ts'], // ✅ for dotenv only
+  setupFilesAfterEnv: ['./jest.setup.ts'], // ✅ for your beforeEach/afterEach logging
 };
