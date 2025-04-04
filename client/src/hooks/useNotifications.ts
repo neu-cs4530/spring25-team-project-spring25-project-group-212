@@ -47,9 +47,7 @@ const useNotifications = () => {
     const handleNotificationUpdate = (data: NotificationUpdatePayload) => {
       // Only update if the notification is for the current user
       if (data.notification.recipient === user?.username) {
-        bell.play().catch(err => {
-          console.warn('Bell sound could not play:', err);
-        });
+        bell.play().catch(() => {});
         // Refetch all notifications to get the populated data
         fetchNotifications();
       }
