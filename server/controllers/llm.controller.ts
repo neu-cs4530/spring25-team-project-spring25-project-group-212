@@ -27,6 +27,7 @@ export const runLLMCommunityTagging = async (): Promise<void> => {
     createdBy: comm.createdBy,
     groupChat: {} as Chat,
     questions: [],
+    pendingInvites: [],
   }));
 
   const allQuestionIdsInCommunities = new Set<string>();
