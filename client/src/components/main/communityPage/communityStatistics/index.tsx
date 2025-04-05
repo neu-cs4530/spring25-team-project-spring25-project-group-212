@@ -5,6 +5,7 @@ import { Chart, CategoryScale, LinearScale, PointElement, LineElement } from 'ch
 import useCommunityStatisticsPage from '../../../../hooks/useCommunityStatisticsPage';
 import UserCardView from '../../usersListPage/userCard';
 import QuestionView from '../../questionPage/question';
+import CommunityNavBar from '../communityNavBar';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement);
 
@@ -34,6 +35,7 @@ const CommunityStatisticsPage = () => {
 
   return (
     <>
+      <CommunityNavBar />
       <div className='space_between right_padding'>
         <div className='bold_title'>Community Statistics</div>
       </div>

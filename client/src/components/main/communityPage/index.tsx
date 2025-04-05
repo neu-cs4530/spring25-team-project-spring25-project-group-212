@@ -14,6 +14,7 @@ import { renameChat } from '../../../services/chatService';
 import './index.css';
 import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
 import { uploadFile } from '../../../services/messageService';
+import CommunityNavBar from './communityNavBar';
 
 const uploader = Uploader({ apiKey: 'public_223k28T4HR7pgyJRnMLX4QntHQxQ' });
 const uploaderOptions = {
@@ -126,6 +127,7 @@ const CommunityPage = () => {
 
   return (
     <div id='community-page'>
+      <CommunityNavBar />
       {!editMode && (
         <div>
           <strong>Community Name: </strong> {community.name}
@@ -152,17 +154,6 @@ const CommunityPage = () => {
           )}
         </div>
       )}
-      <div id='community-header'>
-        <button className='login-button' onClick={handleBulletinBoardTabClick}>
-          Bulletin Board
-        </button>
-        <button className='login-button' onClick={handleInvitesTabClick}>
-          Invite Users to Community
-        </button>
-        <button className='login-button' onClick={handleStatisticsClick}>
-          Community Statistics
-        </button>
-      </div>
       {editMode && canEditNameAboutRules && (
         <div>
           <input
