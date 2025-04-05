@@ -1,10 +1,10 @@
+import { Box, Button, Flex, Heading, Spinner, Text, VStack } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useNotifications from '../../../hooks/useNotifications';
 import { clearUserNotifications } from '../../../services/notificationService';
 import useUserContext from '../../../hooks/useUserContext';
-import './index.css';
 
 const Notifications = () => {
   const navigate = useNavigate();
@@ -29,74 +29,88 @@ const Notifications = () => {
 
   if (loading) {
     return (
-      <div className='notifications-container'>
-        <div className='notifications-header'>
-          <h3 className='notifications-heading'>Notifications</h3>
-        </div>
-        <div className='notifications-scroll'>
-          <div className='notification-item'>
-            <p>Loading notifications...</p>
-          </div>
-        </div>
-      </div>
+      <Box mt={5} pt={4} borderTop='1px solid' borderColor='gray.200'>
+        <Flex justify='space-between' align='center' mb={3}>
+          <Heading size='md'>Notifications</Heading>
+        </Flex>
+        <VStack align='start'>
+          <Spinner size='sm' />
+          <Text>Loading notifications...</Text>
+        </VStack>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div className='notifications-container'>
-        <div className='notifications-header'>
-          <h3 className='notifications-heading'>Notifications</h3>
-        </div>
-        <div className='notifications-scroll'>
-          <div className='notification-item'>
-            <p>Error: {error}</p>
-          </div>
-        </div>
-      </div>
+      <Box mt={5} pt={4} borderTop='1px solid' borderColor='gray.200'>
+        <Flex justify='space-between' align='center' mb={3}>
+          <Heading size='md'>Notifications</Heading>
+        </Flex>
+        <Text color='red.500'>Error: {error}</Text>
+      </Box>
     );
   }
 
   return (
-    <div className='notifications-container'>
-      <div className='notifications-header'>
-        <h3 className='notifications-heading'>Notifications</h3>
-        {notifications.length > 0 && (
-          <button onClick={handleClearNotifications} className='clear-notifications'>
-            Clear
-          </button>
-        )}
-      </div>
-      <div className='notifications-scroll'>
+    <Box borderTop='1px solid' borderColor='gray.200'>
+      <Flex justifyContent='space-between' alignItems='center'>
+        <Heading size='md' ml='3'>
+          Notifications
+        </Heading>
+        <Button
+          size='sm'
+          variant='ghost'
+          colorScheme='gray'
+          onClick={handleClearNotifications}
+          disabled={notifications.length === 0}>
+          Clear
+        </Button>
+      </Flex>
+      <Box maxH='30vh' overflowY='auto'>
         {notifications.length === 0 ? (
-          <div className='notification-item'>
-            <p>No notifications</p>
-          </div>
+          <Flex justify='center'>
+            <Box p={4} borderWidth='1px' borderRadius='md'>
+              <Text>No notifications</Text>
+            </Box>
+          </Flex>
         ) : (
-          notifications.map(notification => (
-            <div
-              key={notification._id.toString()}
-              className={`notification-item ${!notification.read ? 'unread' : ''}`}
-              onClick={() => handleNotificationClick(notification.questionId._id.toString())}
-              role='button'
-              tabIndex={0}
-              onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleNotificationClick(notification.questionId._id.toString());
-                }
-              }}>
-              <p>
-                <strong>{notification.answeredBy}</strong>
-                {` answered your question "${notification.questionId.title}"`}
-              </p>
-              <span className='notification-time'>
-                {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
-              </span>
-            </div>
-          ))
+          <Box display='flex' flexDirection='column' gap='8px'>
+            {notifications.map(notification => (
+              <Box
+                key={notification._id.toString()}
+                p={3}
+                mx={1}
+                borderWidth='1px'
+                borderRadius='md'
+                bg={!notification.read ? 'blue.50' : 'white'}
+                borderColor={!notification.read ? 'blue.200' : 'gray.100'}
+                cursor='pointer'
+                _hover={{
+                  bg: !notification.read ? 'blue.100' : 'gray.50',
+                  borderColor: 'blue.300',
+                }}
+                onClick={() => handleNotificationClick(notification.questionId._id.toString())}
+                tabIndex={0}
+                role='button'
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleNotificationClick(notification.questionId._id.toString());
+                  }
+                }}>
+                <Text fontSize='sm'>
+                  <strong>{notification.answeredBy}</strong> answered your question &quot;
+                  {notification.questionId.title}&quot;
+                </Text>
+                <Text fontSize='xs' color='gray.500' mt={1}>
+                  {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                </Text>
+              </Box>
+            ))}
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

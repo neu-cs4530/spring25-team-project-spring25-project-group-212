@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^3.15.0",
+    "@chakra-ui/theme-tools": "^2.2.6",
     "@cypress/instrument-cra": "^1.4.0",
     "@fake-stack-overflow/shared": "^1.0.0",
     "@jitsi/react-sdk": "^1.4.4",
