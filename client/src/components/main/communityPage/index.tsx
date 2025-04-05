@@ -12,8 +12,8 @@ import { getOnlineUsersForCommunity, joinCommunity } from '../../../services/com
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import { renameChat } from '../../../services/chatService';
 import './index.css';
-import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
 import { uploadFile } from '../../../services/messageService';
+import CommunityNavBar from './communityNavBar';
 
 const uploader = Uploader({ apiKey: 'public_223k28T4HR7pgyJRnMLX4QntHQxQ' });
 const uploaderOptions = {
@@ -54,10 +54,9 @@ const CommunityPage = () => {
     setNewRules,
     handleEditNameAboutRules,
     canEditNameAboutRules,
+    communityExistsError,
   } = useCommunityNameAboutRules();
 
-  const { handleBulletinBoardTabClick, handleInvitesTabClick, handleStatisticsClick } =
-    useCommunityTabsHeader();
   const { user, socket } = useUserContext();
 
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
@@ -131,203 +130,204 @@ const CommunityPage = () => {
   }
   const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
   return (
-    <div id='community-page'>
-      {!editMode && (
-        <div>
-          <strong>Community Name: </strong> {community.name}
-          <p>
-            <strong>About: </strong>
-            {community.about}
-          </p>
-          <p>
-            <strong>Rules: </strong>
-            {community.rules}
-          </p>
-          {userHasJoinedCommunity && canEditNameAboutRules && (
-            <button
-              className='login-button'
-              style={{ marginLeft: '1rem' }}
-              onClick={() => {
-                setEditMode(true);
-                setNewName(community?.name || '');
-                setNewAbout(community?.about || '');
-                setNewRules(community?.rules || '');
-              }}>
-              Edit Name, About, and/or Rules
-            </button>
-          )}
-        </div>
-      )}
-      <div id='community-header'>
-        <button className='login-button' onClick={handleBulletinBoardTabClick}>
-          Bulletin Board
-        </button>
-        {userHasJoinedCommunity && (
-          <button className='login-button' onClick={handleInvitesTabClick}>
-            Invite Users to Community
-          </button>
-        )}
-        <button className='login-button' onClick={handleStatisticsClick}>
-          Community Statistics
-        </button>
-      </div>
-      {userHasJoinedCommunity && editMode && canEditNameAboutRules && (
-        <div>
-          <input
-            className='input-text'
-            placeholder='Enter new name...'
-            type='text'
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-          />
-          <input
-            className='input-text'
-            placeholder='Enter new about...'
-            type='text'
-            value={newAbout}
-            onChange={e => setNewAbout(e.target.value)}
-          />
-          <input
-            className='input-text'
-            placeholder='Enter new rules...'
-            type='text'
-            value={newRules}
-            onChange={e => setNewRules(e.target.value)}
-          />
-          <button
-            className='login-button'
-            style={{ marginLeft: '1rem' }}
-            onClick={handleEditNameAboutRules}>
-            Save
-          </button>
-          <button
-            className='delete-button'
-            style={{ marginLeft: '1rem' }}
-            onClick={() => setEditMode(false)}>
-            Cancel
-          </button>
-        </div>
-      )}
-      <div id='community-content'>
-        <div id='community-questions' style={{ marginBottom: 20 }}>
-          <CommunityQuestionHeader
-            titleText={titleText}
-            qcnt={qlist.length}
-            setQuestionOrder={setQuestionOrder}
-          />
-          <div id='question_list' className='question_list'>
-            {qlist.map(q => (
-              <QuestionView question={q} key={String(q._id)} canClick={userHasJoinedCommunity} />
-            ))}
-          </div>
-          {titleText === 'Search Results' && !qlist.length && (
-            <div className='bold_title right_padding'>No Questions Found</div>
-          )}
-        </div>
-
-        {userHasJoinedCommunity && (
-          <>
-            <div className='online-users'>
-              <strong>Online Users:</strong>
-              <ul>
-                {onlineUsers.map((username, index) => (
-                  <li key={index}>{username}</li>
-                ))}
-              </ul>
-            </div>
-            <div className='rename-chat'>
-              <input
-                className='custom-input'
-                type='text'
-                value={chatName}
-                onChange={e => setChatName(e.target.value)}
-                placeholder='Enter new chat name'
-              />
-              <button className='custom-button' onClick={handleRenameChat}>
-                Rename
-              </button>
-            </div>
-            <p>
-              <strong>Current Chat Name: </strong>
-              {chatName}
-            </p>
-            <div className='direct-message-container'>
-              <div id='community-chat' className='chat-container'>
-                <div className='chat-messages'>
-                  {communityChat?.messages && communityChat.messages.length > 0 ? (
-                    communityChat.messages.map(message => (
-                      <MessageCard
-                        key={String(message._id)}
-                        message={message}
-                        totalUsers={currentCommunity?.members.length || 1}
-                      />
-                    ))
-                  ) : (
-                    <div>No messages yet.</div>
-                  )}
-                </div>
-
-                {typingUsers.length > 0 && (
-                  <div className='typing-indicator'>
-                    {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
-                    {typingUsers.length === 2 &&
-                      `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
-                    {typingUsers.length > 2 && 'Many people are typing...'}
-                  </div>
+    <>
+      {communityExistsError !== '' ? (
+        <strong>{communityExistsError}</strong>
+      ) : (
+        <>
+          {' '}
+          <div id='community-page'>
+            <CommunityNavBar />
+            {!editMode && (
+              <div>
+                <strong>Community Name: </strong> {community.name}
+                <p>
+                  <strong>About: </strong>
+                  {community.about}
+                </p>
+                <p>
+                  <strong>Rules: </strong>
+                  {community.rules}
+                </p>
+                {userHasJoinedCommunity && canEditNameAboutRules && (
+                  <button
+                    className='login-button'
+                    style={{ marginLeft: '1rem' }}
+                    onClick={() => {
+                      setEditMode(true);
+                      setNewName(community?.name || '');
+                      setNewAbout(community?.about || '');
+                      setNewRules(community?.rules || '');
+                    }}>
+                    Edit Name, About, and/or Rules
+                  </button>
                 )}
+              </div>
+            )}
+            {userHasJoinedCommunity && editMode && canEditNameAboutRules && (
+              <div>
+                <input
+                  className='input-text'
+                  placeholder='Enter new name...'
+                  type='text'
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                />
+                <input
+                  className='input-text'
+                  placeholder='Enter new about...'
+                  type='text'
+                  value={newAbout}
+                  onChange={e => setNewAbout(e.target.value)}
+                />
+                <input
+                  className='input-text'
+                  placeholder='Enter new rules...'
+                  type='text'
+                  value={newRules}
+                  onChange={e => setNewRules(e.target.value)}
+                />
+                <button
+                  className='login-button'
+                  style={{ marginLeft: '1rem' }}
+                  onClick={handleEditNameAboutRules}>
+                  Save
+                </button>
+                <button
+                  className='delete-button'
+                  style={{ marginLeft: '1rem' }}
+                  onClick={() => setEditMode(false)}>
+                  Cancel
+                </button>
+              </div>
+            )}
+            <div id='community-content'>
+              <div id='community-questions' style={{ marginBottom: 20 }}>
+                <CommunityQuestionHeader
+                  titleText={titleText}
+                  qcnt={qlist.length}
+                  setQuestionOrder={setQuestionOrder}
+                />
+                <div id='question_list' className='question_list'>
+                  {qlist.map(q => (
+                    <QuestionView
+                      question={q}
+                      key={String(q._id)}
+                      canClick={userHasJoinedCommunity}
+                    />
+                  ))}
+                </div>
+                {titleText === 'Search Results' && !qlist.length && (
+                  <div className='bold_title right_padding'>No Questions Found</div>
+                )}
+              </div>
 
-                <div className='message-input-container'>
-                  <div className='message-input'>
+              {userHasJoinedCommunity && (
+                <>
+                  <div className='online-users'>
+                    <strong>Online Users:</strong>
+                    <ul>
+                      {onlineUsers.map((username, index) => (
+                        <li key={index}>{username}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className='rename-chat'>
                     <input
                       className='custom-input'
                       type='text'
-                      value={newMessage}
-                      onChange={handleTyping}
-                      placeholder='Type a message...'
+                      value={chatName}
+                      onChange={e => setChatName(e.target.value)}
+                      placeholder='Enter new chat name'
                     />
-                    <button
-                      className='emoji-button'
-                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                      😀
-                    </button>
-                    <UploadButton
-                      uploader={uploader}
-                      options={uploaderOptions}
-                      onComplete={files => {
-                        files.forEach(file => {
-                          handleFileUpload(file.fileUrl, user.username);
-                        });
-                      }}>
-                      {({ onClick }) => (
-                        <button className='custom-button' onClick={onClick}>
-                          Upload File
-                        </button>
-                      )}
-                    </UploadButton>
-                    <button className='custom-button' onClick={handleSendMessage}>
-                      Send
-                    </button>
-                    <button
-                      type='button'
-                      className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
-                      onClick={() => setUseMarkdown(!useMarkdown)}
-                      title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
-                      MD
+                    <button className='custom-button' onClick={handleRenameChat}>
+                      Rename
                     </button>
                   </div>
+                  <p>
+                    <strong>Current Chat Name: </strong>
+                    {chatName}
+                  </p>
+                  <div className='direct-message-container'>
+                    <div id='community-chat' className='chat-container'>
+                      <div className='chat-messages'>
+                        {communityChat?.messages && communityChat.messages.length > 0 ? (
+                          communityChat.messages.map(message => (
+                            <MessageCard
+                              key={String(message._id)}
+                              message={message}
+                              totalUsers={currentCommunity?.members.length || 1}
+                            />
+                          ))
+                        ) : (
+                          <div>No messages yet.</div>
+                        )}
+                      </div>
 
-                  {showEmojiPicker && (
-                    <div style={{ height: '300px', overflowY: 'auto' }}>
-                      <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                      {typingUsers.length > 0 && (
+                        <div className='typing-indicator'>
+                          {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
+                          {typingUsers.length === 2 &&
+                            `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
+                          {typingUsers.length > 2 && 'Many people are typing...'}
+                        </div>
+                      )}
+
+                      <div className='message-input-container'>
+                        <div className='message-input'>
+                          <input
+                            className='custom-input'
+                            type='text'
+                            value={newMessage}
+                            onChange={handleTyping}
+                            placeholder='Type a message...'
+                          />
+                          <button
+                            className='emoji-button'
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                            😀
+                          </button>
+                          <UploadButton
+                            uploader={uploader}
+                            options={uploaderOptions}
+                            onComplete={files => {
+                              files.forEach(file => {
+                                handleFileUpload(file.fileUrl, user.username);
+                              });
+                            }}>
+                            {({ onClick }) => (
+                              <button className='custom-button' onClick={onClick}>
+                                Upload File
+                              </button>
+                            )}
+                          </UploadButton>
+                          <button className='custom-button' onClick={handleSendMessage}>
+                            Send
+                          </button>
+                          <button
+                            type='button'
+                            className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                            onClick={() => setUseMarkdown(!useMarkdown)}
+                            title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                            MD
+                          </button>
+                        </div>
+
+                        {showEmojiPicker && (
+                          <div style={{ height: '300px', overflowY: 'auto' }}>
+                            <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                </>
+              )}
             </div>
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
