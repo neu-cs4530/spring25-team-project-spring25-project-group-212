@@ -68,7 +68,9 @@ const BulletinBoardPage = () => {
           <div
             id='bulletin-board-page'
             style={{ display: 'flex', flexDirection: 'row', height: '80vh' }}>
-            <div style={{ flex: 1, borderRight: '1px solid #ccc', overflow: 'hidden' }}>
+            <div
+              className='tldraw__editor'
+              style={{ flex: 1, borderRight: '1px solid #ccc', overflow: 'hidden' }}>
               {isUserInCommunity ? (
                 <Tldraw
                   store={store}
@@ -79,24 +81,26 @@ const BulletinBoardPage = () => {
                 <Tldraw store={store} hideUi={true} />
               )}
             </div>
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              {isInCall ? (
-                <JaaSMeeting
-                  appId='vpaas-magic-cookie-be21d63d5af64179a3267d06a7e829f0'
-                  roomName={community ? community._id.toString() : 'error retrieving community'}
-                  getIFrameRef={iframeRef => {
-                    iframeRef.style.height = '100%';
-                    iframeRef.style.width = '100%';
-                  }}
-                  onApiReady={handleApiReady}
-                />
-              ) : (
-                <div>
-                  <p>Call ended. Click below to rejoin.</p>
-                  <button onClick={() => setIsInCall(true)}>Join Call</button>
-                </div>
-              )}
-            </div>
+            {isUserInCommunity && (
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                {isInCall ? (
+                  <JaaSMeeting
+                    appId='vpaas-magic-cookie-be21d63d5af64179a3267d06a7e829f0'
+                    roomName={community ? community._id.toString() : 'error retrieving community'}
+                    getIFrameRef={iframeRef => {
+                      iframeRef.style.height = '100%';
+                      iframeRef.style.width = '100%';
+                    }}
+                    onApiReady={handleApiReady}
+                  />
+                ) : (
+                  <div>
+                    <p>Call ended. Click below to rejoin.</p>
+                    <button onClick={() => setIsInCall(true)}>Join Call</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
