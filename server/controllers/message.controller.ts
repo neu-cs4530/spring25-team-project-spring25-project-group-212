@@ -199,6 +199,36 @@ const messageController = (socket: FakeSOSocket) => {
     }
   };
 
+  const uploadFileRoute = async (req: Request, res: Response) => {
+    try {
+      const { fileUrl, username } = req.body;
+
+      if (!fileUrl || !username) {
+        return res.status(400).json({ error: 'fileUrl and username are required' });
+      }
+
+      const message = await saveMessage({
+        msg: fileUrl,
+        msgFrom: username,
+        msgDateTime: new Date(),
+        type: 'global',
+        useMarkdown: false,
+      });
+
+      if ('error' in message) {
+        return res.status(500).json({ error: message.error });
+      }
+
+      socket.emit('messageUpdate', { msg: message });
+
+      return res.json({ message, fileUrl });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: `Error saving file message: ${(error as Error).message}` });
+    }
+  };
+
   // Add appropriate HTTP verbs and their endpoints to the router
   router.post('/addMessage', addMessageRoute);
   router.get('/getMessages', getMessagesRoute);
@@ -208,6 +238,7 @@ const messageController = (socket: FakeSOSocket) => {
   router.post('/messages/:messageId/seen', markMessageAsSeenRoute);
   router.delete('/messages/:messageId/delete', deleteMessageRoute);
   router.put('/messages/:messageId/restore', restoreMessageRoute);
+  router.post('/uploads', uploadFileRoute);
 
   return router;
 };

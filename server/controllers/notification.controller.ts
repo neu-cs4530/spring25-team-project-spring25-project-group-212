@@ -34,12 +34,9 @@ const notificationController = (socket: FakeSOSocket) => {
       const notifications = await getUserNotifications(username);
 
       res.json(notifications);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        res.status(500).send(`Error when fetching notifications: ${err.message}`);
-      } else {
-        res.status(500).send('Error when fetching notifications');
-      }
+    } catch (err) {
+      const error = err as Error;
+      res.status(500).send(`Error when fetching notifications: ${error.message}`);
     }
   };
 
@@ -67,11 +64,8 @@ const notificationController = (socket: FakeSOSocket) => {
       await clearNotifications(username);
       res.status(200).send('Notifications cleared successfully');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        res.status(500).send(`Error when clearing notifications: ${err.message}`);
-      } else {
-        res.status(500).send('Error when clearing notifications');
-      }
+      const error = err as Error;
+      res.status(500).send(`Error when fetching notifications: ${error.message}`);
     }
   };
 
@@ -119,11 +113,8 @@ const notificationController = (socket: FakeSOSocket) => {
       socket.emit('notificationUpdate', { notification });
       res.json(notification);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        res.status(500).send(`Error when creating notification: ${err.message}`);
-      } else {
-        res.status(500).send('Error when creating notification');
-      }
+      const error = err as Error;
+      res.status(500).send(`Error when fetching notifications: ${error.message}`);
     }
   };
 
