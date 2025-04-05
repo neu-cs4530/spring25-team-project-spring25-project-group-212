@@ -14,7 +14,6 @@ import useQuestion from '../../../../hooks/useQuestion';
  */
 interface QuestionProps {
   question: PopulatedDatabaseQuestion;
-  canClick?: boolean;
 }
 
 /**
@@ -24,7 +23,7 @@ interface QuestionProps {
  *
  * @param q - The question object containing question details.
  */
-const QuestionView = ({ question, canClick }: QuestionProps) => {
+const QuestionView = ({ question }: QuestionProps) => {
   const navigate = useNavigate();
 
   /**
@@ -62,9 +61,7 @@ const QuestionView = ({ question, canClick }: QuestionProps) => {
       <div
         className='question_content'
         onClick={() => {
-          if (question._id && canClick !== undefined && canClick) {
-            handleAnswer(question._id);
-          }
+          handleAnswer(question._id);
         }}>
         <div className='postStats'>
           <div>{question.answers.length || 0} answers</div>
@@ -94,27 +91,22 @@ const QuestionView = ({ question, canClick }: QuestionProps) => {
           <div className='question_meta'>asked {getMetaData(new Date(question.askDateTime))}</div>
         </div>
       </div>
-      {canClick !== undefined && canClick && (
-        <div>
-          {questionSaved ? (
-            <button
-              className='btn'
-              onClick={() =>
-                handleToggleSaveQuestion(currentUser.username, question._id.toString())
-              }>
-              Unsave
-            </button>
-          ) : (
-            <button
-              className='btn'
-              onClick={() =>
-                handleToggleSaveQuestion(currentUser.username, question._id.toString())
-              }>
-              Save
-            </button>
-          )}
-        </div>
-      )}
+
+      <div>
+        {questionSaved ? (
+          <button
+            className='btn'
+            onClick={() => handleToggleSaveQuestion(currentUser.username, question._id.toString())}>
+            Unsave
+          </button>
+        ) : (
+          <button
+            className='btn'
+            onClick={() => handleToggleSaveQuestion(currentUser.username, question._id.toString())}>
+            Save
+          </button>
+        )}
+      </div>
     </div>
   );
 };

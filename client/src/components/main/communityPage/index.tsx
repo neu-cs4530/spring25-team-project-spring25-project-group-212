@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { UploadButton } from 'react-uploader';
 import { Uploader } from 'uploader';
+import { useLocation } from 'react-router-dom';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
@@ -41,6 +42,8 @@ const CommunityPage = () => {
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const location = useLocation();
+  const isPreview = location.state?.isPreview || false;
 
   const {
     community,
@@ -66,7 +69,7 @@ const CommunityPage = () => {
 
     const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
 
-    if (userHasJoinedCommunity) {
+    if (!userHasJoinedCommunity && !isPreview) {
       socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
       joinCommunity(currentCommunity._id.toString(), user.username);
     }
@@ -76,7 +79,7 @@ const CommunityPage = () => {
         socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
       }
     };
-  }, [currentCommunity, user, socket]);
+  }, [currentCommunity, user, socket, isPreview]);
 
   useEffect(() => {
     if (community?.groupChat?.name) {
@@ -210,11 +213,7 @@ const CommunityPage = () => {
                 />
                 <div id='question_list' className='question_list'>
                   {qlist.map(q => (
-                    <QuestionView
-                      question={q}
-                      key={String(q._id)}
-                      canClick={userHasJoinedCommunity}
-                    />
+                    <QuestionView question={q} key={String(q._id)} />
                   ))}
                 </div>
                 {titleText === 'Search Results' && !qlist.length && (
