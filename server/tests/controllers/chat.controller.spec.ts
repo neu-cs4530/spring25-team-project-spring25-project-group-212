@@ -21,6 +21,7 @@ const getChatSpy = jest.spyOn(chatService, 'getChat');
 const addParticipantSpy = jest.spyOn(chatService, 'addParticipantToChat');
 const populateDocumentSpy = jest.spyOn(databaseUtil, 'populateDocument');
 const getChatsByParticipantsSpy = jest.spyOn(chatService, 'getChatsByParticipants');
+const renameChatSpy = jest.spyOn(chatService, 'renameChat');
 
 /**
  * Sample test suite for the /chat endpoints
@@ -128,6 +129,30 @@ describe('Chat Controller', () => {
 
       expect(response.status).toBe(500);
       expect(response.text).toBe('Error creating a chat: Service error');
+    });
+
+    it('should return 500 if populateDocument fails', async () => {
+      const validChatPayload = {
+        participants: ['user1', 'user2'],
+        messages: [{ msg: 'Hey!', msgFrom: 'user1', msgDateTime: new Date('2025-02-01') }],
+      };
+
+      const chatResponse: DatabaseChat = {
+        _id: new mongoose.Types.ObjectId(),
+        name: '',
+        participants: ['user1', 'user2'],
+        messages: [new mongoose.Types.ObjectId()],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      saveChatSpy.mockResolvedValue(chatResponse);
+      populateDocumentSpy.mockResolvedValue({ error: 'Population failed' });
+
+      const response = await supertest(app).post('/chat/createChat').send(validChatPayload);
+
+      expect(response.status).toBe(500);
+      expect(response.text).toBe('Error creating a chat: Population failed');
     });
   });
 
@@ -544,6 +569,32 @@ describe('Chat Controller', () => {
       expect(response.status).toBe(500);
       expect(response.text).toBe('Error retrieving chat: Failed populating all retrieved chats');
     });
+
+    it('should return 500 if populateDocument fails', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+      const userId = new mongoose.Types.ObjectId().toString();
+
+      const updatedChat: DatabaseChat = {
+        _id: new mongoose.Types.ObjectId(),
+        participants: ['user1', 'user2'],
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      addParticipantSpy.mockResolvedValue(updatedChat);
+      populateDocumentSpy.mockResolvedValue({ error: 'Population failed' });
+
+      const response = await supertest(app)
+        .post(`/chat/${chatId}/addParticipant`)
+        .send({ username: userId });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toBe('Error adding participant to chat: Population failed');
+
+      expect(addParticipantSpy).toHaveBeenCalledWith(chatId, userId);
+      expect(populateDocumentSpy).toHaveBeenCalledWith(updatedChat._id.toString(), 'chat');
+    });
   });
 
   describe('Socket handlers', () => {
@@ -594,6 +645,52 @@ describe('Chat Controller', () => {
 
       clientSocket.emit('joinChat', 'chat123');
       clientSocket.emit('leaveChat', 'chat123');
+    });
+  });
+
+  describe('POST /chat/:chatId/rename', () => {
+    it('should rename the chat successfully', async () => {
+      const chatId = new mongoose.Types.ObjectId();
+      const newName = 'Renamed Chat';
+
+      const updatedChat = {
+        _id: chatId,
+        name: newName,
+        participants: ['user1', 'user2'],
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      renameChatSpy.mockResolvedValue(updatedChat);
+
+      const response = await supertest(app).put(`/chat/${chatId}/rename`).send({ newName });
+
+      expect(response.status).toBe(200);
+      expect(response.body.name).toBe(newName);
+      expect(renameChatSpy).toHaveBeenCalledWith(chatId.toString(), newName);
+    });
+
+    it('should return 400 if newName is missing', async () => {
+      const chatId = new mongoose.Types.ObjectId();
+
+      const response = await supertest(app).put(`/chat/${chatId}/rename`).send({});
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Chat name is required');
+      expect(renameChatSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return 500 if renameChat throws an error', async () => {
+      const chatId = new mongoose.Types.ObjectId().toString();
+      const newName = 'Exploding Chat';
+
+      renameChatSpy.mockRejectedValue(new Error('Database error'));
+
+      const response = await supertest(app).put(`/chat/${chatId}/rename`).send({ newName });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toBe('Error renaming chat: Database error');
     });
   });
 });

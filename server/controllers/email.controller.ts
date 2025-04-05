@@ -128,7 +128,7 @@ const emailController = () => {
     );
   };
 
-  return { handleSendDigestEmail };
+  return { send, getEmails, getContents, topQuestionFinder, handleSendDigestEmail };
 };
 
 export default emailController;
