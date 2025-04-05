@@ -21,6 +21,8 @@ const useCommunityStatisticsPage = () => {
   const [topVotedQuestionVotes, setTopVotedQuestionVotes] = useState(0);
   const [topViewedQuestionViews, setTopViewedQuestionViews] = useState(0);
 
+  const [communityStatisticsError, setCommunityStatisticsError] = useState('');
+
   const [questionData, setQuestionData] = useState<{
     labels: string[];
     datasets: Array<{
@@ -67,6 +69,14 @@ const useCommunityStatisticsPage = () => {
      */
     const topQuestionFinder = async (category: 'voted' | 'viewed') => {
       if (!id) {
+        setCommunityStatisticsError('Error retrieving community');
+        return [];
+      }
+      try {
+        await getCommunityById(id);
+        setCommunityStatisticsError('');
+      } catch (error) {
+        setCommunityStatisticsError('Error retrieving community');
         return [];
       }
       const questions = await getQuestionsForCommunity(id);
@@ -113,6 +123,14 @@ const useCommunityStatisticsPage = () => {
      */
     const topUserFinder = async (category: 'asked' | 'answered' | 'viewed' | 'voted') => {
       if (!id) {
+        setCommunityStatisticsError('Error retrieving community');
+        return [];
+      }
+      try {
+        await getCommunityById(id);
+        setCommunityStatisticsError('');
+      } catch (error) {
+        setCommunityStatisticsError('Error retrieving community');
         return [];
       }
       const questions = await getQuestionsForCommunity(id);
@@ -196,6 +214,14 @@ const useCommunityStatisticsPage = () => {
     const loadQuestionData = async (): Promise<void> => {
       if (!id) {
         setNoData();
+        setCommunityStatisticsError('Error retrieving community');
+        return;
+      }
+      try {
+        await getCommunityById(id);
+        setCommunityStatisticsError('');
+      } catch (error) {
+        setCommunityStatisticsError('Error retrieving community');
         return;
       }
       try {
@@ -244,6 +270,14 @@ const useCommunityStatisticsPage = () => {
     const loadMemberData = async () => {
       if (!id) {
         setNoData();
+        setCommunityStatisticsError('Error retrieving community');
+        return;
+      }
+      try {
+        await getCommunityById(id);
+        setCommunityStatisticsError('');
+      } catch (error) {
+        setCommunityStatisticsError('Error retrieving community');
         return;
       }
       try {
@@ -282,6 +316,7 @@ const useCommunityStatisticsPage = () => {
     topAnswererAnswerCount,
     questionData,
     memberData,
+    communityStatisticsError,
   };
 };
 

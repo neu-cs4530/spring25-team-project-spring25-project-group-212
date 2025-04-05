@@ -2,15 +2,20 @@ import { Tldraw, useEditor } from 'tldraw';
 import { useSyncDemo } from '@tldraw/sync';
 import 'tldraw/tldraw.css';
 import './index.css';
-import useCommunityTabsHeader from '../../../../hooks/useCommunityTabsHeader';
+import { useParams } from 'react-router-dom';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
 import CommunityNavBar from '../communityNavBar';
 
 const BulletinBoardPage = () => {
-  const { handleQuestionsAndChatTabClick, community } = useCommunityTabsHeader();
-  const { handleBulletinBoardLoad, handleBulletinBoardSave, showCheckMark, setShowCheckMark } =
-    useBulletinBoardPage();
-  const store = useSyncDemo({ roomId: `${community?._id.toString()}` });
+  const { id } = useParams();
+  const {
+    handleBulletinBoardLoad,
+    handleBulletinBoardSave,
+    showCheckMark,
+    setShowCheckMark,
+    bulletinBoardError,
+  } = useBulletinBoardPage();
+  const store = useSyncDemo({ roomId: `${id?.toString()}` });
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -36,13 +41,26 @@ const BulletinBoardPage = () => {
     );
   }
   return (
-    <div id='bulletin-board-page'>
-      <CommunityNavBar />
-      <div
-        style={{ position: 'relative', width: '100%', height: '600px', border: '1px solid #ccc' }}>
-        <Tldraw store={store} components={{ SharePanel: SnapshotToolbar }} />
-      </div>
-    </div>
+    <>
+      {bulletinBoardError !== '' ? (
+        <strong>{bulletinBoardError}</strong>
+      ) : (
+        <>
+          <div id='bulletin-board-page'>
+            <CommunityNavBar />
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '600px',
+                border: '1px solid #ccc',
+              }}>
+              <Tldraw store={store} components={{ SharePanel: SnapshotToolbar }} />
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
