@@ -114,11 +114,6 @@ const messageController = (socket: FakeSOSocket) => {
 
   const getReactionsRoute = async (req: Request, res: Response) => {
     const { messageId } = req.params;
-
-    if (!messageId) {
-      res.status(400).json({ error: 'Message ID is required' });
-      return;
-    }
     const reactions = await getReactions(messageId);
     res.json(reactions);
   };
@@ -142,13 +137,6 @@ const messageController = (socket: FakeSOSocket) => {
 
     try {
       const updatedMessage = await markMessageAsSeen(messageId, userId, socket);
-
-      if ('message' in updatedMessage && typeof updatedMessage.message === 'string') {
-        return res.status(200).json({
-          success: false,
-          message: updatedMessage.message,
-        });
-      }
 
       if (!updatedMessage || !('_id' in updatedMessage) || !('seenBy' in updatedMessage)) {
         return res.status(500).json({
