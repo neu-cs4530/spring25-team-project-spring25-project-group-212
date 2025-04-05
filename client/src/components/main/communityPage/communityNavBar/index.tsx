@@ -26,6 +26,12 @@ const CommunityNavBar = () => {
         Invites
       </NavLink>
       <NavLink
+        to={`/community/${id}/chat`}
+        id='chat'
+        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        Chat
+      </NavLink>
+      <NavLink
         to={`/community/${id}/statistics`}
         id='statistics'
         className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
