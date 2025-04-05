@@ -4,6 +4,7 @@ import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
 import UserCardView from '../../usersListPage/userCard';
 import UsersListHeader from '../../usersListPage/header';
 import '../index.css';
+import CommunityNavBar from '../communityNavBar';
 
 const CommunityInvitesPage = () => {
   const { userList, setUserFilter, sendUserInvite } = useCommunityInvitesPage();
@@ -18,6 +19,7 @@ const CommunityInvitesPage = () => {
         <strong>No Users to Invite or community does not exist</strong>
       ) : (
         <div>
+          <CommunityNavBar />
           <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
           <div>
             {userList.map(u => (
