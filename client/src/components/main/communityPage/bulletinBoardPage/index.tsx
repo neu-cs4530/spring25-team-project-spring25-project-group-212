@@ -2,14 +2,38 @@ import { Tldraw, useEditor } from 'tldraw';
 import { useSyncDemo } from '@tldraw/sync';
 import 'tldraw/tldraw.css';
 import './index.css';
-import useCommunityTabsHeader from '../../../../hooks/useCommunityTabsHeader';
+import { JaaSMeeting } from '@jitsi/react-sdk';
+import { useState } from 'react';
+import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
+import { useParams } from 'react-router-dom';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
+import useUserContext from '../../../../hooks/useUserContext';
+import CommunityNavBar from '../communityNavBar';
 
 const BulletinBoardPage = () => {
-  const { handleQuestionsAndChatTabClick, community } = useCommunityTabsHeader();
-  const { handleBulletinBoardLoad, handleBulletinBoardSave, showCheckMark, setShowCheckMark } =
-    useBulletinBoardPage();
-  const store = useSyncDemo({ roomId: `${community?._id.toString()}` });
+  const { user } = useUserContext();
+  const [isInCall, setIsInCall] = useState(true);
+  const { id } = useParams();
+  const {
+    handleBulletinBoardLoad,
+    handleBulletinBoardSave,
+    showCheckMark,
+    setShowCheckMark,
+    bulletinBoardError,
+    community,
+  } = useBulletinBoardPage();
+  const store = useSyncDemo({ roomId: `${id?.toString()}` });
+
+  const handleApiReady = (externalApi: IJitsiMeetExternalApi) => {
+    externalApi.addListener('videoConferenceJoined', () => {
+      setIsInCall(true);
+    });
+
+    externalApi.addListener('videoConferenceLeft', () => {
+      setIsInCall(false);
+    });
+  };
+  const isUserInCommunity = community && community.members.includes(user.username);
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -35,15 +59,48 @@ const BulletinBoardPage = () => {
     );
   }
   return (
-    <div id='bulletin-board-page'>
-      <button className='login-button' onClick={handleQuestionsAndChatTabClick}>
-        Questions and Chat
-      </button>
-      <div
-        style={{ position: 'relative', width: '100%', height: '600px', border: '1px solid #ccc' }}>
-        <Tldraw store={store} components={{ SharePanel: SnapshotToolbar }} />
-      </div>
-    </div>
+    <>
+      {bulletinBoardError !== '' ? (
+        <strong>{bulletinBoardError}</strong>
+      ) : (
+        <div>
+          <CommunityNavBar />
+          <div
+            id='bulletin-board-page'
+            style={{ display: 'flex', flexDirection: 'row', height: '80vh' }}>
+            <div style={{ flex: 1, borderRight: '1px solid #ccc', overflow: 'hidden' }}>
+              {isUserInCommunity ? (
+                <Tldraw
+                  store={store}
+                  components={{ SharePanel: SnapshotToolbar }}
+                  options={{ maxPages: 1 }}
+                />
+              ) : (
+                <Tldraw store={store} hideUi={true} />
+              )}
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              {isInCall ? (
+                <JaaSMeeting
+                  appId='vpaas-magic-cookie-be21d63d5af64179a3267d06a7e829f0'
+                  roomName={community ? community._id.toString() : 'error retrieving community'}
+                  getIFrameRef={iframeRef => {
+                    iframeRef.style.height = '100%';
+                    iframeRef.style.width = '100%';
+                  }}
+                  onApiReady={handleApiReady}
+                />
+              ) : (
+                <div>
+                  <p>Call ended. Click below to rejoin.</p>
+                  <button onClick={() => setIsInCall(true)}>Join Call</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
