@@ -335,7 +335,7 @@ const ProfileSettings: React.FC = () => {
                             }}>
                             Confirm
                           </Button>
-                          <Button colorPalette='gray.500' onClick={onClose}>
+                          <Button colorPalette='blue' variant='outline' onClick={onClose}>
                             Cancel
                           </Button>
                         </HStack>
