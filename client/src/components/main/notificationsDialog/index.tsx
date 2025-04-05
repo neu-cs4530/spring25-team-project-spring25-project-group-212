@@ -56,17 +56,17 @@ const Notifications = () => {
     <Box borderTop='1px solid' borderColor='gray.200'>
       <Flex
         justifyContent={notifications.length > 0 ? 'space-between' : 'center'}
-        alignItems='center'
-        mb={3}
-        mt={3}>
-        <Heading size='md'>Notifications</Heading>
+        alignItems='center'>
+        <Heading size='md' ml='3'>
+          Notifications
+        </Heading>
         {notifications.length > 0 && (
           <Button size='sm' variant='ghost' colorScheme='gray' onClick={handleClearNotifications}>
             Clear
           </Button>
         )}
       </Flex>
-      <Box maxH='300px' overflowY='auto' pr={1}>
+      <Box maxH='30vh' overflowY='auto'>
         {notifications.length === 0 ? (
           <Flex justify='center'>
             <Box p={4} borderWidth='1px' borderRadius='md'>
