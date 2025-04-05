@@ -9,7 +9,7 @@ const UserCommunityInvitesPage = () => {
   return (
     <div>
       {communitiesInvitedTo.length === 0 ? (
-        <div> No Invites</div>
+        <div>No Invites</div>
       ) : (
         <div>
           {communitiesInvitedTo.map(c => (

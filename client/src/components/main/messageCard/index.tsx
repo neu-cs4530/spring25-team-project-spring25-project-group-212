@@ -142,6 +142,27 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
     messageContent = <p className='deleted-message'>Message has been deleted</p>;
   } else if ('useMarkdown' in message && message.useMarkdown) {
     messageContent = <ReactMarkdown>{delMessage.msg}</ReactMarkdown>;
+  } else if (delMessage.msg.includes('/upcdn')) {
+    messageContent = (
+      <div className='pdf-preview'>
+        <iframe
+          src={delMessage.msg}
+          title='PDF Preview'
+          width='50%'
+          height='250px'
+          style={{ border: 'none' }}
+        />
+        <p>
+          <a
+            href={delMessage.msg}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-500 underline'>
+            Open file in new tab
+          </a>
+        </p>
+      </div>
+    );
   } else {
     messageContent = <p>{delMessage.msg}</p>;
   }

@@ -8,13 +8,18 @@
     "shared"
   ],
   "dependencies": {
-    "emoji-picker-react": "^4.12.2",
-    "react-markdown": "^10.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.5",
     "@mui/material": "^6.4.7",
     "date-fns": "^4.1.0",
-    "react-markdown": "^10.1.0"
+    "emoji-picker-react": "^4.12.2",
+    "multer": "^1.4.5-lts.2",
+    "react-markdown": "^10.1.0",
+    "react-uploader": "^3.43.0",
+    "uploader": "^3.48.3"
+  },
+  "devDependencies": {
+    "@types/multer": "^1.4.12"
   }
 }

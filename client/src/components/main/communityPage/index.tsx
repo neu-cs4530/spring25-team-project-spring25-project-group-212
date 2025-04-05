@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import EmojiPicker from 'emoji-picker-react';
+import { UploadButton } from 'react-uploader';
+import { Uploader } from 'uploader';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
@@ -11,6 +13,17 @@ import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRule
 import { renameChat } from '../../../services/chatService';
 import './index.css';
 import useCommunityTabsHeader from '../../../hooks/useCommunityTabsHeader';
+import { uploadFile } from '../../../services/messageService';
+
+const uploader = Uploader({ apiKey: 'public_223k28T4HR7pgyJRnMLX4QntHQxQ' });
+const uploaderOptions = {
+  multi: false,
+  styles: {
+    colors: {
+      primary: '#4A90E2',
+    },
+  },
+};
 
 const CommunityPage = () => {
   const {
@@ -95,6 +108,15 @@ const CommunityPage = () => {
       setChatName(chatName);
     } catch (error) {
       throw Error('Failed to rename the chat');
+    }
+  };
+
+  const handleFileUpload = async (url: string, username: string) => {
+    try {
+      const res = await uploadFile({ fileUrl: url, username });
+      setNewMessage(prev => `${prev}${res}`);
+    } catch (err) {
+      throw Error('Error uploading file message');
     }
   };
 
@@ -259,6 +281,20 @@ const CommunityPage = () => {
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                   😀
                 </button>
+                <UploadButton
+                  uploader={uploader}
+                  options={uploaderOptions}
+                  onComplete={files => {
+                    files.forEach(file => {
+                      handleFileUpload(file.fileUrl, user.username);
+                    });
+                  }}>
+                  {({ onClick }) => (
+                    <button className='custom-button' onClick={onClick}>
+                      Upload File
+                    </button>
+                  )}
+                </UploadButton>
                 <button className='custom-button' onClick={handleSendMessage}>
                   Send
                 </button>

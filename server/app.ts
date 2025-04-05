@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import * as http from 'http';
+import path from 'path';
 
 import answerController from './controllers/answer.controller';
 import questionController from './controllers/question.controller';
@@ -87,6 +88,7 @@ app.use('/chat', chatController(socket));
 app.use('/games', gameController(socket));
 app.use('/community', communityController(socket));
 app.use('/notification', notificationController(socket));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Export the app instance
 export { app, server, startServer };

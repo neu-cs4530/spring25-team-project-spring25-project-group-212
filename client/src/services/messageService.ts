@@ -104,6 +104,15 @@ const restoreMessage = async (messageId: string) => {
   return res.data;
 };
 
+const uploadFile = async (payload: { fileUrl: string; username: string }): Promise<string> => {
+  const res = await api.post(`${MESSAGE_API_URL}/uploads`, payload);
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading the file');
+  }
+  return res.data.fileUrl;
+};
+
 export {
   addMessage,
   getMessages,
@@ -112,4 +121,5 @@ export {
   markMessageAsSeen,
   deleteMessage,
   restoreMessage,
+  uploadFile,
 };
