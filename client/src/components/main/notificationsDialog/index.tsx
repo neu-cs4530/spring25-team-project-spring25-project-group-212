@@ -54,7 +54,11 @@ const Notifications = () => {
 
   return (
     <Box borderTop='1px solid' borderColor='gray.200'>
-      <Flex justify='space-between' align='center'>
+      <Flex
+        justifyContent={notifications.length > 0 ? 'space-between' : 'center'}
+        alignItems='center'
+        mb={3}
+        mt={3}>
         <Heading size='md'>Notifications</Heading>
         {notifications.length > 0 && (
           <Button size='sm' variant='ghost' colorScheme='gray' onClick={handleClearNotifications}>
@@ -64,9 +68,11 @@ const Notifications = () => {
       </Flex>
       <Box maxH='300px' overflowY='auto' pr={1}>
         {notifications.length === 0 ? (
-          <Box p={4} borderWidth='1px' borderRadius='md'>
-            <Text>No notifications</Text>
-          </Box>
+          <Flex justify='center'>
+            <Box p={4} borderWidth='1px' borderRadius='md'>
+              <Text>No notifications</Text>
+            </Box>
+          </Flex>
         ) : (
           <Box display='flex' flexDirection='column' gap='8px'>
             {notifications.map(notification => (
