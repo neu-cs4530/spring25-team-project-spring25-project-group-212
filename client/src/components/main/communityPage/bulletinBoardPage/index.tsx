@@ -4,12 +4,18 @@ import 'tldraw/tldraw.css';
 import './index.css';
 import useCommunityTabsHeader from '../../../../hooks/useCommunityTabsHeader';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
+import useUserContext from '../../../../hooks/useUserContext';
 
 const BulletinBoardPage = () => {
+  const { user } = useUserContext();
   const { handleQuestionsAndChatTabClick, community } = useCommunityTabsHeader();
   const { handleBulletinBoardLoad, handleBulletinBoardSave, showCheckMark, setShowCheckMark } =
     useBulletinBoardPage();
   const store = useSyncDemo({ roomId: `${community?._id.toString()}` });
+  if (community === undefined || community === null) {
+    return <div>Loading...</div>;
+  }
+  const isUserInCommunity = community.members.includes(user.username);
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -40,8 +46,22 @@ const BulletinBoardPage = () => {
         Questions and Chat
       </button>
       <div
-        style={{ position: 'relative', width: '100%', height: '600px', border: '1px solid #ccc' }}>
-        <Tldraw store={store} components={{ SharePanel: SnapshotToolbar }} />
+        style={{ position: 'relative', width: '100%', height: '800px', border: '1px solid #ccc' }}>
+        {isUserInCommunity ? (
+          <Tldraw
+            store={store}
+            components={{ SharePanel: SnapshotToolbar }}
+            options={{ maxPages: 1 }}
+          />
+        ) : (
+          <Tldraw
+            store={store}
+            onMount={editor => {
+              editor.updateInstanceState({ isReadonly: true });
+            }}
+            options={{ maxPages: 1 }}
+          />
+        )}
       </div>
     </div>
   );
