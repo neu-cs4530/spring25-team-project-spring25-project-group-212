@@ -54,17 +54,18 @@ const Notifications = () => {
 
   return (
     <Box borderTop='1px solid' borderColor='gray.200'>
-      <Flex
-        justifyContent={notifications.length > 0 ? 'space-between' : 'center'}
-        alignItems='center'>
+      <Flex justifyContent='space-between' alignItems='center'>
         <Heading size='md' ml='3'>
           Notifications
         </Heading>
-        {notifications.length > 0 && (
-          <Button size='sm' variant='ghost' colorScheme='gray' onClick={handleClearNotifications}>
-            Clear
-          </Button>
-        )}
+        <Button
+          size='sm'
+          variant='ghost'
+          colorScheme='gray'
+          onClick={handleClearNotifications}
+          disabled={notifications.length === 0}>
+          Clear
+        </Button>
       </Flex>
       <Box maxH='30vh' overflowY='auto'>
         {notifications.length === 0 ? (
@@ -79,6 +80,7 @@ const Notifications = () => {
               <Box
                 key={notification._id.toString()}
                 p={3}
+                mx={1}
                 borderWidth='1px'
                 borderRadius='md'
                 bg={!notification.read ? 'blue.50' : 'white'}
