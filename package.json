@@ -12,6 +12,7 @@
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.5",
     "@mui/material": "^6.4.7",
+    "@tldraw/state": "^3.11.1",
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.12.2",
     "multer": "^1.4.5-lts.2",
@@ -20,6 +21,14 @@
     "uploader": "^3.48.3"
   },
   "devDependencies": {
-    "@types/multer": "^1.4.12"
+    "@types/multer": "^1.4.12",
+    "react-markdown": "^10.1.0",
+    "tailwindcss": "^4.0.17"
+  },
+  "overrides": {
+    "camelcase-css": "2.0.0"
+  },
+  "devDependencies": {
+    "camelcase": "^8.0.0"
   }
 }

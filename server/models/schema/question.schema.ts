@@ -1,4 +1,9 @@
 import { Schema } from 'mongoose';
+
+const voteSchema: Schema = new Schema({
+  username: { type: String, required: true },
+  timestamp: { type: Date, required: true },
+});
 /**
  * Mongoose schema for the Question collection.
  *
@@ -33,8 +38,8 @@ const questionSchema: Schema = new Schema(
       type: Date,
     },
     views: [{ type: String }],
-    upVotes: [{ type: String }],
-    downVotes: [{ type: String }],
+    upVotes: { type: [voteSchema], default: [] },
+    downVotes: { type: [voteSchema], default: [] },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     useMarkdown: {
       type: Boolean,

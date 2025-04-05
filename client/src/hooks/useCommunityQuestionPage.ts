@@ -8,6 +8,7 @@ import {
   PopulatedDatabaseQuestion,
 } from '../types/types';
 import { getQuestionsForCommunity } from '../services/communityService';
+import { getQuestionsByFilter } from '../services/questionService';
 
 /**
  * Custom hook for managing the question page state, filtering, and real-time updates.
@@ -47,12 +48,20 @@ const useCommunityQuestionPage = () => {
 
   useEffect(() => {
     /**
-     * Function to fetch questions based on the filter and update the question list.
+     * Function to fetch questions for this community based on the filter and update the question list.
      */
     const fetchData = async () => {
       try {
         if (id) {
-          const res = await getQuestionsForCommunity(id);
+          const allQuestionsWithOrder = await getQuestionsByFilter(questionOrder);
+          const unfilteredCommunityQuestions: PopulatedDatabaseQuestion[] =
+            await getQuestionsForCommunity(id);
+          const unfilteredCommunityQuestionsIds = new Set(
+            [...unfilteredCommunityQuestions].map(q => q._id.toString()),
+          );
+          const res = allQuestionsWithOrder.filter(q =>
+            unfilteredCommunityQuestionsIds.has(q._id.toString()),
+          );
           setQlist(res || []);
           setQError('');
         }

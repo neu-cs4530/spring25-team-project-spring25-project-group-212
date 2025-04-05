@@ -2,6 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { NotificationUpdatePayload, PopulatedDatabaseNotification } from '../types/types';
 import { getUserNotifications } from '../services/notificationService';
 import useUserContext from './useUserContext';
+import bellSound from '../assets/bells.wav';
+
+const bell = new Audio(bellSound);
 
 /**
  * Custom hook for managing notifications.
@@ -44,6 +47,7 @@ const useNotifications = () => {
     const handleNotificationUpdate = (data: NotificationUpdatePayload) => {
       // Only update if the notification is for the current user
       if (data.notification.recipient === user?.username) {
+        bell.play().catch(() => {});
         // Refetch all notifications to get the populated data
         fetchNotifications();
       }
@@ -63,5 +67,4 @@ const useNotifications = () => {
     refetchNotifications: fetchNotifications,
   };
 };
-
 export default useNotifications;

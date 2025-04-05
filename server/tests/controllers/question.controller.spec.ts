@@ -323,6 +323,7 @@ describe('Test questionController', () => {
   });
 
   describe('POST /upvoteQuestion', () => {
+    const now = new Date();
     it('should upvote a question successfully', async () => {
       const mockReqBody = {
         qid: '65e9b5a995b6c7045a30d823',
@@ -331,7 +332,13 @@ describe('Test questionController', () => {
 
       const mockResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
+        downVotes: [],
+      };
+
+      const mockResponseIsoString = {
+        msg: 'Question upvoted successfully',
+        upVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
         downVotes: [],
       };
 
@@ -340,7 +347,7 @@ describe('Test questionController', () => {
       const response = await supertest(app).post('/question/upvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponse);
+      expect(response.body).toEqual(mockResponseIsoString);
     });
 
     it('should cancel the upvote successfully', async () => {
@@ -351,7 +358,13 @@ describe('Test questionController', () => {
 
       const mockFirstResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['some-user'],
+        upVotes: [{ username: 'some-user', timestamp: now }],
+        downVotes: [],
+      };
+
+      const mockFirstResponseIso = {
+        msg: 'Question upvoted successfully',
+        upVotes: [{ username: 'some-user', timestamp: now.toISOString() }],
         downVotes: [],
       };
 
@@ -365,7 +378,7 @@ describe('Test questionController', () => {
 
       const firstResponse = await supertest(app).post('/question/upvoteQuestion').send(mockReqBody);
       expect(firstResponse.status).toBe(200);
-      expect(firstResponse.body).toEqual(mockFirstResponse);
+      expect(firstResponse.body).toEqual(mockFirstResponseIso);
 
       addVoteToQuestionSpy.mockResolvedValueOnce(mockSecondResponse);
 
@@ -386,7 +399,13 @@ describe('Test questionController', () => {
       // First upvote the question
       let mockResponseWithBothVotes: VoteResponse = {
         msg: 'Question upvoted successfully',
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
+        downVotes: [],
+      };
+
+      const mockResponseWithBothVotesIso = {
+        msg: 'Question upvoted successfully',
+        upVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
         downVotes: [],
       };
 
@@ -395,12 +414,18 @@ describe('Test questionController', () => {
       let response = await supertest(app).post('/question/upvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponseWithBothVotes);
+      expect(response.body).toEqual(mockResponseWithBothVotesIso);
 
       // Now downvote the question
       mockResponseWithBothVotes = {
         msg: 'Question downvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
+        upVotes: [],
+      };
+
+      const mockResponseWithBothVotesIso2 = {
+        msg: 'Question downvoted successfully',
+        downVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
         upVotes: [],
       };
 
@@ -409,7 +434,7 @@ describe('Test questionController', () => {
       response = await supertest(app).post('/question/downvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponseWithBothVotes);
+      expect(response.body).toEqual(mockResponseWithBothVotesIso2);
     });
 
     it('should return bad request error if the request had qid missing', async () => {
@@ -434,6 +459,7 @@ describe('Test questionController', () => {
   });
 
   describe('POST /downvoteQuestion', () => {
+    const now = new Date();
     it('should downvote a question successfully', async () => {
       const mockReqBody = {
         qid: '65e9b5a995b6c7045a30d823',
@@ -442,7 +468,13 @@ describe('Test questionController', () => {
 
       const mockResponse = {
         msg: 'Question upvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
+        upVotes: [],
+      };
+
+      const mockResponseIso = {
+        msg: 'Question upvoted successfully',
+        downVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
         upVotes: [],
       };
 
@@ -451,7 +483,7 @@ describe('Test questionController', () => {
       const response = await supertest(app).post('/question/downvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponse);
+      expect(response.body).toEqual(mockResponseIso);
     });
 
     it('should cancel the downvote successfully', async () => {
@@ -463,7 +495,13 @@ describe('Test questionController', () => {
       const mockFirstResponse = {
         msg: 'Question downvoted successfully',
         upVotes: [],
-        downVotes: ['some-user'],
+        downVotes: [{ username: 'some-user', timestamp: now }],
+      };
+
+      const mockFirstResponseIso = {
+        msg: 'Question downvoted successfully',
+        upVotes: [],
+        downVotes: [{ username: 'some-user', timestamp: now.toISOString() }],
       };
 
       const mockSecondResponse = {
@@ -478,7 +516,7 @@ describe('Test questionController', () => {
         .post('/question/downvoteQuestion')
         .send(mockReqBody);
       expect(firstResponse.status).toBe(200);
-      expect(firstResponse.body).toEqual(mockFirstResponse);
+      expect(firstResponse.body).toEqual(mockFirstResponseIso);
 
       addVoteToQuestionSpy.mockResolvedValueOnce(mockSecondResponse);
 
@@ -499,7 +537,13 @@ describe('Test questionController', () => {
       // First downvote the question
       let mockResponse: VoteResponse = {
         msg: 'Question downvoted successfully',
-        downVotes: ['new-user'],
+        downVotes: [{ username: 'new-user', timestamp: now }],
+        upVotes: [],
+      };
+
+      const mockResponseIso = {
+        msg: 'Question downvoted successfully',
+        downVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
         upVotes: [],
       };
 
@@ -508,13 +552,19 @@ describe('Test questionController', () => {
       let response = await supertest(app).post('/question/downvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponse);
+      expect(response.body).toEqual(mockResponseIso);
 
       // Then upvote the question
       mockResponse = {
         msg: 'Question upvoted successfully',
         downVotes: [],
-        upVotes: ['new-user'],
+        upVotes: [{ username: 'new-user', timestamp: now }],
+      };
+
+      const mockResponseIso2 = {
+        msg: 'Question upvoted successfully',
+        downVotes: [],
+        upVotes: [{ username: 'new-user', timestamp: now.toISOString() }],
       };
 
       addVoteToQuestionSpy.mockResolvedValueOnce(mockResponse);
@@ -522,7 +572,7 @@ describe('Test questionController', () => {
       response = await supertest(app).post('/question/upvoteQuestion').send(mockReqBody);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockResponse);
+      expect(response.body).toEqual(mockResponseIso2);
     });
 
     it('should return bad request error if the request had qid missing', async () => {

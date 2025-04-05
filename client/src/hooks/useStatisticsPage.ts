@@ -87,9 +87,9 @@ const useStatisticsPage = () => {
         } else if (category === 'answered') {
           question.answers.forEach(answer => incrementUserCount(answer.ansBy));
         } else {
-          // 'voted'
-          question.upVotes.forEach(incrementUserCount);
-          question.downVotes.forEach(incrementUserCount);
+          // 'voted' - since upvotes and downvotes are now objects, we must make sure to map to user  names before incrementing.
+          question.upVotes.map(vote => vote.username).forEach(incrementUserCount);
+          question.downVotes.map(vote => vote.username).forEach(incrementUserCount);
         }
       });
 

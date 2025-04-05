@@ -24,6 +24,7 @@ import {
   sortQuestionsByNewest,
   sortQuestionsByUnanswered,
   sortQuestionsBySaved,
+  sortQuestionsByTrending,
 } from '../utils/sort.util';
 import UserModel from '../models/users.model';
 
@@ -45,10 +46,12 @@ const checkKeywordInQuestion = (q: Question, keywordlist: string[]): boolean => 
 /**
  * Retrieves questions ordered by specified criteria.
  * @param {OrderType} order - The order type to filter the questions
+ * @param {string} communityId -
  * @returns {Promise<Question[]>} - The ordered list of questions
  */
 export const getQuestionsByOrder = async (
   order: OrderType,
+  communityId?: string,
 ): Promise<PopulatedDatabaseQuestion[]> => {
   try {
     const qlist: PopulatedDatabaseQuestion[] = await QuestionModel.find().populate<{
@@ -68,6 +71,8 @@ export const getQuestionsByOrder = async (
         return sortQuestionsByUnanswered(qlist);
       case 'newest':
         return sortQuestionsByNewest(qlist);
+      case 'trending':
+        return sortQuestionsByTrending(qlist);
       case 'saved':
         return [];
       case 'mostViewed':
@@ -200,33 +205,53 @@ export const saveQuestion = async (question: Question): Promise<QuestionResponse
 /**
  * Adds a vote to a question.
  * @param {string} qid - The question ID
- * @param {string} username - The username who voted
+ * @param {string} uname - The username who voted
  * @param {'upvote' | 'downvote'} voteType - The vote type
  * @returns {Promise<VoteResponse>} - The updated vote result
  */
 export const addVoteToQuestion = async (
   qid: string,
-  username: string,
+  uname: string,
   voteType: 'upvote' | 'downvote',
 ): Promise<VoteResponse> => {
   let updateOperation: QueryOptions;
-
+  const now = new Date();
   if (voteType === 'upvote') {
     updateOperation = [
       {
         $set: {
           upVotes: {
             $cond: [
-              { $in: [username, '$upVotes'] },
-              { $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u', username] } } },
-              { $concatArrays: ['$upVotes', [username]] },
+              {
+                $in: [uname, '$upVotes.username'],
+              },
+              {
+                $map: {
+                  input: '$upVotes',
+                  as: 'vote',
+                  in: {
+                    $cond: [
+                      { $eq: ['$$vote.username', uname] },
+                      { username: '$$vote.username', timestamp: now }, // Update timestamp if already in upVotes
+                      '$$vote',
+                    ],
+                  },
+                },
+              },
+              { $concatArrays: ['$upVotes', [{ username: uname, timestamp: new Date() }]] },
             ],
           },
           downVotes: {
             $cond: [
-              { $in: [username, '$upVotes'] },
+              { $in: [uname, '$upVotes.username'] },
               '$downVotes',
-              { $filter: { input: '$downVotes', as: 'd', cond: { $ne: ['$$d', username] } } },
+              {
+                $filter: {
+                  input: '$downVotes',
+                  as: 'd',
+                  cond: { $ne: ['$$d.username', uname] },
+                },
+              },
             ],
           },
         },
@@ -238,16 +263,36 @@ export const addVoteToQuestion = async (
         $set: {
           downVotes: {
             $cond: [
-              { $in: [username, '$downVotes'] },
-              { $filter: { input: '$downVotes', as: 'd', cond: { $ne: ['$$d', username] } } },
-              { $concatArrays: ['$downVotes', [username]] },
+              {
+                $in: [uname, '$downVotes.username'],
+              },
+              {
+                $map: {
+                  input: '$downVotes',
+                  as: 'vote',
+                  in: {
+                    $cond: [
+                      { $eq: ['$$vote.username', uname] },
+                      { username: '$$vote.username', timestamp: new Date() }, // Update timestamp if already in downVotes
+                      '$$vote',
+                    ],
+                  },
+                },
+              },
+              { $concatArrays: ['$downVotes', [{ username: uname, timestamp: new Date() }]] },
             ],
           },
           upVotes: {
             $cond: [
-              { $in: [username, '$downVotes'] },
+              { $in: [uname, '$downVotes.username'] },
               '$upVotes',
-              { $filter: { input: '$upVotes', as: 'u', cond: { $ne: ['$$u', username] } } },
+              {
+                $filter: {
+                  input: '$upVotes',
+                  as: 'u',
+                  cond: { $ne: ['$$u.username', uname] },
+                },
+              },
             ],
           },
         },
@@ -269,19 +314,19 @@ export const addVoteToQuestion = async (
     let msg = '';
 
     if (voteType === 'upvote') {
-      msg = result.upVotes.includes(username)
+      msg = result.upVotes.some(vote => vote.username === uname)
         ? 'Question upvoted successfully'
         : 'Upvote cancelled successfully';
     } else {
-      msg = result.downVotes.includes(username)
+      msg = result.downVotes.some(vote => vote.username === uname)
         ? 'Question downvoted successfully'
         : 'Downvote cancelled successfully';
     }
 
     return {
       msg,
-      upVotes: result.upVotes || [],
-      downVotes: result.downVotes || [],
+      upVotes: result.upVotes.map(({ username, timestamp }) => ({ username, timestamp })) || [],
+      downVotes: result.downVotes.map(({ username, timestamp }) => ({ username, timestamp })) || [],
     };
   } catch (err) {
     return {
