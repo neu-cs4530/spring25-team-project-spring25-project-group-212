@@ -1,5 +1,16 @@
 import React from 'react';
-import './index.css';
+import {
+  Box,
+  Button,
+  Heading,
+  Input,
+  Text,
+  VStack,
+  HStack,
+  useDisclosure,
+  Grid,
+  GridItem,
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import useProfileSettings from '../../hooks/useProfileSettings';
 
@@ -15,7 +26,6 @@ const ProfileSettings: React.FC = () => {
     confirmNewPassword,
     successMessage,
     errorMessage,
-    showConfirmation,
     pendingAction,
     canEditProfile,
     showPassword,
@@ -27,7 +37,6 @@ const ProfileSettings: React.FC = () => {
     setNewEmail,
     setNewPassword,
     setConfirmNewPassword,
-    setShowConfirmation,
 
     handleResetPassword,
     handleUpdateBiography,
@@ -43,226 +52,307 @@ const ProfileSettings: React.FC = () => {
   } = useProfileSettings();
 
   const navigate = useNavigate();
+  const { open, onOpen, onClose } = useDisclosure();
 
   if (loading) {
     return (
-      <div className='page-container'>
-        <div className='profile-card'>
-          <h2>Loading user data...</h2>
-        </div>
-      </div>
+      <Box className='page-container' p={4}>
+        <Box className='profile-card' p={6} borderWidth='1px' borderRadius='md' boxShadow='md'>
+          <Heading size='md'>Loading user data...</Heading>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className='page-container'>
-      <div className='profile-card'>
-        <h2>Profile</h2>
-        {successMessage && <p className='success-message'>{successMessage}</p>}
-        {errorMessage && <p className='error-message'>{errorMessage}</p>}
-        {userData ? (
-          <>
-            <h4>General Information</h4>
-            <p>
-              <strong>Username:</strong> {userData.username}
-            </p>
-
-            {/* ---- Biography Section ---- */}
-            {!editBioMode && (
-              <p>
-                <strong>Biography:</strong> {userData.biography || 'No biography yet.'}
-                {canEditProfile && (
-                  <button
-                    className='login-button'
-                    style={{ marginLeft: '1rem' }}
-                    onClick={() => {
-                      setEditBioMode(true);
-                      setNewBio(userData.biography || '');
-                    }}>
-                    Edit
-                  </button>
-                )}
-              </p>
-            )}
-
-            {editBioMode && canEditProfile && (
-              <p style={{ margin: '1rem 0' }}>
-                <strong>Biography:</strong>
-                <input
-                  className='input-text'
-                  type='text'
-                  value={newBio}
-                  onChange={e => setNewBio(e.target.value)}
-                />
-                <button
-                  className='login-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={handleUpdateBiography}>
-                  Save
-                </button>
-                <button
-                  className='delete-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={() => setEditBioMode(false)}>
-                  Cancel
-                </button>
-              </p>
-            )}
-
-            {!editEmailMode && canEditProfile && (
-              <p>
-                <strong>Email:</strong> {userData.email || 'No email provided.'}
-                {canEditProfile && (
-                  <button
-                    className='login-button'
-                    style={{ marginLeft: '1rem' }}
-                    onClick={() => {
-                      setEditEmailMode(true);
-                      setNewEmail(userData.email || '');
-                    }}>
-                    Edit
-                  </button>
-                )}
-              </p>
-            )}
-
-            {editEmailMode && canEditProfile && (
-              <p style={{ margin: '1rem 0' }}>
-                <strong>Email:</strong>
-                <input
-                  className='input-text'
-                  type='text'
-                  value={newEmail}
-                  onChange={e => setNewEmail(e.target.value)}
-                />
-                <div>
-                  By providing your email you agree to receiving daily emails from
-                  Fake-Stack-Overflow
-                </div>
-                <button
-                  className='login-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={handleUpdateEmail}>
-                  Save
-                </button>
-                <button
-                  className='delete-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={() => setEditEmailMode(false)}>
-                  Cancel
-                </button>
-              </p>
-            )}
-
-            <p>
-              <strong>Date Joined:</strong>{' '}
-              {userData.dateJoined ? new Date(userData.dateJoined).toLocaleDateString() : 'N/A'}
-            </p>
-
-            <p>
-              <div>
-                <strong>Top Voted Question: </strong>
-                {topVotedQuestion === null ? <></> : <>{topVotedCount}</>}
-              </div>
-              {topVotedQuestion === null ? (
-                <>No Questions asked yet</>
-              ) : (
-                <div
-                  className='postTitle'
-                  onClick={e => {
-                    navigate(`/question/${topVotedQuestion._id}`);
-                  }}>
-                  {topVotedQuestion.title}
-                </div>
-              )}
-            </p>
-
-            <p>
-              <div>
-                <strong>Top Viewed Question: </strong>
-                {topViewedQuestion === null ? <></> : <>{topViewedCount} views</>}
-              </div>
-              {topViewedQuestion === null ? (
-                <>No Questions asked yet</>
-              ) : (
-                <div
-                  className='postTitle'
-                  onClick={e => {
-                    navigate(`/question/${topViewedQuestion._id}`);
-                  }}>
-                  {topViewedQuestion.title}
-                </div>
-              )}
-            </p>
-            {canEditProfile && (
-              <button
-                className='login-button'
-                style={{ marginTop: 20, marginLeft: 0 }}
-                onClick={handleUserInvites}>
-                View Community Invites
-              </button>
-            )}
-
-            {/* ---- Reset Password Section ---- */}
-            {canEditProfile && (
+    <>
+      <Box className='page-container' p={4}>
+        <Box className='profile-card' p={6} borderWidth='1px' borderRadius='md' boxShadow='md'>
+          <Grid templateRows='repeat(2, 1fr)' templateColumns='repeat(5, 1fr)' gap={4}>
+            <GridItem rowSpan={1} colSpan={5}>
+              <Box>
+                <Heading size='lg' mb={4}>
+                  Profile
+                </Heading>
+              </Box>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={5}>
+              <Box>
+                {successMessage && <Text color='green.500'>{successMessage}</Text>}
+                {errorMessage && <Text color='red.500'>{errorMessage}</Text>}
+              </Box>
+            </GridItem>
+            {userData ? (
               <>
-                <h4>Reset Password</h4>
-                <input
-                  className='input-text'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='New Password'
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-                <input
-                  className='input-text'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='Confirm New Password'
-                  value={confirmNewPassword}
-                  onChange={e => setConfirmNewPassword(e.target.value)}
-                />
-                <button className='toggle-password-button' onClick={togglePasswordVisibility}>
-                  {showPassword ? 'Hide Passwords' : 'Show Passwords'}
-                </button>
-                <button className='login-button' onClick={handleResetPassword}>
-                  Reset
-                </button>
-              </>
-            )}
+                <GridItem rowSpan={4} colSpan={1}>
+                  <Box>
+                    <Heading size='sm'>General Information</Heading>
+                  </Box>
+                </GridItem>
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Username:</strong> {userData.username}
+                  </Text>
+                </GridItem>
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Date Joined:</strong>{' '}
+                    {userData.dateJoined
+                      ? new Date(userData.dateJoined).toLocaleDateString()
+                      : 'N/A'}
+                  </Text>
+                </GridItem>
+                {/* ---- Biography Section ---- */}
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Biography:</strong>{' '}
+                    {!editBioMode ? (
+                      <>
+                        {userData.biography || 'No biography yet.'}
+                        {canEditProfile && (
+                          <Button
+                            size='xs'
+                            ml={4}
+                            variant='outline'
+                            colorPalette='blue'
+                            onClick={() => {
+                              setEditBioMode(true);
+                              setNewBio(userData.biography || '');
+                            }}>
+                            Edit
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <VStack align='start' p={2}>
+                        <Input
+                          value={newBio}
+                          onChange={e => setNewBio(e.target.value)}
+                          placeholder='Enter your biography'
+                        />
+                        <HStack>
+                          <Button
+                            size='xs'
+                            colorPalette='blue'
+                            variant='outline'
+                            onClick={handleUpdateBiography}>
+                            Save
+                          </Button>
+                          <Button
+                            size='xs'
+                            colorPalette='red'
+                            variant='outline'
+                            onClick={() => setEditBioMode(false)}>
+                            Cancel
+                          </Button>
+                        </HStack>
+                      </VStack>
+                    )}
+                  </Text>
+                </GridItem>
+                {/* ---- Email Section ---- */}
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Email:</strong>{' '}
+                    {!editEmailMode ? (
+                      <>
+                        {userData.email || 'No email provided.'}
+                        {canEditProfile && (
+                          <Button
+                            size='xs'
+                            ml={4}
+                            variant='outline'
+                            colorPalette='blue'
+                            onClick={() => {
+                              setEditEmailMode(true);
+                              setNewEmail(userData.email || '');
+                            }}>
+                            Edit
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <VStack align='start' p={2}>
+                        <Input
+                          value={newEmail}
+                          onChange={e => setNewEmail(e.target.value)}
+                          placeholder='Enter your email'
+                        />
+                        <Text fontSize='sm' color='gray.500'>
+                          By providing your email, you agree to receive daily emails from
+                          Fake-Stack-Overflow.
+                        </Text>
+                        <HStack>
+                          <Button
+                            size='xs'
+                            colorPalette='blue'
+                            variant='outline'
+                            onClick={handleUpdateEmail}>
+                            Save
+                          </Button>
+                          <Button
+                            size='xs'
+                            colorPalette='red'
+                            variant='outline'
+                            onClick={() => setEditEmailMode(false)}>
+                            Cancel
+                          </Button>
+                        </HStack>
+                      </VStack>
+                    )}
+                  </Text>
+                </GridItem>
 
-            {/* ---- Danger Zone (Delete User) ---- */}
-            {canEditProfile && (
-              <>
-                <h4>Danger Zone</h4>
-                <button className='delete-button' onClick={handleDeleteUser}>
-                  Delete This User
-                </button>
-              </>
-            )}
-          </>
-        ) : (
-          <p>No user data found. Make sure the username parameter is correct.</p>
-        )}
+                {/* ---- Top Questions Section ---- */}
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Top Voted Question:</strong>{' '}
+                    {topVotedQuestion ? (
+                      <Text
+                        as='span'
+                        color='blue.500'
+                        cursor='pointer'
+                        onClick={() => navigate(`/question/${topVotedQuestion._id}`)}>
+                        {topVotedQuestion.title} ({topVotedCount} votes)
+                      </Text>
+                    ) : (
+                      'No questions asked yet.'
+                    )}
+                  </Text>
+                </GridItem>
 
-        {/* ---- Confirmation Modal for Delete ---- */}
-        {showConfirmation && (
-          <div className='modal'>
-            <div className='modal-content'>
-              <p>
-                Are you sure you want to delete user <strong>{userData?.username}</strong>? This
-                action cannot be undone.
-              </p>
-              <button className='delete-button' onClick={() => pendingAction && pendingAction()}>
-                Confirm
-              </button>
-              <button className='cancel-button' onClick={() => setShowConfirmation(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+                <GridItem colSpan={2}>
+                  <Text>
+                    <strong>Top Viewed Question:</strong>{' '}
+                    {topViewedQuestion ? (
+                      <Text
+                        as='span'
+                        color='blue.500'
+                        cursor='pointer'
+                        onClick={() => navigate(`/question/${topViewedQuestion._id}`)}>
+                        {topViewedQuestion.title} ({topViewedCount} views)
+                      </Text>
+                    ) : (
+                      'No questions asked yet.'
+                    )}
+                  </Text>
+                </GridItem>
+
+                <GridItem colSpan={4}>
+                  {canEditProfile && (
+                    <Button
+                      size='xs'
+                      ml={0}
+                      colorPalette='blue'
+                      variant='outline'
+                      onClick={handleUserInvites}>
+                      View Community Invites
+                    </Button>
+                  )}
+                </GridItem>
+
+                {/* ---- Reset Password Section ---- */}
+                {canEditProfile && (
+                  <>
+                    <GridItem rowSpan={2} colSpan={1}>
+                      <Heading size='sm'>Reset Password</Heading>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='New Password'
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                      />
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='Confirm New Password'
+                        value={confirmNewPassword}
+                        onChange={e => setConfirmNewPassword(e.target.value)}
+                      />
+                    </GridItem>
+                    <GridItem colSpan={4}>
+                      <Button
+                        size='xs'
+                        ml={0}
+                        variant='outline'
+                        colorPalette='blue'
+                        onClick={togglePasswordVisibility}>
+                        {showPassword ? 'Hide Passwords' : 'Show Passwords'}
+                      </Button>
+                      <Button size='xs' colorPalette='red' onClick={handleResetPassword}>
+                        Reset
+                      </Button>
+                    </GridItem>
+                  </>
+                )}
+
+                {/* ---- Danger Zone ---- */}
+                {canEditProfile && (
+                  <>
+                    <GridItem rowSpan={1} colSpan={1}>
+                      <Heading size='sm' color='red.500'>
+                        Danger Zone
+                      </Heading>
+                    </GridItem>
+                    <GridItem colSpan={4}>
+                      <Button
+                        size='xs'
+                        ml={0}
+                        colorPalette='red'
+                        onClick={() => {
+                          onOpen();
+                          handleDeleteUser();
+                        }}>
+                        Delete This User
+                      </Button>
+                    </GridItem>
+                    {open && (
+                      <Box
+                        position='fixed'
+                        top='50%'
+                        left='50%'
+                        transform='translate(-50%, -50%)'
+                        bg='white'
+                        p={6}
+                        borderRadius='md'
+                        boxShadow='lg'
+                        zIndex={10}>
+                        <Text mb={4}>
+                          Are you sure you want to delete user <strong>{userData?.username}</strong>
+                          ? This action cannot be undone.
+                        </Text>
+                        <HStack p={4}>
+                          <Button
+                            colorPalette='red'
+                            onClick={() => {
+                              if (pendingAction) {
+                                pendingAction();
+                              }
+                              onClose();
+                            }}>
+                            Confirm
+                          </Button>
+                          <Button colorPalette='blue' variant='outline' onClick={onClose}>
+                            Cancel
+                          </Button>
+                        </HStack>
+                      </Box>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <GridItem>
+                <Text>No user data found. Make sure the username parameter is correct.</Text>
+              </GridItem>
+            )}
+          </Grid>
+        </Box>
+      </Box>
+    </>
   );
 };
 
