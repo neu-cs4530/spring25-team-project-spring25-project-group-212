@@ -1,14 +1,11 @@
 import mongoose from 'mongoose';
-import { config } from 'dotenv';
 import {
   createAnswerNotification,
   getUserNotifications,
   clearNotifications,
 } from '../../services/notification.service';
-import { QUESTIONS, ans1, ans2, ans3, ans4, POPULATED_QUESTIONS } from '../mockData.models';
+import { QUESTIONS, ans1 } from '../mockData.models';
 import NotificationModel from '../../models/notifications.model';
-import QuestionModel from '../../models/questions.model';
-import AnswerModel from '../../models/answers.model';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mockingoose = require('mockingoose');
@@ -18,16 +15,29 @@ describe('Notification Service', () => {
     mockingoose.resetAll();
   });
 
-  it('should create a new answer notification', async () => {
+  test('should create a new answer notification', async () => {
     const question = QUESTIONS[0];
-
     const answer = ans1;
+
+    mockingoose(NotificationModel).toReturn(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        type: 'ANSWER',
+        recipient: question.askedBy,
+        questionId: question._id,
+        answerId: answer._id,
+        answeredBy: answer.ansBy,
+        createdAt: new Date(),
+        read: false,
+      },
+      'create',
+    );
 
     const notification = await createAnswerNotification(
       question.askedBy,
       question._id.toString(),
       answer._id.toString(),
-      ans1.ansBy,
+      answer.ansBy,
       answer.text,
     );
 
@@ -37,47 +47,82 @@ describe('Notification Service', () => {
     expect(notification.answeredBy).toBe('ansBy1');
   });
 
-  it('should retrieve all notifications for a user', async () => {
+  test('createAnswerNotification should throw an error when creation fails', async () => {
     const question = QUESTIONS[0];
-
     const answer = ans1;
 
-    await createAnswerNotification(
-      question.askedBy,
-      question._id.toString(),
-      answer._id.toString(),
-      ans1.ansBy,
-      answer.text,
-    );
+    jest.spyOn(NotificationModel, 'create').mockRejectedValue(new Error('Mock create error'));
 
-    const notifications = await getUserNotifications('q_by1');
-    expect(notifications[0].questionId.title).toBe('Q1');
-    expect(notifications[0].answerId.text).toBe('A1');
+    await expect(
+      createAnswerNotification(
+        question.askedBy,
+        question._id.toString(),
+        answer._id.toString(),
+        answer.ansBy,
+        answer.text,
+      ),
+    ).rejects.toThrow('Error creating notification');
   });
 
-  it('should clear all notifications for a user', async () => {
-    const question = await QuestionModel.create({
-      title: 'Q2',
-      text: '...',
-      askedBy: 'eve',
-    });
+  test('should retrieve all notifications for a user', async () => {
+    const question = QUESTIONS[0];
+    const answer = ans1;
 
-    const answer = await AnswerModel.create({
-      text: 'A2',
-      answeredBy: 'frank',
-      questionId: question._id,
-    });
-
-    await createAnswerNotification(
-      'eve',
-      question._id.toString(),
-      answer._id.toString(),
-      'frank',
-      'A2',
+    mockingoose(NotificationModel).toReturn(
+      [
+        {
+          _id: new mongoose.Types.ObjectId(),
+          type: 'ANSWER',
+          recipient: question.askedBy,
+          questionId: { _id: question._id, title: question.title },
+          answerId: { _id: answer._id, text: answer.text },
+          answeredBy: answer.ansBy,
+          createdAt: new Date(),
+          read: false,
+        },
+      ],
+      'find',
     );
 
-    await clearNotifications('eve');
-    const notifications = await NotificationModel.find({ recipient: 'eve' });
-    expect(notifications.length).toBe(0);
+    NotificationModel.schema.path('questionId', Object);
+    NotificationModel.schema.path('answerId', Object);
+
+    const notifications = await getUserNotifications(question.askedBy);
+
+    expect(notifications.length).toBe(1);
+    expect(notifications[0].questionId.title).toBe(question.title);
+    expect(notifications[0].answerId.text).toBe(answer.text);
+  });
+
+  test('getUserNotifications should throw an error when fetching fails', async () => {
+    const question = QUESTIONS[0];
+
+    mockingoose(NotificationModel).toReturn(new Error('Mock find error'), 'find');
+
+    await expect(getUserNotifications(question.askedBy)).rejects.toThrow(
+      'Error fetching notifications',
+    );
+  });
+
+  test('should clear all notifications for a user', async () => {
+    const question = QUESTIONS[0];
+
+    mockingoose(NotificationModel).toReturn({}, 'deleteMany');
+    await clearNotifications(question.askedBy);
+
+    mockingoose(NotificationModel).toReturn([], 'find');
+    const notifications = await getUserNotifications(question.askedBy);
+
+    expect(notifications).toEqual([]);
+  });
+
+  test('clearNotifications should throw an error when deletion fails', async () => {
+    const question = QUESTIONS[0];
+
+    mockingoose(NotificationModel).toReturn(new Error('Mock delete error'), 'deleteMany');
+
+    await expect(clearNotifications(question.askedBy)).rejects.toThrow(
+      'Error clearing notifications',
+    );
   });
 });
