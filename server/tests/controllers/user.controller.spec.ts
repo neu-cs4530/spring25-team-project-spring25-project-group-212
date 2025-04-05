@@ -2,6 +2,7 @@ import supertest from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app';
 import * as util from '../../services/user.service';
+import * as userController from '../../controllers/user.controller';
 import { SafeDatabaseUser, User } from '../../types/types';
 
 const mockUser: User = {
@@ -31,6 +32,8 @@ const updatedUserSpy = jest.spyOn(util, 'updateUser');
 const getUserByUsernameSpy = jest.spyOn(util, 'getUserByUsername');
 const getUsersListSpy = jest.spyOn(util, 'getUsersList');
 const deleteUserByUsernameSpy = jest.spyOn(util, 'deleteUserByUsername');
+const updateUserSpy = jest.spyOn(util, 'updateUser');
+const isUpdateEmailBodyValidSpy = jest.spyOn(userController, 'isUpdateEmailBodyValid');
 
 describe('Test userController', () => {
   describe('POST /signup', () => {
@@ -287,8 +290,6 @@ describe('Test userController', () => {
     });
 
     it('should return 404 if username not provided', async () => {
-      // Express automatically returns 404 for missing parameters when
-      // defined as required in the route
       const response = await supertest(app).get('/user/getUser/');
       expect(response.status).toBe(404);
     });
@@ -334,8 +335,6 @@ describe('Test userController', () => {
     });
 
     it('should return 404 if username not provided', async () => {
-      // Express automatically returns 404 for missing parameters when
-      // defined as required in the route
       const response = await supertest(app).delete('/user/deleteUser/');
       expect(response.status).toBe(404);
     });
@@ -348,14 +347,12 @@ describe('Test userController', () => {
         biography: 'This is my new bio',
       };
 
-      // Mock a successful updateUser call
       updatedUserSpy.mockResolvedValueOnce(mockSafeUser);
 
       const response = await supertest(app).patch('/user/updateBiography').send(mockReqBody);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockUserJSONResponse);
-      // Ensure updateUser is called with the correct args
       expect(updatedUserSpy).toHaveBeenCalledWith(mockUser.username, {
         biography: 'This is my new bio',
       });
@@ -401,7 +398,6 @@ describe('Test userController', () => {
         biography: 'Attempting update biography',
       };
 
-      // Simulate a DB error
       updatedUserSpy.mockResolvedValueOnce({ error: 'Error updating user' });
 
       const response = await supertest(app).patch('/user/updateBiography').send(mockReqBody);
@@ -410,6 +406,182 @@ describe('Test userController', () => {
       expect(response.text).toContain(
         'Error when updating user biography: Error: Error updating user',
       );
+    });
+  });
+
+  describe('PATCH /updateEmail', () => {
+    it('should return 400 when no username is provided', async () => {
+      const response = await supertest(app)
+        .patch('/user/updateEmail')
+        .send({ email: 'test@example.com' });
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid user body');
+    });
+
+    it('should return 400 for an invalid email', async () => {
+      const response = await supertest(app)
+        .patch('/user/updateEmail')
+        .send({ username: 'alice', email: 'not-valid' });
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid user body');
+    });
+  });
+
+  describe('PATCH /toggleSaveQuestion', () => {
+    const mockUser2: SafeDatabaseUser = {
+      _id: new mongoose.Types.ObjectId(),
+      username: 'testUser',
+      dateJoined: new Date('2024-12-03'),
+      savedQuestions: [],
+    };
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should add the question ID to savedQuestions if not present', async () => {
+      const questionToSave = 'q1';
+      getUserByUsernameSpy.mockResolvedValueOnce({
+        ...mockUser2,
+        savedQuestions: [],
+      });
+      updateUserSpy.mockResolvedValueOnce({
+        ...mockUser2,
+        savedQuestions: [questionToSave],
+      });
+
+      const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
+        username: mockUser.username,
+        qid: questionToSave,
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.savedQuestions).toContain(questionToSave);
+      expect(getUserByUsernameSpy).toHaveBeenCalledWith(mockUser.username);
+      expect(updateUserSpy).toHaveBeenCalledWith(mockUser.username, {
+        savedQuestions: [questionToSave],
+      });
+    });
+
+    it('should remove the question ID from savedQuestions if already present', async () => {
+      const questionToRemove = 'q2';
+      getUserByUsernameSpy.mockResolvedValueOnce({
+        ...mockUser2,
+        savedQuestions: [questionToRemove],
+      });
+      updateUserSpy.mockResolvedValueOnce({
+        ...mockUser2,
+        savedQuestions: [],
+      });
+
+      const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
+        username: mockUser.username,
+        qid: questionToRemove,
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.savedQuestions).not.toContain(questionToRemove);
+      expect(getUserByUsernameSpy).toHaveBeenCalledWith(mockUser.username);
+      expect(updateUserSpy).toHaveBeenCalledWith(mockUser.username, {
+        savedQuestions: [],
+      });
+    });
+
+    it('should return 500 if getUserByUsername returns an error', async () => {
+      getUserByUsernameSpy.mockResolvedValueOnce({ error: 'Some error' });
+
+      const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
+        username: mockUser.username,
+        qid: 'q1',
+      });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error when updating user biography');
+    });
+
+    it('should return 500 if updateUser returns an error', async () => {
+      getUserByUsernameSpy.mockResolvedValueOnce({
+        ...mockUser2,
+        savedQuestions: [],
+      });
+      updateUserSpy.mockResolvedValueOnce({ error: 'DB update error' });
+
+      const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
+        username: mockUser.username,
+        qid: 'q1',
+      });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error when updating user biography');
+    });
+  });
+  describe('PATCH /updateEmail', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return 400 if the request body is invalid', async () => {
+      isUpdateEmailBodyValidSpy.mockReturnValueOnce(false);
+
+      const response = await supertest(app)
+        .patch('/user/updateEmail')
+        .send({ username: 'testUser', email: 'invalidEmail' });
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid user body');
+    });
+
+    it('should return 500 if updateUser returns an error', async () => {
+      isUpdateEmailBodyValidSpy.mockReturnValueOnce(true);
+
+      updateUserSpy.mockResolvedValueOnce({ error: 'Some DB Error' });
+
+      const response = await supertest(app)
+        .patch('/user/updateEmail')
+        .send({ username: 'testUser', email: 'valid@example.com' });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error when updating user email: Error: Some DB Error');
+    });
+
+    it('should return 500 if an unhandled error is thrown', async () => {
+      isUpdateEmailBodyValidSpy.mockReturnValueOnce(true);
+
+      updateUserSpy.mockImplementationOnce(() => {
+        throw new Error('Unexpected error');
+      });
+
+      const response = await supertest(app)
+        .patch('/user/updateEmail')
+        .send({ username: 'testUser', email: 'valid@example.com' });
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Error when updating user email: Error: Unexpected error');
+    });
+  });
+
+  it('should return 200 with updated user object if email update is successful', async () => {
+    const updatedUser = {
+      ...mockSafeUser,
+      email: 'updated@example.com',
+    };
+
+    updateUserSpy.mockResolvedValueOnce(updatedUser);
+
+    const response = await supertest(app).patch('/user/updateEmail').send({
+      username: updatedUser.username,
+      email: updatedUser.email,
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      ...updatedUser,
+      _id: updatedUser._id.toString(),
+      dateJoined: updatedUser.dateJoined.toISOString(),
+    });
+
+    expect(updateUserSpy).toHaveBeenCalledWith(updatedUser.username, {
+      email: updatedUser.email,
     });
   });
 });
