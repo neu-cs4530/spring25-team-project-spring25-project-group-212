@@ -41,6 +41,10 @@ const useCommunitiesListPage = () => {
     navigate(`/community/${communityId}`);
   };
 
+  const handlePreviewCommunity = (communityId: string) => {
+    navigate(`/community/${communityId}`);
+  };
+
   const handleCreateCommunity = async () => {
     navigate(`/new/community`);
   };
@@ -54,6 +58,7 @@ const useCommunitiesListPage = () => {
     error,
     handleJoin,
     handleCreateCommunity,
+    handlePreviewCommunity,
     sortCommunitiesBy,
   };
 };

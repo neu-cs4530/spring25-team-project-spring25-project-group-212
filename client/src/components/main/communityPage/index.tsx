@@ -65,11 +65,17 @@ const CommunityPage = () => {
   useEffect(() => {
     if (!currentCommunity || !user || !socket) return undefined;
 
-    socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
-    joinCommunity(currentCommunity._id.toString(), user.username);
+    const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
+
+    if (userHasJoinedCommunity) {
+      socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
+      joinCommunity(currentCommunity._id.toString(), user.username);
+    }
 
     return () => {
-      socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
+      if (userHasJoinedCommunity) {
+        socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
+      }
     };
   }, [currentCommunity, user, socket]);
 
@@ -123,7 +129,7 @@ const CommunityPage = () => {
   if (!currentCommunity || !community) {
     return <div>Loading...</div>;
   }
-
+  const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
   return (
     <div id='community-page'>
       {!editMode && (
@@ -137,7 +143,7 @@ const CommunityPage = () => {
             <strong>Rules: </strong>
             {community.rules}
           </p>
-          {canEditNameAboutRules && (
+          {userHasJoinedCommunity && canEditNameAboutRules && (
             <button
               className='login-button'
               style={{ marginLeft: '1rem' }}
@@ -156,14 +162,16 @@ const CommunityPage = () => {
         <button className='login-button' onClick={handleBulletinBoardTabClick}>
           Bulletin Board
         </button>
-        <button className='login-button' onClick={handleInvitesTabClick}>
-          Invite Users to Community
-        </button>
+        {userHasJoinedCommunity && (
+          <button className='login-button' onClick={handleInvitesTabClick}>
+            Invite Users to Community
+          </button>
+        )}
         <button className='login-button' onClick={handleStatisticsClick}>
           Community Statistics
         </button>
       </div>
-      {editMode && canEditNameAboutRules && (
+      {userHasJoinedCommunity && editMode && canEditNameAboutRules && (
         <div>
           <input
             className='input-text'
@@ -209,7 +217,7 @@ const CommunityPage = () => {
           />
           <div id='question_list' className='question_list'>
             {qlist.map(q => (
-              <QuestionView question={q} key={String(q._id)} />
+              <QuestionView question={q} key={String(q._id)} canClick={userHasJoinedCommunity} />
             ))}
           </div>
           {titleText === 'Search Results' && !qlist.length && (
@@ -217,104 +225,107 @@ const CommunityPage = () => {
           )}
         </div>
 
-        <div className='online-users'>
-          <strong>Online Users:</strong>
-          <ul>
-            {onlineUsers.map((username, index) => (
-              <li key={index}>{username}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className='rename-chat'>
-          <input
-            className='custom-input'
-            type='text'
-            value={chatName}
-            onChange={e => setChatName(e.target.value)}
-            placeholder='Enter new chat name'
-          />
-          <button className='custom-button' onClick={handleRenameChat}>
-            Rename
-          </button>
-        </div>
-        <p>
-          <strong>Current Chat Name: </strong>
-          {chatName}
-        </p>
-        <div className='direct-message-container'>
-          <div id='community-chat' className='chat-container'>
-            <div className='chat-messages'>
-              {communityChat?.messages && communityChat.messages.length > 0 ? (
-                communityChat.messages.map(message => (
-                  <MessageCard
-                    key={String(message._id)}
-                    message={message}
-                    totalUsers={currentCommunity?.members.length || 1}
-                  />
-                ))
-              ) : (
-                <div>No messages yet.</div>
-              )}
+        {userHasJoinedCommunity && (
+          <>
+            <div className='online-users'>
+              <strong>Online Users:</strong>
+              <ul>
+                {onlineUsers.map((username, index) => (
+                  <li key={index}>{username}</li>
+                ))}
+              </ul>
             </div>
-
-            {typingUsers.length > 0 && (
-              <div className='typing-indicator'>
-                {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
-                {typingUsers.length === 2 &&
-                  `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
-                {typingUsers.length > 2 && 'Many people are typing...'}
-              </div>
-            )}
-
-            <div className='message-input-container'>
-              <div className='message-input'>
-                <input
-                  className='custom-input'
-                  type='text'
-                  value={newMessage}
-                  onChange={handleTyping}
-                  placeholder='Type a message...'
-                />
-                <button
-                  className='emoji-button'
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                  😀
-                </button>
-                <UploadButton
-                  uploader={uploader}
-                  options={uploaderOptions}
-                  onComplete={files => {
-                    files.forEach(file => {
-                      handleFileUpload(file.fileUrl, user.username);
-                    });
-                  }}>
-                  {({ onClick }) => (
-                    <button className='custom-button' onClick={onClick}>
-                      Upload File
-                    </button>
+            <div className='rename-chat'>
+              <input
+                className='custom-input'
+                type='text'
+                value={chatName}
+                onChange={e => setChatName(e.target.value)}
+                placeholder='Enter new chat name'
+              />
+              <button className='custom-button' onClick={handleRenameChat}>
+                Rename
+              </button>
+            </div>
+            <p>
+              <strong>Current Chat Name: </strong>
+              {chatName}
+            </p>
+            <div className='direct-message-container'>
+              <div id='community-chat' className='chat-container'>
+                <div className='chat-messages'>
+                  {communityChat?.messages && communityChat.messages.length > 0 ? (
+                    communityChat.messages.map(message => (
+                      <MessageCard
+                        key={String(message._id)}
+                        message={message}
+                        totalUsers={currentCommunity?.members.length || 1}
+                      />
+                    ))
+                  ) : (
+                    <div>No messages yet.</div>
                   )}
-                </UploadButton>
-                <button className='custom-button' onClick={handleSendMessage}>
-                  Send
-                </button>
-                <button
-                  type='button'
-                  className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
-                  onClick={() => setUseMarkdown(!useMarkdown)}
-                  title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
-                  MD
-                </button>
-              </div>
-
-              {showEmojiPicker && (
-                <div style={{ height: '300px', overflowY: 'auto' }}>
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} />
                 </div>
-              )}
+
+                {typingUsers.length > 0 && (
+                  <div className='typing-indicator'>
+                    {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
+                    {typingUsers.length === 2 &&
+                      `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
+                    {typingUsers.length > 2 && 'Many people are typing...'}
+                  </div>
+                )}
+
+                <div className='message-input-container'>
+                  <div className='message-input'>
+                    <input
+                      className='custom-input'
+                      type='text'
+                      value={newMessage}
+                      onChange={handleTyping}
+                      placeholder='Type a message...'
+                    />
+                    <button
+                      className='emoji-button'
+                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                      😀
+                    </button>
+                    <UploadButton
+                      uploader={uploader}
+                      options={uploaderOptions}
+                      onComplete={files => {
+                        files.forEach(file => {
+                          handleFileUpload(file.fileUrl, user.username);
+                        });
+                      }}>
+                      {({ onClick }) => (
+                        <button className='custom-button' onClick={onClick}>
+                          Upload File
+                        </button>
+                      )}
+                    </UploadButton>
+                    <button className='custom-button' onClick={handleSendMessage}>
+                      Send
+                    </button>
+                    <button
+                      type='button'
+                      className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                      onClick={() => setUseMarkdown(!useMarkdown)}
+                      title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                      MD
+                    </button>
+                  </div>
+
+                  {showEmojiPicker && (
+                    <div style={{ height: '300px', overflowY: 'auto' }}>
+                      <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

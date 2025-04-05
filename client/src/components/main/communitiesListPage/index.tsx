@@ -4,8 +4,14 @@ import CommunitiesListCardJoin from './communitiesListCardJoin';
 import CommunitiesListCardView from './communitiesListCardView';
 
 const CommunitiesListPage = () => {
-  const { communities, error, handleJoin, handleCreateCommunity, sortCommunitiesBy } =
-    useCommunitiesListPage();
+  const {
+    communities,
+    error,
+    handleJoin,
+    handleCreateCommunity,
+    sortCommunitiesBy,
+    handlePreviewCommunity,
+  } = useCommunitiesListPage();
   const { user } = useUserContext();
 
   const joinedCommunities = communities.filter(c => c.members.includes(user.username));
@@ -35,6 +41,7 @@ const CommunitiesListPage = () => {
             key={c._id.toString()}
             community={c}
             handleCommunityJoin={() => handleJoin(c._id.toString())}
+            handleCommunityPreview={() => handlePreviewCommunity(c._id.toString())}
           />
         ))}
       </div>
