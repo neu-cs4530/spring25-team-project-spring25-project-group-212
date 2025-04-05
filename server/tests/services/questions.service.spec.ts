@@ -7,8 +7,9 @@ import {
   fetchAndIncrementQuestionViewsById,
   saveQuestion,
   addVoteToQuestion,
+  getQuestionsBySaved,
 } from '../../services/question.service';
-import { DatabaseQuestion, PopulatedDatabaseQuestion } from '../../types/types';
+import { DatabaseQuestion, PopulatedDatabaseQuestion, Question } from '../../types/types';
 import {
   QUESTIONS,
   tag1,
@@ -19,6 +20,8 @@ import {
   ans4,
   POPULATED_QUESTIONS,
 } from '../mockData.models';
+import UserModel from '../../models/users.model';
+import * as sortUtils from '../../utils/sort.util';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mockingoose = require('mockingoose');
@@ -106,6 +109,33 @@ describe('Question model', () => {
       expect(result[0]._id.toString()).toEqual('65e9b5a995b6c7045a30d823');
       expect(result[1]._id.toString()).toEqual('65e9b58910afe6e94fc6e6dc');
       expect(result[2]._id.toString()).toEqual('65e9b9b44c052f0a08ecade0');
+    });
+
+    test('should return questions sorted by trending', async () => {
+      const sortSpy = jest.spyOn(sortUtils, 'sortQuestionsByTrending');
+      sortSpy.mockImplementation(qs => qs.reverse()); // fake sort logic for test
+
+      mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
+      QuestionModel.schema.path('answers', Object);
+      QuestionModel.schema.path('tags', Object);
+      QuestionModel.schema.path('comments', Object);
+
+      const result = await getQuestionsByOrder('trending');
+
+      expect(sortSpy).toHaveBeenCalledTimes(1);
+      expect(sortSpy).toHaveBeenCalledWith(expect.any(Array));
+
+      // ✅ Compare serialized versions to avoid Mongoose internal fields
+      expect(JSON.parse(JSON.stringify(result))).toEqual(
+        JSON.parse(JSON.stringify([...POPULATED_QUESTIONS].reverse())),
+      );
+
+      sortSpy.mockRestore();
+    });
+
+    test('getQuestionsByOrder with "saved" should return an empty array', async () => {
+      const result = await getQuestionsByOrder('saved');
+      expect(result).toEqual([]);
     });
 
     test('get active questions, newest questions sorted by most recently answered 2', async () => {
@@ -315,6 +345,20 @@ describe('Question model', () => {
       expect(result.views).toEqual([]);
       expect(result.answers.length).toEqual(0);
     });
+    test('should return error when QuestionModel.create throws', async () => {
+      const invalidQuestion = {
+        title: null,
+      } as unknown as Question;
+
+      // ✅ Correct way to simulate a thrown error
+      jest.spyOn(QuestionModel, 'create').mockRejectedValue(new Error('Mock create failure'));
+
+      const result = await saveQuestion(invalidQuestion);
+
+      expect(result).toEqual({ error: 'Error when saving a question' });
+
+      jest.restoreAllMocks(); // Clean up
+    });
   });
 
   describe('addVoteToQuestion', () => {
@@ -491,6 +535,69 @@ describe('Question model', () => {
       const result = await addVoteToQuestion('someQuestionId', 'testUser', 'downvote');
 
       expect(result).toEqual({ error: 'Error when adding downvote to question' });
+    });
+    test('should return [] for upVotes and downVotes when they are undefined', async () => {
+      const mockQuestion = {
+        _id: 'someQuestionId',
+        // Simulate undefined votes
+        upVotes: undefined,
+        downVotes: undefined,
+      };
+
+      mockingoose(QuestionModel).toReturn(mockQuestion, 'findOneAndUpdate');
+
+      const result = await addVoteToQuestion('someQuestionId', 'testUser', 'upvote');
+
+      // Verify fallback to empty arrays
+      if ('error' in result) throw new Error('Unexpected error');
+      expect(result.upVotes).toEqual([]);
+      expect(result.downVotes).toEqual([]);
+    });
+  });
+
+  describe('getQuestionsBySaved', () => {
+    beforeEach(() => {
+      mockingoose.resetAll();
+    });
+
+    test('should return saved questions sorted accordingly', async () => {
+      // Mock all questions
+      mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
+
+      // Assume the user has saved two specific questions
+      const savedQuestionIds = ['65e9b58910afe6e94fc6e6dc', '65e9b716ff0e892116b2de09'];
+
+      // Mock user
+      mockingoose(UserModel).toReturn(
+        {
+          username: 'testUser',
+          savedQuestions: savedQuestionIds,
+        },
+        'findOne',
+      );
+
+      const result = await getQuestionsBySaved('testUser');
+
+      expect(result.length).toBe(2);
+      expect(result.map(q => q._id.toString()).sort()).toEqual(savedQuestionIds.sort());
+    });
+
+    test('should return empty array if user not found', async () => {
+      mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
+      mockingoose(UserModel).toReturn(null, 'findOne');
+
+      const result = await getQuestionsBySaved('nonExistentUser');
+
+      expect(result).toEqual([]);
+    });
+
+    test('should return empty array if question fetching fails', async () => {
+      mockingoose(QuestionModel).toReturn(new Error('error'), 'find');
+      mockingoose(UserModel).toReturn({}, 'findOne');
+
+      const result = await getQuestionsBySaved('testUser');
+
+      expect(result).toEqual([]);
     });
   });
 });

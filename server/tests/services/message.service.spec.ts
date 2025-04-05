@@ -1,9 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import MessageModel from '../../models/messages.model';
 import UserModel from '../../models/users.model';
-import { getMessages, saveMessage } from '../../services/message.service';
-import { Message } from '../../types/types';
+import { getMessages, saveMessage, addReactionToMessage } from '../../services/message.service';
+import { Message, FakeSOSocket } from '../../types/types';
 
+const fakeSocket = { emit: jest.fn() } as unknown as FakeSOSocket;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mockingoose = require('mockingoose');
 
@@ -24,8 +25,11 @@ const message2: Message = {
 };
 
 describe('Message model', () => {
+  jest.mock('../../models/users.model');
+  jest.mock('../../models/messages.model');
   beforeEach(() => {
     mockingoose.resetAll();
+    jest.clearAllMocks();
   });
 
   describe('saveMessage', () => {
@@ -91,6 +95,33 @@ describe('Message model', () => {
       const messages = await getMessages();
 
       expect(messages).toMatchObject([message1, message2]);
+    });
+  });
+  describe('addReactionToMessage', () => {
+    const fakeUserId = new Types.ObjectId();
+    const fakeMessageId = new Types.ObjectId().toString();
+
+    it('adds a reaction when user and message exist', async () => {
+      mockingoose(UserModel).toReturn({ _id: fakeUserId }, 'findOne');
+      mockingoose(MessageModel).toReturn({ _id: fakeMessageId, reactions: [] }, 'findOne');
+      mockingoose(MessageModel).toReturn(
+        {
+          _id: fakeMessageId,
+          reactions: [{ emoji: '🔥', userId: fakeUserId, _id: new Types.ObjectId() }],
+        },
+        'findOneAndUpdate',
+      );
+
+      const result = await addReactionToMessage(fakeMessageId, 'user1', '🔥', fakeSocket);
+
+      if ('reactions' in result) {
+        const { reactions } = result;
+        expect(reactions).toEqual(
+          expect.arrayContaining([expect.objectContaining({ emoji: '🔥', userId: fakeUserId })]),
+        );
+      } else {
+        fail(`Expected result to contain 'reactions', but got: ${JSON.stringify(result)}`);
+      }
     });
   });
 });
