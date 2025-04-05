@@ -137,7 +137,9 @@ describe('Test notificationController', () => {
     });
 
     it('should return 400 if required fields are missing', async () => {
-      const { recipient, ...incomplete } = validNotificationRequest;
+      const incomplete = Object.fromEntries(
+        Object.entries(validNotificationRequest).filter(([key]) => key !== 'recipient'),
+      );
 
       const response = await supertest(app)
         .post('/notification/createNotification')
