@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Editor, getSnapshot, loadSnapshot } from 'tldraw';
 
 const useBulletinBoardPage = () => {
+  const roomId = crypto.randomUUID();
   const [showCheckMark, setShowCheckMark] = useState(false);
 
   const handleBulletinBoardSave = useCallback((editor: Editor) => {
@@ -26,7 +27,13 @@ const useBulletinBoardPage = () => {
     return () => {};
   }, [showCheckMark]);
 
-  return { handleBulletinBoardLoad, handleBulletinBoardSave, showCheckMark, setShowCheckMark };
+  return {
+    handleBulletinBoardLoad,
+    handleBulletinBoardSave,
+    showCheckMark,
+    setShowCheckMark,
+    roomId,
+  };
 };
 
 export default useBulletinBoardPage;

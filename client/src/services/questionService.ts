@@ -66,8 +66,12 @@ const addQuestion = async (q: Question): Promise<PopulatedDatabaseQuestion> => {
  * @param username - The username of the person upvoting the question.
  * @throws Error if there is an issue upvoting the question.
  */
-const upvoteQuestion = async (qid: ObjectId, username: string): Promise<VoteInterface> => {
-  const data = { qid, username };
+const upvoteQuestion = async (
+  qid: ObjectId,
+  username: string,
+  communityId?: string,
+): Promise<VoteInterface> => {
+  const data = { qid, username, communityId };
   const res = await api.post(`${QUESTION_API_URL}/upvoteQuestion`, data);
   if (res.status !== 200) {
     throw new Error('Error while upvoting the question');
@@ -82,8 +86,12 @@ const upvoteQuestion = async (qid: ObjectId, username: string): Promise<VoteInte
  * @param username - The username of the person downvoting the question.
  * @throws Error if there is an issue downvoting the question.
  */
-const downvoteQuestion = async (qid: ObjectId, username: string): Promise<VoteInterface> => {
-  const data = { qid, username };
+const downvoteQuestion = async (
+  qid: ObjectId,
+  username: string,
+  communityId?: string,
+): Promise<VoteInterface> => {
+  const data = { qid, username, communityId };
   const res = await api.post(`${QUESTION_API_URL}/downvoteQuestion`, data);
   if (res.status !== 200) {
     throw new Error('Error while downvoting the question');

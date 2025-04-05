@@ -95,3 +95,55 @@ export const sortQuestionsBySaved = (
   slist: string[],
 ): PopulatedDatabaseQuestion[] =>
   sortQuestionsByNewest(qlist).filter(q => slist.includes(q._id.toString()));
+
+const calculateTrendingScore = (
+  question: PopulatedDatabaseQuestion,
+  timeWindow: number,
+): number => {
+  const now = Date.now();
+  const timeThreshold = now - timeWindow;
+
+  const recentComments = question.comments.filter(
+    comment => comment.commentDateTime.getTime() > timeThreshold,
+  ).length;
+
+  const recentAnswers = question.answers.filter(
+    answer => answer.ansDateTime.getTime() > timeThreshold,
+  ).length;
+
+  const recentUpVotes = question.upVotes.filter(
+    upvote => upvote.timestamp.getTime() > timeThreshold,
+  ).length;
+
+  const recentDownVotes = question.upVotes.filter(
+    downVote => downVote.timestamp.getTime() > timeThreshold,
+  ).length;
+
+  return recentComments * 2 + recentAnswers * 3 + recentUpVotes * 1.5 - (recentDownVotes - 1);
+};
+
+export const sortQuestionsByTrending = (
+  qlist: PopulatedDatabaseQuestion[],
+  timeWindow: number = 2 * 24 * 60 * 60 * 1000, // last 2 days
+): PopulatedDatabaseQuestion[] => {
+  const questionsWithScores = qlist.map(question => ({
+    ques: question,
+    score: calculateTrendingScore(question, timeWindow),
+  }));
+  questionsWithScores.sort((a, b) => b.score - a.score);
+  return questionsWithScores.map(q => q.ques);
+};
+
+export const sortQuestionsByTrendingInCommunity = (
+  qlist: PopulatedDatabaseQuestion[],
+  communityId: string,
+  timeWindow: number = 2 * 24 * 60 * 60 * 1000, // last 2 days
+): PopulatedDatabaseQuestion[] => {
+  const questionsWithScores = qlist.map(question => ({
+    question,
+    score: calculateTrendingScore(question, timeWindow),
+  }));
+
+  questionsWithScores.sort((a, b) => b.score - a.score);
+  return questionsWithScores.map(q => q.question);
+};
