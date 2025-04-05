@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Editor, getSnapshot, loadSnapshot } from 'tldraw';
+import { PopulatedDatabaseCommunity } from '@fake-stack-overflow/shared';
 import { getCommunityById } from '../services/communityService';
 
 const useBulletinBoardPage = () => {
   const { id } = useParams();
   const roomId = crypto.randomUUID();
   const [showCheckMark, setShowCheckMark] = useState(false);
+  const [community, setCommunity] = useState<PopulatedDatabaseCommunity>();
 
   const handleBulletinBoardSave = useCallback((editor: Editor) => {
     const { document } = getSnapshot(editor.store);
@@ -28,7 +30,8 @@ const useBulletinBoardPage = () => {
         return () => {};
       }
       try {
-        await getCommunityById(id);
+        const retrievedCommunity = await getCommunityById(id);
+        setCommunity(retrievedCommunity);
         setBulletinBoardError('');
       } catch (error) {
         setBulletinBoardError('Error retrieving community');
@@ -55,6 +58,7 @@ const useBulletinBoardPage = () => {
     setShowCheckMark,
     roomId,
     bulletinBoardError,
+    community,
   };
 };
 
