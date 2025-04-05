@@ -131,10 +131,18 @@ const ProfileSettings: React.FC = () => {
                           placeholder='Enter your biography'
                         />
                         <HStack>
-                          <Button size='xs' colorScheme='blue' onClick={handleUpdateBiography}>
+                          <Button
+                            size='xs'
+                            colorPalette='blue'
+                            variant='outline'
+                            onClick={handleUpdateBiography}>
                             Save
                           </Button>
-                          <Button size='xs' colorScheme='red' onClick={() => setEditBioMode(false)}>
+                          <Button
+                            size='xs'
+                            colorPalette='red'
+                            variant='outline'
+                            onClick={() => setEditBioMode(false)}>
                             Cancel
                           </Button>
                         </HStack>
@@ -175,12 +183,17 @@ const ProfileSettings: React.FC = () => {
                           Fake-Stack-Overflow.
                         </Text>
                         <HStack>
-                          <Button size='xs' colorScheme='blue' onClick={handleUpdateEmail}>
+                          <Button
+                            size='xs'
+                            colorPalette='blue'
+                            variant='outline'
+                            onClick={handleUpdateEmail}>
                             Save
                           </Button>
                           <Button
                             size='xs'
-                            colorScheme='red'
+                            colorPalette='red'
+                            variant='outline'
                             onClick={() => setEditEmailMode(false)}>
                             Cancel
                           </Button>
