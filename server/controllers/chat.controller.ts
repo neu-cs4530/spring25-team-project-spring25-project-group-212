@@ -268,11 +268,6 @@ const chatController = (socket: FakeSOSocket) => {
     try {
       const updatedChat = await renameChat(chatId, newName);
 
-      // if (!updatedChat) {
-      //   res.status(404).send('Chat not found');
-      //   return;
-      // }
-
       socket.emit('chatUpdate', { chat: updatedChat, type: 'renamed' });
       res.json(updatedChat);
     } catch (err) {
