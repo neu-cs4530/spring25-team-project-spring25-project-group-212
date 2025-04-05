@@ -16,8 +16,23 @@ const useCommunityNameAboutRules = () => {
   const [canEditNameAboutRules, setCanEditNameAboutRules] = useState(false);
 
   useEffect(() => {
+    const communityExistsCheck = async () => {
+      if (!id) {
+        setErr('Error retrieving community');
+        return undefined;
+      }
+      try {
+        await getCommunityById(id);
+        setErr('');
+      } catch (error) {
+        setErr('Error retrieving community');
+      }
+      return undefined;
+    };
+
+    communityExistsCheck();
     if (!id) {
-      setErr('Community not found');
+      setErr('Error retrieving community');
       return;
     }
 
@@ -77,7 +92,7 @@ const useCommunityNameAboutRules = () => {
     setNewAbout,
     newRules,
     setNewRules,
-    err,
+    communityExistsError: err,
     handleEditNameAboutRules,
     canEditNameAboutRules,
   };
