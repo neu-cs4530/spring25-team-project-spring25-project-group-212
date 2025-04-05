@@ -11,7 +11,6 @@ const container = document.getElementById('root');
 
 const App = () => {
   const [socket, setSocket] = useState<FakeSOSocket | null>(null);
-
   const serverURL = process.env.REACT_APP_SERVER_URL;
 
   if (serverURL === undefined) {
