@@ -24,7 +24,7 @@ const CommunitiesListCardJoin = ({
       <button
         onClick={() =>
           navigate(`/community/${community._id.toString()}`, {
-            state: { isPreview: true }, // Pass `isPreview` state
+            state: { isPreview: true },
           })
         }>
         Preview Community
