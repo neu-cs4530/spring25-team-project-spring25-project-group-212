@@ -54,13 +54,7 @@ const BulletinBoardPage = () => {
             options={{ maxPages: 1 }}
           />
         ) : (
-          <Tldraw
-            store={store}
-            onMount={editor => {
-              editor.updateInstanceState({ isReadonly: true });
-            }}
-            options={{ maxPages: 1 }}
-          />
+          <Tldraw store={store} hideUi={true} />
         )}
       </div>
     </div>
