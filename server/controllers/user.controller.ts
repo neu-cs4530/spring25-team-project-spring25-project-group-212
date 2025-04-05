@@ -18,6 +18,17 @@ import {
   updateUser,
 } from '../services/user.service';
 
+/**
+ * Validates that the request body contains all required fields to update an email and that the email is in a valid format.
+ * @param req The incoming request containing user data.
+ * @returns `true` if the body contains valid user fields and email is valid; otherwise, `false`.
+ */
+export const isUpdateEmailBodyValid = (req: UpdateEmailRequest): boolean => {
+  if (req.body === undefined || req.body.username === undefined) return false;
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return regex.test(req.body.email) || req.body.email === '';
+};
+
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
 
@@ -43,17 +54,6 @@ const userController = (socket: FakeSOSocket) => {
     req.body.username !== undefined &&
     req.body.username.trim() !== '' &&
     req.body.biography !== undefined;
-
-  /**
-   * Validates that the request body contains all required fields to update an email and that the email is in a valid format.
-   * @param req The incoming request containing user data.
-   * @returns `true` if the body contains valid user fields and email is valid; otherwise, `false`.
-   */
-  const isUpdateEmailBodyValid = (req: UpdateEmailRequest): boolean => {
-    if (req.body === undefined || req.body.username === undefined) return false;
-    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return regex.test(req.body.email) || req.body.email === '';
-  };
 
   /**
    * Handles the creation of a new user account.
