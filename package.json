@@ -8,6 +8,7 @@
     "shared"
   ],
   "dependencies": {
+    "@chakra-ui/react": "^3.15.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.5",
@@ -16,19 +17,16 @@
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.12.2",
     "multer": "^1.4.5-lts.2",
+    "next-themes": "^0.4.6",
+    "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "react-uploader": "^3.43.0",
     "uploader": "^3.48.3"
   },
   "devDependencies": {
-    "@types/multer": "^1.4.12",
-    "react-markdown": "^10.1.0",
-    "tailwindcss": "^4.0.17"
+    "camelcase": "^8.0.0"
   },
   "overrides": {
     "camelcase-css": "2.0.0"
-  },
-  "devDependencies": {
-    "camelcase": "^8.0.0"
   }
 }
