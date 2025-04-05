@@ -290,8 +290,6 @@ describe('Test userController', () => {
     });
 
     it('should return 404 if username not provided', async () => {
-      // Express automatically returns 404 for missing parameters when
-      // defined as required in the route
       const response = await supertest(app).get('/user/getUser/');
       expect(response.status).toBe(404);
     });
@@ -337,8 +335,6 @@ describe('Test userController', () => {
     });
 
     it('should return 404 if username not provided', async () => {
-      // Express automatically returns 404 for missing parameters when
-      // defined as required in the route
       const response = await supertest(app).delete('/user/deleteUser/');
       expect(response.status).toBe(404);
     });
@@ -351,14 +347,12 @@ describe('Test userController', () => {
         biography: 'This is my new bio',
       };
 
-      // Mock a successful updateUser call
       updatedUserSpy.mockResolvedValueOnce(mockSafeUser);
 
       const response = await supertest(app).patch('/user/updateBiography').send(mockReqBody);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockUserJSONResponse);
-      // Ensure updateUser is called with the correct args
       expect(updatedUserSpy).toHaveBeenCalledWith(mockUser.username, {
         biography: 'This is my new bio',
       });
@@ -404,7 +398,6 @@ describe('Test userController', () => {
         biography: 'Attempting update biography',
       };
 
-      // Simulate a DB error
       updatedUserSpy.mockResolvedValueOnce({ error: 'Error updating user' });
 
       const response = await supertest(app).patch('/user/updateBiography').send(mockReqBody);
@@ -420,7 +413,7 @@ describe('Test userController', () => {
     it('should return 400 when no username is provided', async () => {
       const response = await supertest(app)
         .patch('/user/updateEmail')
-        .send({ email: 'test@example.com' }); // no username
+        .send({ email: 'test@example.com' });
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid user body');
     });
@@ -447,11 +440,10 @@ describe('Test userController', () => {
     });
 
     it('should add the question ID to savedQuestions if not present', async () => {
-      // Suppose the user does NOT have the question q1 saved
       const questionToSave = 'q1';
       getUserByUsernameSpy.mockResolvedValueOnce({
         ...mockUser2,
-        savedQuestions: [], // i.e. no questions saved yet
+        savedQuestions: [],
       });
       updateUserSpy.mockResolvedValueOnce({
         ...mockUser2,
@@ -472,7 +464,6 @@ describe('Test userController', () => {
     });
 
     it('should remove the question ID from savedQuestions if already present', async () => {
-      // Suppose the user *does* have the question 'q2' already saved
       const questionToRemove = 'q2';
       getUserByUsernameSpy.mockResolvedValueOnce({
         ...mockUser2,
@@ -480,7 +471,7 @@ describe('Test userController', () => {
       });
       updateUserSpy.mockResolvedValueOnce({
         ...mockUser2,
-        savedQuestions: [], // after removal
+        savedQuestions: [],
       });
 
       const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
@@ -509,12 +500,10 @@ describe('Test userController', () => {
     });
 
     it('should return 500 if updateUser returns an error', async () => {
-      // The user is found successfully
       getUserByUsernameSpy.mockResolvedValueOnce({
         ...mockUser2,
         savedQuestions: [],
       });
-      // But the update fails
       updateUserSpy.mockResolvedValueOnce({ error: 'DB update error' });
 
       const response = await supertest(app).patch('/user/toggleSaveQuestion').send({
@@ -532,7 +521,6 @@ describe('Test userController', () => {
     });
 
     it('should return 400 if the request body is invalid', async () => {
-      // Force the validation check to fail
       isUpdateEmailBodyValidSpy.mockReturnValueOnce(false);
 
       const response = await supertest(app)
@@ -544,10 +532,8 @@ describe('Test userController', () => {
     });
 
     it('should return 500 if updateUser returns an error', async () => {
-      // The body is valid, so pass the validation
       isUpdateEmailBodyValidSpy.mockReturnValueOnce(true);
 
-      // Make updateUser return an error
       updateUserSpy.mockResolvedValueOnce({ error: 'Some DB Error' });
 
       const response = await supertest(app)
@@ -559,10 +545,8 @@ describe('Test userController', () => {
     });
 
     it('should return 500 if an unhandled error is thrown', async () => {
-      // The body is valid
       isUpdateEmailBodyValidSpy.mockReturnValueOnce(true);
 
-      // Force an unexpected throw from updateUser
       updateUserSpy.mockImplementationOnce(() => {
         throw new Error('Unexpected error');
       });
@@ -582,7 +566,6 @@ describe('Test userController', () => {
       email: 'updated@example.com',
     };
 
-    // Mock updateUser to return a successfully updated user object
     updateUserSpy.mockResolvedValueOnce(updatedUser);
 
     const response = await supertest(app).patch('/user/updateEmail').send({
