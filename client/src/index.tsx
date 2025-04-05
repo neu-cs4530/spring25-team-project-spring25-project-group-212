@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import { io } from 'socket.io-client';
 import { useEffect, useState } from 'react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import FakeStackOverflow from './components/fakestackoverflow';
 import { FakeSOSocket } from './types/types';
 
@@ -10,7 +11,6 @@ const container = document.getElementById('root');
 
 const App = () => {
   const [socket, setSocket] = useState<FakeSOSocket | null>(null);
-
   const serverURL = process.env.REACT_APP_SERVER_URL;
 
   if (serverURL === undefined) {
@@ -30,9 +30,11 @@ const App = () => {
   }, [socket, serverURL]);
 
   return (
-    <Router>
-      <FakeStackOverflow socket={socket} />
-    </Router>
+    <ChakraProvider value={defaultSystem}>
+      <Router>
+        <FakeStackOverflow socket={socket} />
+      </Router>
+    </ChakraProvider>
   );
 };
 
