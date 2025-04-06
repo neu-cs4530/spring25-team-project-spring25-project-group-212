@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Spinner, Center } from '@chakra-ui/react';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
@@ -48,8 +49,12 @@ const CommunityPage = () => {
     };
   }, [community, user, socket, isPreview]);
 
-  if (!community || !community) {
-    return <div>Loading...</div>;
+  if (!community) {
+    return (
+      <Center height='100vh'>
+        <Spinner size='xl' />
+      </Center>
+    );
   }
   const userHasJoinedCommunity = community.members.includes(user.username);
   return (
