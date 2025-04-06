@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useStatisticsPage from '../../../hooks/useStatisticsPage';
 import StatisticsHeader from './header';
 import UserCardView from '../usersListPage/userCard';
-import QuestionView from '../questionPage/question';
+import QuestionStack from '../questionPage/questionStack';
 
 /**
  * StatisticsPage component renders a page displaying a list of statistics
@@ -102,9 +102,7 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The most viewed ${topViewedQuestions.length > 1 ? 'questions' : 'question'}: ${topViewedQuestionViews} views`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topViewedQuestions.map(q => (
-          <QuestionView question={q} key={String(q._id)} />
-        ))}
+        <QuestionStack questions={topViewedQuestions} />
       </div>
       {(!topAskingUsers.length || topAskingUsers.length === 0) && (
         <div className='bold_title right_padding'>No Most Viewed Question Found</div>
@@ -114,9 +112,7 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The best voted ${topVotedQuestions.length > 1 ? 'questions' : 'question'}: ${topVotedQuestionVotes}`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topVotedQuestions.map(q => (
-          <QuestionView question={q} key={String(q._id)} />
-        ))}
+        <QuestionStack questions={topVotedQuestions} />
       </div>
       {(!topAskingUsers.length || topAskingUsers.length === 0) && (
         <div className='bold_title right_padding'>No Best Voted Question Found</div>
