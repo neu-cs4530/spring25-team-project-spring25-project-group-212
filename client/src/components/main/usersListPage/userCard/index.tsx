@@ -57,7 +57,7 @@ const UserCardView = (props: UserProps) => {
         <GridItem>
           <Flex justifyContent='flex-end'>
             {buttonText === '' ? (
-              <Text fontSize='sm' color='blue' cursor='pointer'>
+              <Text fontSize='sm' color='blue.500' cursor='pointer'>
                 View Profile
               </Text>
             ) : (
