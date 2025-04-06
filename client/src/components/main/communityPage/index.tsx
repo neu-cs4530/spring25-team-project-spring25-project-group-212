@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
@@ -11,7 +10,6 @@ import CommunityNavBar from './communityNavBar';
 import QuestionStack from '../questionPage/questionStack';
 
 const CommunityPage = () => {
-  const { currentCommunity } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const location = useLocation();
@@ -35,26 +33,26 @@ const CommunityPage = () => {
   const { user, socket } = useUserContext();
 
   useEffect(() => {
-    if (!currentCommunity || !user || !socket) return undefined;
+    if (!community || !user || !socket) return undefined;
 
-    const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
+    const userHasJoinedCommunity = community.members.includes(user.username);
 
     if (!userHasJoinedCommunity && !isPreview) {
-      socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
-      joinCommunity(currentCommunity._id.toString(), user.username);
+      socket.emit('joinCommunity', community._id.toString(), user.username);
+      joinCommunity(community._id.toString(), user.username);
     }
 
     return () => {
       if (userHasJoinedCommunity) {
-        socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
+        socket.emit('leaveCommunity', community._id.toString(), user.username);
       }
     };
-  }, [currentCommunity, user, socket, isPreview]);
+  }, [community, user, socket, isPreview]);
 
-  if (!currentCommunity || !community) {
+  if (!community || !community) {
     return <div>Loading...</div>;
   }
-  const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
+  const userHasJoinedCommunity = community.members.includes(user.username);
   return (
     <>
       {communityExistsError !== '' ? (
