@@ -46,7 +46,7 @@ const QuestionView = ({ question }: QuestionProps) => {
   const clickUsername = (username: string) => {
     navigate(`/user/${username}`);
   };
-   /**
+  /**
    * Function to navigate to the specified question page based on the question ID.
    *
    * @param questionID - The ID of the question to navigate to.
