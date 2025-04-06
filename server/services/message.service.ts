@@ -67,9 +67,8 @@ export const addReactionToMessage = async (
       throw new Error('Message not found');
     }
 
-    existingMessage.reactions = existingMessage.reactions || [];
-    const alreadyReacted = existingMessage.reactions.some(
-      reaction => reaction.emoji === emoji && reaction.userId.toString() === userId.toString(),
+    const alreadyReacted = (existingMessage.reactions ?? []).some(
+      reaction => reaction.emoji === emoji && reaction.userId.toString() === user._id.toString(),
     );
 
     if (alreadyReacted) {
@@ -152,7 +151,7 @@ export const getReactions = async (messageId: string) => {
       throw new Error('Message not found');
     }
 
-    return message.reactions || [];
+    return message.reactions;
   } catch (error) {
     return { error: `Error fetching reactions: ${(error as Error).message}` };
   }

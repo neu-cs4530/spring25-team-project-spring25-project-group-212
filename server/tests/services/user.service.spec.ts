@@ -235,15 +235,13 @@ describe('updateUser', () => {
 
   it('should update the biography if the user is found', async () => {
     const newBio = 'This is a new biography';
-    // Make a new partial updates object just for biography
+
     const biographyUpdates: Partial<User> = { biography: newBio };
 
-    // Mock the DB to return a safe user (i.e., no password in results)
     mockingoose(UserModel).toReturn({ ...safeUpdatedUser, biography: newBio }, 'findOneAndUpdate');
 
     const result = await updateUser(user.username, biographyUpdates);
 
-    // Check that the result is a SafeUser and the biography got updated
     if ('username' in result) {
       expect(result.biography).toEqual(newBio);
     } else {
@@ -252,7 +250,6 @@ describe('updateUser', () => {
   });
 
   it('should return an error if biography update fails because user not found', async () => {
-    // Simulate user not found
     mockingoose(UserModel).toReturn(null, 'findOneAndUpdate');
 
     const newBio = 'No user found test';

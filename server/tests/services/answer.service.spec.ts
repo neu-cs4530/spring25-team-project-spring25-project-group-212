@@ -76,7 +76,7 @@ describe('Answer model', () => {
     test('addAnswerToQuestion should throw an error if a required field is missing in the answer', async () => {
       const invalidAnswer: Partial<DatabaseAnswer> = {
         text: 'This is an answer text',
-        ansBy: 'user123', // Missing ansDateTime
+        ansBy: 'user123',
       };
 
       const qid = 'validQuestionId';

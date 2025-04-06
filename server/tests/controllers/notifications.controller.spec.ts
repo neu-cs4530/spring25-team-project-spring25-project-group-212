@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 import supertest from 'supertest';
-import { app } from '../../app'; // same approach as question.controller.spec
+import { app } from '../../app';
 import * as notificationService from '../../services/notification.service';
 
-// -- SPY on all service functions we need:
 const getUserNotificationsSpy = jest.spyOn(notificationService, 'getUserNotifications');
 const clearNotificationsSpy = jest.spyOn(notificationService, 'clearNotifications');
 const createAnswerNotificationSpy = jest.spyOn(notificationService, 'createAnswerNotification');
 
-// Example valid request body for POST /createNotification
 const validNotificationRequest = {
   recipient: 'user1',
   questionId: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dc').toString(),
@@ -43,10 +41,8 @@ describe('Test notificationController', () => {
         },
       ]);
 
-      // Making the request
       const response = await supertest(app).get('/notification/getNotifications?username=user1');
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body.length).toBe(1);
       expect(response.body[0].recipient).toBe('user1');
@@ -70,9 +66,6 @@ describe('Test notificationController', () => {
     });
   });
 
-  //
-  // DELETE /clearNotifications
-  //
   describe('DELETE /notification/clearNotifications', () => {
     it('should clear notifications for a valid user', async () => {
       clearNotificationsSpy.mockResolvedValueOnce();
@@ -105,9 +98,6 @@ describe('Test notificationController', () => {
     });
   });
 
-  //
-  // POST /createNotification
-  //
   describe('POST /notification/createNotification', () => {
     it('should create a new notification and return it', async () => {
       createAnswerNotificationSpy.mockResolvedValueOnce({

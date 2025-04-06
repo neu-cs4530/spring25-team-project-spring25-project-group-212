@@ -6,13 +6,11 @@ import TagModel from '../../models/tags.model';
 import { DatabaseTag, Tag } from '../../types/types';
 
 const getTagCountMapSpy: jest.SpyInstance = jest.spyOn(tagUtil, 'getTagCountMap');
-// Spy on the TagModel.findOne method
 const findOneSpy = jest.spyOn(TagModel, 'findOne');
 
 describe('Test tagController', () => {
   describe('GET /getTagByName/:name', () => {
     it('should return the tag when found', async () => {
-      // Mock a tag object to be returned by the findOne method
       const mockTag: Tag = { name: 'exampleTag', description: 'This is a test tag' };
       const mockDatabaseTag: DatabaseTag = { ...mockTag, _id: new mongoose.Types.ObjectId() };
 
@@ -25,7 +23,6 @@ describe('Test tagController', () => {
     });
 
     it('should return 404 if the tag is not found', async () => {
-      // Mock findOne to return null to simulate tag not found
       findOneSpy.mockResolvedValueOnce(null);
 
       const response = await supertest(app).get('/tag/getTagByName/nonExistentTag');
