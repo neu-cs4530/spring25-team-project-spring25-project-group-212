@@ -324,8 +324,9 @@ export const addVoteToQuestion = async (
 
     return {
       msg,
-      upVotes: result.upVotes.map(({ username, timestamp }) => ({ username, timestamp })) || [],
-      downVotes: result.downVotes.map(({ username, timestamp }) => ({ username, timestamp })) || [],
+      upVotes: result.upVotes?.map(({ username, timestamp }) => ({ username, timestamp })) || [],
+      downVotes:
+        result.downVotes?.map(({ username, timestamp }) => ({ username, timestamp })) || [],
     };
   } catch (err) {
     return {

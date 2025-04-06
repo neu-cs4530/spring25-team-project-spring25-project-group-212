@@ -1,5 +1,6 @@
 import React from 'react';
 import './index.css';
+import { Button } from '@chakra-ui/react';
 import { OrderType } from '../../../../../types/types';
 import { orderTypeDisplayName } from '../../../../../types/constants';
 
@@ -23,13 +24,15 @@ interface OrderButtonProps {
  * @param setQuestionOrder - Callback function to set the order of questions based on the input message.
  */
 const OrderButton = ({ orderType, setQuestionOrder }: OrderButtonProps) => (
-  <button
-    className='btn'
+  <Button
+    colorPalette='blue'
+    variant='outline'
+    size='sm'
     onClick={() => {
       setQuestionOrder(orderType);
     }}>
     {orderTypeDisplayName[orderType]}
-  </button>
+  </Button>
 );
 
 export default OrderButton;

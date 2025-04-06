@@ -84,7 +84,7 @@ const ans1: PopulatedDatabaseAnswer = {
   _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6dc'),
   text: 'Answer 1 Text',
   ansBy: 'answer1_user',
-  ansDateTime: new Date('2024-06-09'), // The mock date is string type but in the actual implementation it is a Date type
+  ansDateTime: new Date('2024-06-09'),
   comments: [],
   useMarkdown: false,
 };
@@ -166,13 +166,13 @@ const MOCK_POPULATED_QUESTIONS: PopulatedDatabaseQuestion[] = [
 
 const simplifyQuestion = (question: PopulatedDatabaseQuestion) => ({
   ...question,
-  _id: question._id.toString(), // Converting ObjectId to string
-  tags: question.tags.map(tag => ({ ...tag, _id: tag._id.toString() })), // Converting tag ObjectId
+  _id: question._id.toString(),
+  tags: question.tags.map(tag => ({ ...tag, _id: tag._id.toString() })),
   answers: question.answers.map(answer => ({
     ...answer,
     _id: answer._id.toString(),
     ansDateTime: (answer as Answer).ansDateTime.toISOString(),
-  })), // Converting answer ObjectId
+  })),
   askDateTime: question.askDateTime.toISOString(),
 });
 
@@ -185,10 +185,8 @@ describe('Test questionController', () => {
       jest.spyOn(questionUtil, 'saveQuestion').mockResolvedValueOnce(mockDatabaseQuestion);
       jest.spyOn(databaseUtil, 'populateDocument').mockResolvedValueOnce(mockPopulatedQuestion);
 
-      // Making the request
       const response = await supertest(app).post('/question/addQuestion').send(mockQuestion);
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body).toEqual(simplifyQuestion(mockPopulatedQuestion));
     });
@@ -199,10 +197,8 @@ describe('Test questionController', () => {
         .spyOn(questionUtil, 'saveQuestion')
         .mockResolvedValueOnce({ error: 'Error while saving question' });
 
-      // Making the request
       const response = await supertest(app).post('/question/addQuestion').send(mockQuestion);
 
-      // Asserting the response
       expect(response.status).toBe(500);
     });
 
@@ -213,74 +209,60 @@ describe('Test questionController', () => {
         .spyOn(databaseUtil, 'populateDocument')
         .mockResolvedValueOnce({ error: 'Error while populating' });
 
-      // Making the request
       const response = await supertest(app).post('/question/addQuestion').send(mockQuestion);
 
-      // Asserting the response
       expect(response.status).toBe(500);
     });
 
     it('should return 500 if tag ids could not be retrieved', async () => {
       jest.spyOn(tagUtil, 'processTags').mockResolvedValue([]);
 
-      // Making the request
       const response = await supertest(app).post('/question/addQuestion').send(mockQuestion);
 
-      // Asserting the response
       expect(response.status).toBe(500);
     });
 
     it('should return bad request if question title is empty string', async () => {
-      // Making the request
       const response = await supertest(app)
         .post('/question/addQuestion')
         .send({ ...mockQuestion, title: '' });
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid question body');
     });
 
     it('should return bad request if question text is empty string', async () => {
-      // Making the request
       const response = await supertest(app)
         .post('/question/addQuestion')
         .send({ ...mockQuestion, text: '' });
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid question body');
     });
 
     it('should return bad request if tags are empty', async () => {
-      // Making the request
       const response = await supertest(app)
         .post('/question/addQuestion')
         .send({ ...mockQuestion, tags: [] });
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid question body');
     });
 
     it('should return bad request if askedBy is empty string', async () => {
-      // Making the request
       const response = await supertest(app)
         .post('/question/addQuestion')
         .send({ ...mockQuestion, askedBy: '' });
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid question body');
     });
 
     it('should ensure only unique tags are added', async () => {
-      // Mock request body with duplicate tags
       const mockQuestionDuplicates: Question = {
-        // _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6fe'),
         title: 'New Question Title',
         text: 'New Question Text',
-        tags: [dbTag1, dbTag1, dbTag2, dbTag2], // Duplicate tags
+        tags: [dbTag1, dbTag1, dbTag2, dbTag2],
         answers: [],
         askedBy: 'question3_user',
         askDateTime: new Date('2024-06-06'),
@@ -295,30 +277,27 @@ describe('Test questionController', () => {
       const result: PopulatedDatabaseQuestion = {
         ...mockQuestionDuplicates,
         _id: new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6fe'),
-        tags: [dbTag1, dbTag2], // Duplicate tags
+        tags: [dbTag1, dbTag2],
         answers: [],
         comments: [],
       };
 
-      // Set up the mock to resolve with unique tags
       jest.spyOn(tagUtil, 'processTags').mockResolvedValue([dbTag1, dbTag2]);
       jest.spyOn(questionUtil, 'saveQuestion').mockResolvedValueOnce({
         ...result,
-        tags: [dbTag1._id, dbTag2._id], // Ensure only unique tags are saved,
+        tags: [dbTag1._id, dbTag2._id],
         answers: [],
         comments: [],
       });
 
       jest.spyOn(databaseUtil, 'populateDocument').mockResolvedValueOnce(result);
 
-      // Making the request
       const response = await supertest(app)
         .post('/question/addQuestion')
         .send(mockQuestionDuplicates);
 
-      // Asserting the response
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(simplifyQuestion(result)); // Expect only unique tags
+      expect(response.body).toEqual(simplifyQuestion(result));
     });
   });
 
@@ -396,7 +375,6 @@ describe('Test questionController', () => {
         username: 'new-user',
       };
 
-      // First upvote the question
       let mockResponseWithBothVotes: VoteResponse = {
         msg: 'Question upvoted successfully',
         upVotes: [{ username: 'new-user', timestamp: now }],
@@ -416,7 +394,6 @@ describe('Test questionController', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockResponseWithBothVotesIso);
 
-      // Now downvote the question
       mockResponseWithBothVotes = {
         msg: 'Question downvoted successfully',
         downVotes: [{ username: 'new-user', timestamp: now }],
@@ -534,7 +511,6 @@ describe('Test questionController', () => {
         username: 'new-user',
       };
 
-      // First downvote the question
       let mockResponse: VoteResponse = {
         msg: 'Question downvoted successfully',
         downVotes: [{ username: 'new-user', timestamp: now }],
@@ -554,7 +530,6 @@ describe('Test questionController', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockResponseIso);
 
-      // Then upvote the question
       mockResponse = {
         msg: 'Question upvoted successfully',
         downVotes: [],
@@ -598,7 +573,6 @@ describe('Test questionController', () => {
 
   describe('GET /getQuestionById/:qid', () => {
     it('should return a question object in the response when the question id is passed as request parameter', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: '65e9b5a995b6c7045a30d823',
       };
@@ -610,23 +584,19 @@ describe('Test questionController', () => {
         q => q._id.toString() === mockReqParams.qid,
       )[0];
 
-      // Provide mock question data
       jest
         .spyOn(questionUtil, 'fetchAndIncrementQuestionViewsById')
         .mockResolvedValueOnce(populatedFindQuestion);
 
-      // Making the request
       const response = await supertest(app).get(
         `/question/getQuestionById/${mockReqParams.qid}?username=${mockReqQuery.username}`,
       );
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body).toEqual(simplifyQuestion(populatedFindQuestion));
     });
 
     it('should not return a question object with a duplicated user in the views if the user is viewing the same question again', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: '65e9b5a995b6c7045a30d823',
       };
@@ -638,23 +608,19 @@ describe('Test questionController', () => {
         q => q._id.toString() === mockReqParams.qid,
       )[0];
 
-      // Provide mock question data
       jest
         .spyOn(questionUtil, 'fetchAndIncrementQuestionViewsById')
         .mockResolvedValueOnce(populatedFindQuestion);
 
-      // Making the request
       const response = await supertest(app).get(
         `/question/getQuestionById/${mockReqParams.qid}?username=${mockReqQuery.username}`,
       );
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body).toEqual(simplifyQuestion(populatedFindQuestion));
     });
 
     it('should return bad request error if the question id is not in the correct format', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: 'invalid id',
       };
@@ -662,32 +628,26 @@ describe('Test questionController', () => {
         username: 'question2_user',
       };
 
-      // Making the request
       const response = await supertest(app).get(
         `/question/getQuestionById/${mockReqParams.qid}?username=${mockReqQuery.username}`,
       );
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid ID format');
     });
 
     it('should return bad request error if the username is not provided', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: '65e9b5a995b6c7045a30d823',
       };
 
-      // Making the request
       const response = await supertest(app).get(`/question/getQuestionById/${mockReqParams.qid}`);
 
-      // Asserting the response
       expect(response.status).toBe(400);
       expect(response.text).toBe('Invalid username requesting question.');
     });
 
     it('should return database error if the question id is not found in the database', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: '65e9b5a995b6c7045a30d823',
       };
@@ -699,12 +659,10 @@ describe('Test questionController', () => {
         .spyOn(questionUtil, 'fetchAndIncrementQuestionViewsById')
         .mockResolvedValueOnce({ error: 'Failed to get question.' });
 
-      // Making the request
       const response = await supertest(app).get(
         `/question/getQuestionById/${mockReqParams.qid}?username=${mockReqQuery.username}`,
       );
 
-      // Asserting the response
       expect(response.status).toBe(500);
       expect(response.text).toBe(
         'Error when fetching question by id: Error while fetching question by id',
@@ -712,7 +670,6 @@ describe('Test questionController', () => {
     });
 
     it('should return bad request error if an error occurs when fetching and updating the question', async () => {
-      // Mock request parameters
       const mockReqParams = {
         qid: '65e9b5a995b6c7045a30d823',
       };
@@ -724,12 +681,10 @@ describe('Test questionController', () => {
         .spyOn(questionUtil, 'fetchAndIncrementQuestionViewsById')
         .mockResolvedValueOnce({ error: 'Error when fetching and updating a question' });
 
-      // Making the request
       const response = await supertest(app).get(
         `/question/getQuestionById/${mockReqParams.qid}?username=${mockReqQuery.username}`,
       );
 
-      // Asserting the response
       expect(response.status).toBe(500);
       expect(response.text).toBe(
         'Error when fetching question by id: Error while fetching question by id',
@@ -741,16 +696,13 @@ describe('Test questionController', () => {
     it('should return the result of filterQuestionsBySearch as response even if request parameters of order and search are absent', async () => {
       getQuestionsByOrderSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
       filterQuestionsBySearchSpy.mockReturnValueOnce(MOCK_POPULATED_QUESTIONS);
-      // Making the request
       const response = await supertest(app).get('/question/getQuestion');
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body).toEqual(EXPECTED_QUESTIONS);
     });
 
     it('should return the result of filterQuestionsBySearch as response for an order and search criteria in the request parameters', async () => {
-      // Mock request query parameters
       const mockReqQuery = {
         order: 'dummyOrder',
         search: 'dummySearch',
@@ -759,30 +711,24 @@ describe('Test questionController', () => {
       getQuestionsByOrderSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
       filterQuestionsBySearchSpy.mockReturnValueOnce(MOCK_POPULATED_QUESTIONS);
 
-      // Making the request
       const response = await supertest(app).get('/question/getQuestion').query(mockReqQuery);
 
-      // Asserting the response
       expect(response.status).toBe(200);
       expect(response.body).toEqual(EXPECTED_QUESTIONS);
     });
 
     it('should return error if getQuestionsByOrder throws an error', async () => {
-      // Mock request query parameters
       const mockReqQuery = {
         order: 'dummyOrder',
         search: 'dummySearch',
       };
       getQuestionsByOrderSpy.mockRejectedValueOnce(new Error('Error fetching questions'));
-      // Making the request
       const response = await supertest(app).get('/question/getQuestion').query(mockReqQuery);
 
-      // Asserting the response
       expect(response.status).toBe(500);
     });
 
     it('should return error if filterQuestionsBySearch throws an error', async () => {
-      // Mock request query parameters
       const mockReqQuery = {
         order: 'dummyOrder',
         search: 'dummySearch',
@@ -791,10 +737,8 @@ describe('Test questionController', () => {
       filterQuestionsBySearchSpy.mockImplementationOnce(() => {
         throw new Error('Error filtering questions');
       });
-      // Making the request
       const response = await supertest(app).get('/question/getQuestion').query(mockReqQuery);
 
-      // Asserting the response
       expect(response.status).toBe(500);
     });
   });

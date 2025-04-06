@@ -40,7 +40,6 @@ describe('Chat service', () => {
     it('should successfully save a chat and verify its body (ignore exact IDs)', async () => {
       mockingoose(UserModel).toReturn(user, 'findOne');
 
-      // 2) Mock message creation
       mockingoose(MessageModel).toReturn(
         {
           _id: new mongoose.Types.ObjectId(),
@@ -52,7 +51,6 @@ describe('Chat service', () => {
         'create',
       );
 
-      // 3) Mock chat creation
       mockingoose(ChatModel).toReturn(
         {
           _id: new mongoose.Types.ObjectId(),
@@ -64,10 +62,8 @@ describe('Chat service', () => {
         'create',
       );
 
-      // 4) Call the service
       const result = await saveChat(mockChatPayload);
 
-      // 5) Verify no error
       if ('error' in result) {
         throw new Error(`Expected a Chat, got error: ${result.error}`);
       }
@@ -124,7 +120,6 @@ describe('Chat service', () => {
         updatedAt: new Date(),
       } as unknown as Chat;
 
-      // Mock findByIdAndUpdate
       mockingoose(ChatModel).toReturn(mockUpdatedChat, 'findOneAndUpdate');
 
       const result = await addMessageToChat(chatId, messageId);
@@ -166,7 +161,7 @@ describe('Chat service', () => {
         updatedAt: new Date(),
       };
 
-      mockingoose(ChatModel).toReturn(mockFoundChat, 'findOne'); // or 'findById' => 'findOne'
+      mockingoose(ChatModel).toReturn(mockFoundChat, 'findOne');
       const result = await getChat(mockFoundChat._id.toString());
 
       if ('error' in result) {
@@ -198,7 +193,6 @@ describe('Chat service', () => {
 
   describe('addParticipantToChat', () => {
     it('should add a participant if user exists', async () => {
-      // Mock user
       mockingoose(UserModel).toReturn(
         { _id: new mongoose.Types.ObjectId(), username: 'testUser' },
         'findOne',
@@ -232,9 +226,7 @@ describe('Chat service', () => {
     });
 
     it('should return an error if chat is not found', async () => {
-      // user found
       mockingoose(UserModel).toReturn({ _id: 'validUserId' }, 'findOne');
-      // but chat not found
       mockingoose(ChatModel).toReturn(null, 'findOneAndUpdate');
 
       const result = await addParticipantToChat('anyChatId', 'validUserId');

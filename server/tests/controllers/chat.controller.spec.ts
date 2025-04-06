@@ -100,7 +100,6 @@ describe('Chat Controller', () => {
         updatedAt: populatedChatResponse.updatedAt.toISOString(),
       });
 
-      // Update expected value to match serialization
       expect(saveChatSpy).toHaveBeenCalledWith(serializedPayload);
       expect(populateDocumentSpy).toHaveBeenCalledWith(chatResponse._id.toString(), 'chat');
     });
@@ -235,7 +234,6 @@ describe('Chat Controller', () => {
     it('should return 400 for missing chatId, msg, or msgFrom', async () => {
       const chatId = new mongoose.Types.ObjectId();
 
-      // Test missing msg
       const missingMsg = {
         msgFrom: 'user1',
         msgDateTime: new Date('2025-01-01'),
@@ -243,7 +241,6 @@ describe('Chat Controller', () => {
       const response1 = await supertest(app).post(`/chat/${chatId}/addMessage`).send(missingMsg);
       expect(response1.status).toBe(400);
 
-      // Test missing msgFrom
       const missingFrom = {
         msg: 'Hello!',
         msgDateTime: new Date('2025-01-01'),
@@ -255,7 +252,6 @@ describe('Chat Controller', () => {
     it('should return 500 if addMessageToChat returns an error', async () => {
       const chatId = new mongoose.Types.ObjectId().toString();
 
-      // 1) Mock `createMessage` to succeed
       saveMessageSpy.mockResolvedValue({
         _id: new mongoose.Types.ObjectId(),
         msg: 'Hello',
@@ -266,17 +262,14 @@ describe('Chat Controller', () => {
         seenBy: [],
       });
 
-      // 2) Mock `addMessageToChat` to return an error object
       addMessageSpy.mockResolvedValue({ error: 'Error updating chat' });
 
-      // 3) Invoke the endpoint with valid body
       const response = await supertest(app).post(`/chat/${chatId}/addMessage`).send({
         msg: 'Hello',
         msgFrom: 'UserX',
         msgDateTime: new Date().toISOString(),
       });
 
-      // 4) Expect a 500 with the error message
       expect(response.status).toBe(500);
       expect(response.text).toContain('Error updating chat');
     });
@@ -291,7 +284,6 @@ describe('Chat Controller', () => {
         useMarkdown: false,
       };
 
-      // Mock createMessageSpy to return an object with _id as undefined
       saveMessageSpy.mockResolvedValue({ error: 'Error saving message' });
 
       const response = await supertest(app).post(`/chat/${chatId}/addMessage`).send(messagePayload);
@@ -311,16 +303,12 @@ describe('Chat Controller', () => {
         ...messagePayload,
       };
 
-      // Mock the successful creation of the message
       saveMessageSpy.mockResolvedValueOnce(mockMessage);
 
-      // Mock the failure of updating the chat (addMessageToChat scenario)
       addMessageSpy.mockResolvedValueOnce({ error: 'Error updating chat' });
 
-      // Call the endpoint
       const response = await supertest(app).post(`/chat/${chatId}/addMessage`).send(messagePayload);
 
-      // Validate the response
       expect(response.status).toBe(500);
       expect(response.text).toContain('Error adding a message to chat: Error updating chat');
     });
@@ -329,16 +317,14 @@ describe('Chat Controller', () => {
       const chatId = new mongoose.Types.ObjectId().toString();
       const foundChat = {
         _id: new mongoose.Types.ObjectId(),
-        participants: ['testUser'], // Array of ObjectIds
-        messages: [], // Array of ObjectIds
+        participants: ['testUser'],
+        messages: [],
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      // Mock the getChat service to return a valid chat
       getChatSpy.mockResolvedValue(foundChat);
 
-      // Mock populateDocument to return an error
       populateDocumentSpy.mockResolvedValue({ error: 'Error populating chat' });
 
       const response = await supertest(app).get(`/chat/${chatId}`);
@@ -364,10 +350,8 @@ describe('Chat Controller', () => {
 
   describe('GET /chat/:chatId', () => {
     it('should retrieve a chat by ID', async () => {
-      // 1) Prepare a valid chatId param
       const chatId = new mongoose.Types.ObjectId().toString();
 
-      // 2) Mock a fully enriched chat
       const mockFoundChat: DatabaseChat = {
         _id: new mongoose.Types.ObjectId(),
         participants: ['user1'],
@@ -398,19 +382,15 @@ describe('Chat Controller', () => {
         updatedAt: new Date(),
       };
 
-      // 3) Mock the service calls
       getChatSpy.mockResolvedValue(mockFoundChat);
       populateDocumentSpy.mockResolvedValue(mockPopulatedChat);
 
-      // 4) Invoke the endpoint
       const response = await supertest(app).get(`/chat/${chatId}`);
 
-      // 5) Assertions
       expect(response.status).toBe(200);
       expect(getChatSpy).toHaveBeenCalledWith(chatId);
       expect(populateDocumentSpy).toHaveBeenCalledWith(mockFoundChat._id.toString(), 'chat');
 
-      // Convert ObjectIds and Dates for comparison
       expect(response.body).toMatchObject({
         _id: mockPopulatedChat._id.toString(),
         participants: mockPopulatedChat.participants.map(p => p.toString()),
@@ -483,7 +463,7 @@ describe('Chat Controller', () => {
 
     it('should return 400 if userId is missing', async () => {
       const chatId = new mongoose.Types.ObjectId().toString();
-      const response = await supertest(app).post(`/chat/${chatId}/addParticipant`).send({}); // Missing userId
+      const response = await supertest(app).post(`/chat/${chatId}/addParticipant`).send({});
 
       expect(response.status).toBe(400);
       expect(response.text).toBe('Missing chatId or userId');
