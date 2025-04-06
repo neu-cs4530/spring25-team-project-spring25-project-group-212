@@ -115,11 +115,13 @@ const calculateTrendingScore = (
     upvote => upvote.timestamp.getTime() > timeThreshold,
   ).length;
 
-  const recentDownVotes = question.upVotes.filter(
+  const recentDownVotes = question.downVotes.filter(
     downVote => downVote.timestamp.getTime() > timeThreshold,
   ).length;
 
-  return recentComments * 2 + recentAnswers * 3 + recentUpVotes * 1.5 - (recentDownVotes - 1);
+  return (
+    recentComments * 2 + recentAnswers * 3 + recentUpVotes * 1.5 - Math.max(0, recentDownVotes - 1)
+  );
 };
 
 export const sortQuestionsByTrending = (
