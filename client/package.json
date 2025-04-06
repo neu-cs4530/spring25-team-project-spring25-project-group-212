@@ -21,7 +21,6 @@
     "react-router-dom": "^6.28.1",
     "react-scripts": "5.0.1",
     "react-uploader": "^3.43.0",
-    "reactjs-popup": "^2.0.6",
     "socket.io-client": "^4.8.1",
     "tldraw": "^3.10.3",
     "uploader": "^3.48.3"
