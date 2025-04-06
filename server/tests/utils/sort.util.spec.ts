@@ -105,6 +105,7 @@ describe('sort.util', () => {
     const sorted = sortQuestionsByActive(questions);
     expect(sorted[0]._id).toBe(q2._id);
   });
+
   it('sortQuestionsByActive sorts by more recent answer first', () => {
     const base = new Date();
 
