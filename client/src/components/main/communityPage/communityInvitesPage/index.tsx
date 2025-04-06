@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Spinner, Center } from '@chakra-ui/react';
+import { Spinner, Center, Box } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
 import UsersListHeader from '../../usersListPage/header';
@@ -23,7 +23,9 @@ const CommunityInvitesPage = () => {
       ) : (
         <div>
           <CommunityNavBar />
-          <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
+          <Box px={6} py={4}>
+            <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
+          </Box>
           <div>
             <UserStack
               users={userList}
