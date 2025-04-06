@@ -54,7 +54,11 @@ const useCommunityQuestionPage = () => {
     const fetchData = async () => {
       try {
         if (id) {
-          const allQuestionsWithOrder = await getQuestionsByFilter(questionOrder, '', user.username);
+          const allQuestionsWithOrder = await getQuestionsByFilter(
+            questionOrder,
+            '',
+            user.username,
+          );
           const unfilteredCommunityQuestions: PopulatedDatabaseQuestion[] =
             await getQuestionsForCommunity(id);
           const unfilteredCommunityQuestionsIds = new Set(
@@ -130,7 +134,7 @@ const useCommunityQuestionPage = () => {
       socket.off('answerUpdate', handleAnswerUpdate);
       socket.off('viewsUpdate', handleViewsUpdate);
     };
-  }, [id, questionOrder, search, socket]);
+  }, [id, questionOrder, search, socket, user.username]);
 
   return { titleText, qlist, setQuestionOrder, qError };
 };
