@@ -24,9 +24,6 @@ export const saveCommunity = async (
 ): Promise<CommunityResponse> => {
   try {
     const chat = await ChatModel.create({ participants: communityPayload.createdBy, messages: [] });
-    if (!chat) {
-      throw new Error('Error creating chat');
-    }
 
     // create a new community with the group chat id and no questions to start
     const CommunityWithModel = {
@@ -42,9 +39,7 @@ export const saveCommunity = async (
     };
 
     const result = await CommunityModel.create(CommunityWithModel);
-    if (!result) {
-      throw new Error('Error saving community');
-    }
+
     return result;
   } catch (error) {
     return { error: `Error saving community: ${error}` };
@@ -58,7 +53,7 @@ export const saveCommunity = async (
  */
 export const getCommunityById = async (communityId: string): Promise<CommunityResponse> => {
   try {
-    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId).lean();
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
     if (!community) {
       throw new Error('Community not found');
     }
@@ -70,11 +65,14 @@ export const getCommunityById = async (communityId: string): Promise<CommunityRe
 
 /**
  * Retrieves all communities from the database.
- * @returns {Promise<CommunityResponse[]>} - An array of all communities or an error message.
+ * @returns {Promise<CommunityResponse[]>} - An array of all communities or an empty array.
  */
 export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
   try {
-    const communities: DatabaseCommunity[] = await CommunityModel.find().lean();
+    const communities: DatabaseCommunity[] | null = await CommunityModel.find().lean();
+    if (!communities) {
+      throw new Error('Cannot find all communities');
+    }
     return communities;
   } catch (error) {
     return [];
@@ -84,7 +82,7 @@ export const getAllCommunities = async (): Promise<CommunitiesResponse> => {
 /**
  * Gets all questions associated with this community from the database.
  * @param communityId - The ID of the community to retrieve questions for.
- * @returns {Promise<PopulatedDatabaseQuestion[]>} - An array of questions or an error message.
+ * @returns {Promise<PopulatedDatabaseQuestion[]>} - An array of questions or an empty array.
  * NOTE - the rest of the service functions do not return fully populated Community (e.g. chat and questions), that is done in the controller
  */
 export const getQuestionsForCommunity = async (
