@@ -53,7 +53,7 @@ export const saveCommunity = async (
  */
 export const getCommunityById = async (communityId: string): Promise<CommunityResponse> => {
   try {
-    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId);
+    const community: DatabaseCommunity | null = await CommunityModel.findById(communityId).lean();
     if (!community) {
       throw new Error('Community not found');
     }

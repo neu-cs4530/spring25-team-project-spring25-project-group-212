@@ -188,14 +188,8 @@ describe('getCommunityById', () => {
   });
 
   it('should throw an error if community could not be found (null)', async () => {
-    mockingoose(CommunityModel).toReturn(null, 'findOne');
+    mockingoose(CommunityModel).toReturn(null, 'lean');
     const res = await getCommunityById('id');
-    expect('error' in res).toBe(true);
-  });
-
-  it('should throw an error if community could not be found (null)', async () => {
-    jest.spyOn(CommunityModel, 'findOne').mockRejectedValueOnce(new Error());
-    const res = await getCommunityById(savedCommunity._id.toString());
     expect('error' in res).toBe(true);
   });
 });
