@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ObjectId } from 'mongodb';
 import { useNavigate } from 'react-router-dom';
-import './index.css';
+import { Box, Button, Grid, GridItem, HStack, Text, Heading, Flex } from '@chakra-ui/react';
 import { getMetaData } from '../../../../tool';
 import { PopulatedDatabaseQuestion } from '../../../../types/types';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -39,6 +39,14 @@ const QuestionView = ({ question }: QuestionProps) => {
   };
 
   /**
+   * Function to navigate to specified users user page.
+   *
+   * @param username - The username of the user to be navigated to.
+   */
+  const clickUsername = (username: string) => {
+    navigate(`/user/${username}`);
+  };
+   /**
    * Function to navigate to the specified question page based on the question ID.
    *
    * @param questionID - The ID of the question to navigate to.
@@ -52,62 +60,97 @@ const QuestionView = ({ question }: QuestionProps) => {
    */
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
+
   useEffect(() => {
     handleSetQuestionSaved(currentUser.username, question._id.toString());
   }, [currentUser.username, question._id, handleSetQuestionSaved]);
 
   return (
-    <div className='question right_padding'>
-      <div
-        className='question_content'
-        onClick={() => {
-          handleAnswer(question._id);
-        }}>
-        <div className='postStats'>
-          <div>{question.answers.length || 0} answers</div>
-          <div>{question.views.length} views</div>
-        </div>
-        <div className='question_mid'>
-          <div className='postTitle'>{question.title}</div>
-          <div className='question_tags'>
+    <Box
+      p={4}
+      borderWidth='1px'
+      borderRadius='md'
+      boxShadow='sm'
+      _hover={{ boxShadow: 'md', cursor: 'pointer' }}
+      bg='white'
+      onClick={() => handleAnswer(question._id)}>
+      <Grid templateColumns='1fr 2fr 1fr 1fr' gap={4} alignItems='center'>
+        {/* Answers and Views */}
+        <GridItem>
+          <Text fontWeight='bold'>{question.answers.length || 0} answers</Text>
+          <Text>{question.views.length} views</Text>
+        </GridItem>
+
+        {/* Question Title and Tags */}
+        <GridItem>
+          <Heading size='xl' m={2} textDecoration='underline'>
+            {question.title}
+          </Heading>
+          <HStack p={2}>
             {question.tags.map(tag => (
-              <button
+              <Button
                 key={String(tag._id)}
-                className='question_tag_button'
+                size='sm'
+                colorPalette='blue'
+                variant='ghost'
                 onClick={e => {
                   e.stopPropagation();
                   clickTag(tag.name);
-                }}>
+                }}
+                cursor='pointer'>
                 {tag.name}
-              </button>
+              </Button>
             ))}
-          </div>
-        </div>
-        <div className='lastActivity'>
-          <div className='question_author'>
-            {question.anonymous ? <i>Anonymous</i> : question.askedBy}
-          </div>
-          <div>&nbsp;</div>
-          <div className='question_meta'>asked {getMetaData(new Date(question.askDateTime))}</div>
-        </div>
-      </div>
+          </HStack>
+        </GridItem>
 
-      <div>
-        {questionSaved ? (
-          <button
-            className='btn'
-            onClick={() => handleToggleSaveQuestion(currentUser.username, question._id.toString())}>
-            Unsave
-          </button>
-        ) : (
-          <button
-            className='btn'
-            onClick={() => handleToggleSaveQuestion(currentUser.username, question._id.toString())}>
-            Save
-          </button>
-        )}
-      </div>
-    </div>
+        <GridItem>
+          <Text
+            color='red'
+            fontStyle={question.anonymous ? 'italic' : ''}
+            onClick={e => {
+              if (!question.anonymous) {
+                e.stopPropagation();
+                clickUsername(question.askedBy);
+              }
+            }}
+            cursor='pointer'>
+            {question.anonymous ? 'Anonymous' : question.askedBy}
+          </Text>
+          <Text fontSize='sm' color='gray'>
+            asked {getMetaData(new Date(question.askDateTime))}
+          </Text>
+        </GridItem>
+
+        <GridItem>
+          <Flex justifyContent='flex-end'>
+            {questionSaved ? (
+              <Button
+                size='sm'
+                colorPalette='blue'
+                variant='outline'
+                onClick={e => {
+                  e.stopPropagation();
+                  handleToggleSaveQuestion(currentUser.username, question._id.toString());
+                }}>
+                Unsave
+              </Button>
+            ) : (
+              <Button
+                size='sm'
+                colorPalette='blue'
+                variant='outline'
+                onClick={e => {
+                  e.stopPropagation();
+                  handleToggleSaveQuestion(currentUser.username, question._id.toString());
+                }}>
+                Save
+              </Button>
+            )}
+          </Flex>
+        </GridItem>
+      </Grid>
+    </Box>
   );
 };
 
