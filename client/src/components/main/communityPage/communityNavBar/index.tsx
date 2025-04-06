@@ -7,7 +7,7 @@ const CommunityNavBar = () => {
   return (
     <HStack>
       <NavLink
-        to={`/community/${id}/`}
+        to={`/community/${id}`}
         id='home'
         className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
         end={true}>
