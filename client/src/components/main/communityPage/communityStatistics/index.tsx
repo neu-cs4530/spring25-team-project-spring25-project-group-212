@@ -4,8 +4,8 @@ import { Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
 import useCommunityStatisticsPage from '../../../../hooks/useCommunityStatisticsPage';
 import UserCardView from '../../usersListPage/userCard';
-import QuestionView from '../../questionPage/question';
 import CommunityNavBar from '../communityNavBar';
+import QuestionStack from '../../questionPage/questionStack';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement);
 
@@ -109,9 +109,7 @@ const CommunityStatisticsPage = () => {
             <div className='not_quite_so_bold_title'>{`The most viewed ${topViewedQuestions.length > 1 ? 'questions' : 'question'}: ${topViewedQuestionViews} views`}</div>
           </div>
           <div id='users_list' className='users_list'>
-            {topViewedQuestions.map(q => (
-              <QuestionView question={q} key={String(q._id)} />
-            ))}
+            <QuestionStack questions={topViewedQuestions} />
           </div>
           {(!topAskingUsers.length || topAskingUsers.length === 0) && (
             <div className='bold_title right_padding'>No Most Viewed Question Found</div>
@@ -120,9 +118,7 @@ const CommunityStatisticsPage = () => {
             <div className='not_quite_so_bold_title'>{`The best voted ${topVotedQuestions.length > 1 ? 'questions' : 'question'}: ${topVotedQuestionVotes}`}</div>
           </div>
           <div id='users_list' className='users_list'>
-            {topVotedQuestions.map(q => (
-              <QuestionView question={q} key={String(q._id)} />
-            ))}
+            <QuestionStack questions={topVotedQuestions} />
           </div>
           {(!topAskingUsers.length || topAskingUsers.length === 0) && (
             <div className='bold_title right_padding'>No Best Voted Question Found</div>

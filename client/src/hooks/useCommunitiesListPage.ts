@@ -42,7 +42,7 @@ const useCommunitiesListPage = () => {
   };
 
   const handlePreviewCommunity = (communityId: string) => {
-    navigate(`/community/${communityId}`);
+    navigate(`/community/${communityId}`, { state: { isPreview: true } });
   };
 
   const handleCreateCommunity = async () => {

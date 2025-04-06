@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Button, HStack, Heading, Text, useDisclosure } from '@chakra-ui/react';
 import QuestionHeader from './header';
-import QuestionView from './question';
 import useQuestionPage from '../../../hooks/useQuestionPage';
 import useUserContext from '../../../hooks/useUserContext';
+import QuestionStack from './questionStack';
 
 const QuestionPage = () => {
   const { titleText, qlist, setQuestionOrder } = useQuestionPage();
@@ -28,13 +28,9 @@ const QuestionPage = () => {
         qcnt={qlist.length}
         setQuestionOrder={setQuestionOrder}
       />
-
-      <Box id='question_list' mt={6}>
-        {qlist.map(q => (
-          <QuestionView question={q} key={String(q._id)} />
-        ))}
-      </Box>
-
+      <div id='question_list' className='question_list'>
+        <QuestionStack questions={qlist} />
+      </div>
       {titleText === 'Search Results' && !qlist.length && (
         <Text fontWeight='bold' mt={4} textAlign='center'>
           No Questions Found

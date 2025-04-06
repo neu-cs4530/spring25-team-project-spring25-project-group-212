@@ -4,7 +4,6 @@ import { UploadButton } from 'react-uploader';
 import { Uploader } from 'uploader';
 import { useLocation } from 'react-router-dom';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
-import QuestionView from '../questionPage/question';
 import MessageCard from '../messageCard';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
@@ -15,6 +14,7 @@ import { renameChat } from '../../../services/chatService';
 import './index.css';
 import { uploadFile } from '../../../services/messageService';
 import CommunityNavBar from './communityNavBar';
+import QuestionStack from '../questionPage/questionStack';
 
 const uploader = Uploader({ apiKey: 'public_223k28T4HR7pgyJRnMLX4QntHQxQ' });
 const uploaderOptions = {
@@ -212,9 +212,7 @@ const CommunityPage = () => {
                   setQuestionOrder={setQuestionOrder}
                 />
                 <div id='question_list' className='question_list'>
-                  {qlist.map(q => (
-                    <QuestionView question={q} key={String(q._id)} />
-                  ))}
+                  <QuestionStack questions={qlist} />
                 </div>
                 {titleText === 'Search Results' && !qlist.length && (
                   <div className='bold_title right_padding'>No Questions Found</div>
