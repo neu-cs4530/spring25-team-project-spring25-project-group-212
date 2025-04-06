@@ -43,5 +43,4 @@ const CommunitiesListCardJoin = ({
     </VStack>
   </Box>
 );
-
 export default CommunitiesListCardJoin;

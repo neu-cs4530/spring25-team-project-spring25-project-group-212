@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
-import QuestionView from '../questionPage/question';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
@@ -8,11 +8,14 @@ import { joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import './index.css';
 import CommunityNavBar from './communityNavBar';
+import QuestionStack from '../questionPage/questionStack';
 
 const CommunityPage = () => {
   const { currentCommunity } = useCommunityMessagingPage();
 
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
+  const location = useLocation();
+  const isPreview = location.state?.isPreview || false;
 
   const {
     community,
@@ -36,7 +39,7 @@ const CommunityPage = () => {
 
     const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
 
-    if (userHasJoinedCommunity) {
+    if (!userHasJoinedCommunity && !isPreview) {
       socket.emit('joinCommunity', currentCommunity._id.toString(), user.username);
       joinCommunity(currentCommunity._id.toString(), user.username);
     }
@@ -46,7 +49,7 @@ const CommunityPage = () => {
         socket.emit('leaveCommunity', currentCommunity._id.toString(), user.username);
       }
     };
-  }, [currentCommunity, user, socket]);
+  }, [currentCommunity, user, socket, isPreview]);
 
   if (!currentCommunity || !community) {
     return <div>Loading...</div>;
@@ -132,13 +135,7 @@ const CommunityPage = () => {
                   setQuestionOrder={setQuestionOrder}
                 />
                 <div id='question_list' className='question_list'>
-                  {qlist.map(q => (
-                    <QuestionView
-                      question={q}
-                      key={String(q._id)}
-                      canClick={userHasJoinedCommunity}
-                    />
-                  ))}
+                  <QuestionStack questions={qlist} />
                 </div>
                 {titleText === 'Search Results' && !qlist.length && (
                   <div className='bold_title right_padding'>No Questions Found</div>
