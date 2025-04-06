@@ -44,14 +44,18 @@ const useCommunityMessagingPage = () => {
 
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewMessage(e.target.value);
-    socket.emit('userTyping', user.username);
+    if (currentCommunity) {
+      socket.emit('userTyping', currentCommunity?._id.toString(), user.username);
+    }
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit('userStoppedTyping', user.username);
+      if (currentCommunity) {
+        socket.emit('userStoppedTyping', currentCommunity?._id.toString(), user.username);
+      }
     }, 2000);
   };
 
@@ -148,7 +152,9 @@ const useCommunityMessagingPage = () => {
     }
 
     setError('');
-    socket.emit('userStoppedTyping', user.username);
+    if (currentCommunity) {
+      socket.emit('userStoppedTyping', currentCommunity?._id.toString(), user.username);
+    }
 
     const newMsg: Omit<Message, 'type'> = {
       msg: newMessage,

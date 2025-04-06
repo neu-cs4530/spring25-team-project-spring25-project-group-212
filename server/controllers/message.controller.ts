@@ -118,14 +118,14 @@ const messageController = (socket: FakeSOSocket) => {
     res.json(reactions);
   };
   socket.on('connection', clientSocket => {
-    clientSocket.on('userTyping', (username: string) => {
+    clientSocket.on('userTyping', (communityID: string, username: string) => {
       typingUsers.add(username);
-      clientSocket.broadcast.emit('typingUpdate', Array.from(typingUsers));
+      clientSocket.to(communityID).emit('typingUpdate', Array.from(typingUsers));
     });
 
-    clientSocket.on('userStoppedTyping', (username: string) => {
+    clientSocket.on('userStoppedTyping', (communityID: string, username: string) => {
       typingUsers.delete(username);
-      clientSocket.broadcast.emit('typingUpdate', Array.from(typingUsers));
+      clientSocket.to(communityID).emit('typingUpdate', Array.from(typingUsers));
     });
 
     clientSocket.on('disconnect', () => {});

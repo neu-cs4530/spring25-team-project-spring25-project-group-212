@@ -122,8 +122,8 @@ export interface ClientToServerEvents {
   leaveGame: (gameID: string) => void;
   joinChat: (chatID: string) => void;
   leaveChat: (chatID: string | undefined) => void;
-  userTyping: (username: string) => void;
-  userStoppedTyping: (username: string) => void;
+  userTyping: (communityID: string, username: string) => void;
+  userStoppedTyping: (communityID: string, username: string) => void;
   joinCommunity: (communityID: string, username: string) => void;
   leaveCommunity: (communityID: string, username: string) => void;
   joinUser: (userId: string) => void;
