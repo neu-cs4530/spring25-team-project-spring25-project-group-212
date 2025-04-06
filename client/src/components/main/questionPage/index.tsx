@@ -28,9 +28,9 @@ const QuestionPage = () => {
         qcnt={qlist.length}
         setQuestionOrder={setQuestionOrder}
       />
-      <div id='question_list' className='question_list'>
+      <Box id='question_list' className='question_list'>
         <QuestionStack questions={qlist} />
-      </div>
+      </Box>
       {titleText === 'Search Results' && !qlist.length && (
         <Text fontWeight='bold' mt={4} textAlign='center'>
           No Questions Found
