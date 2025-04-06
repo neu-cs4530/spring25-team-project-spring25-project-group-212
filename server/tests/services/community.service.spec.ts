@@ -415,7 +415,6 @@ describe('updateCommunity', () => {
 
 describe('Online Users Management', () => {
   beforeEach(() => {
-    // Reset the onlineUsers object before each test
     Object.keys(onlineUsers).forEach(key => delete onlineUsers[key]);
   });
 
@@ -434,10 +433,10 @@ describe('Online Users Management', () => {
     const username = 'user1';
 
     addOnlineUser(communityID, username);
-    addOnlineUser(communityID, username); // Add the same user again
+    addOnlineUser(communityID, username);
 
     const result = getOnlineUsers(communityID);
-    expect(result).toEqual([username]); // Ensure the user is not duplicated
+    expect(result).toEqual([username]);
   });
 
   it('should remove a user from the online users set for a community', () => {
@@ -448,7 +447,7 @@ describe('Online Users Management', () => {
     removeOnlineUser(communityID, username);
 
     const result = getOnlineUsers(communityID);
-    expect(result).toEqual([]); // Ensure the user is removed
+    expect(result).toEqual([]);
   });
 
   it('should delete the community entry if the last user is removed', () => {
@@ -458,14 +457,14 @@ describe('Online Users Management', () => {
     addOnlineUser(communityID, username);
     removeOnlineUser(communityID, username);
 
-    expect(onlineUsers[communityID]).toBeUndefined(); // Ensure the community entry is deleted
+    expect(onlineUsers[communityID]).toBeUndefined();
   });
 
   it('should return an empty array if there are no online users for a community', () => {
     const communityID = 'community1';
 
     const result = getOnlineUsers(communityID);
-    expect(result).toEqual([]); // Ensure an empty array is returned
+    expect(result).toEqual([]);
   });
 
   it('should handle multiple users in a community', () => {
@@ -477,6 +476,6 @@ describe('Online Users Management', () => {
     addOnlineUser(communityID, user2);
 
     const result = getOnlineUsers(communityID);
-    expect(result).toEqual(expect.arrayContaining([user1, user2])); // Ensure both users are present
+    expect(result).toEqual(expect.arrayContaining([user1, user2]));
   });
 });
