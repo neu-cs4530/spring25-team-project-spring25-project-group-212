@@ -13,23 +13,8 @@ import {
   saveQuestionToCommunity,
   updateCommunity,
 } from '../../services/community.service';
-import {
-  QUESTIONS,
-  tag1,
-  tag2,
-  ans1,
-  ans2,
-  ans3,
-  ans4,
-  POPULATED_QUESTIONS,
-} from '../mockData.models';
-import {
-  Chat,
-  Community,
-  DatabaseChat,
-  DatabaseCommunity,
-  PopulatedDatabaseChat,
-} from '../../types/types';
+import { QUESTIONS, POPULATED_QUESTIONS } from '../mockData.models';
+import { Community, DatabaseChat, PopulatedDatabaseChat } from '../../types/types';
 import ChatModel from '../../models/chat.model';
 import QuestionModel from '../../models/questions.model';
 
@@ -37,34 +22,6 @@ import QuestionModel from '../../models/questions.model';
 const mockingoose = require('mockingoose');
 
 const now = new Date();
-
-const mockQn = {
-  title: 'New Question Title',
-  text: 'New Question Text',
-  tags: [tag1, tag2],
-  askedBy: 'question3_user',
-  askDateTime: new Date('2024-06-06'),
-  answers: [],
-  views: [],
-  upVotes: [],
-  downVotes: [],
-  comments: [],
-  useMarkdown: false,
-  anonymous: false,
-};
-
-const mockChat: Chat = {
-  participants: ['user1'],
-  messages: [
-    {
-      msg: 'Hello!',
-      msgFrom: 'user1',
-      msgDateTime: new Date('2025-01-01T00:00:00.000Z'),
-      type: 'direct',
-      useMarkdown: false,
-    },
-  ],
-};
 
 const chatResponse: DatabaseChat = {
   _id: new mongoose.Types.ObjectId(),
