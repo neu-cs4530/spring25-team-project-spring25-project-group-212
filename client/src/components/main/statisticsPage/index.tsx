@@ -2,8 +2,8 @@ import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import { useNavigate } from 'react-router-dom';
 import useStatisticsPage from '../../../hooks/useStatisticsPage';
 import StatisticsHeader from './header';
-import UserCardView from '../usersListPage/userCard';
 import QuestionStack from '../questionPage/questionStack';
+import UserStack from '../usersListPage/userStack';
 
 /**
  * StatisticsPage component renders a page displaying a list of statistics
@@ -38,13 +38,10 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The most questions asked by ${topAskingUsers.length > 1 ? 'users' : 'a user'}: ${topAskerQuestionCount}`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topAskingUsers.map(user => (
-          <UserCardView
-            user={user}
-            key={user.username}
-            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-          />
-        ))}
+        <UserStack
+          users={topAskingUsers}
+          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+        />
       </div>
       {(!topAskingUsers.length || topAskingUsers.length === 0) && (
         <div className='bold_title right_padding'>No Top Asking User Found</div>
@@ -54,13 +51,10 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The most answers made by ${topAnsweringUsers.length > 1 ? 'users' : 'a user'}: ${topAnswererAnswerCount}`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topAnsweringUsers.map(user => (
-          <UserCardView
-            user={user}
-            key={user.username}
-            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-          />
-        ))}
+        <UserStack
+          users={topAnsweringUsers}
+          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+        />
       </div>
       {(!topAnsweringUsers.length || topAnsweringUsers.length === 0) && (
         <div className='bold_title right_padding'>No Top Answering User Found</div>
@@ -70,13 +64,10 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The most votes cast by ${topVotingUsers.length > 1 ? 'users' : 'a user'}: ${topVoterCount}`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topVotingUsers.map(user => (
-          <UserCardView
-            user={user}
-            key={user.username}
-            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-          />
-        ))}
+        <UserStack
+          users={topVotingUsers}
+          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+        />
       </div>
       {(!topVotingUsers.length || topVotingUsers.length === 0) && (
         <div className='bold_title right_padding'>No Top Voting User Found</div>
@@ -86,13 +77,10 @@ const StatisticsPage = () => {
         <div className='not_quite_so_bold_title'>{`The most questions viewed by ${topViewingUsers.length > 1 ? 'users' : 'a user'}: ${topViewerCount}`}</div>
       </div>
       <div id='users_list' className='users_list'>
-        {topViewingUsers.map(user => (
-          <UserCardView
-            user={user}
-            key={user.username}
-            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-          />
-        ))}
+        <UserStack
+          users={topViewingUsers}
+          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+        />
       </div>
       {(!topViewingUsers.length || topViewingUsers.length === 0) && (
         <div className='bold_title right_padding'>No Top Viewing User Found</div>
