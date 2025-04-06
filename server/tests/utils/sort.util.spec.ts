@@ -132,6 +132,7 @@ describe('sort.util', () => {
 
     const sorted = sortQuestionsByTrending([qLow, qMid, qHigh]);
 
+    // This is an example of how the scoring might work:
     // qHigh score = 3*2 + 2*3 + 2*1.5 - (2-1) = 6 + 6 + 3 - 1 = 14
     // qMid score = 2*2 + 1*3 + 1*1.5 - (0-1) = 4 + 3 + 1.5 - 0 = 8.5
     // qLow score = 1*2 = 2
@@ -182,6 +183,7 @@ describe('sort.util', () => {
 
     const sorted = sortQuestionsByTrendingInCommunity([qLow, qMid, qHigh], 'community-id');
 
+    // This is an example of how the scoring might work:
     // qHigh score = 3*2 + 2*3 + 2*1.5 - (2-1) = 6 + 6 + 3 - 1 = 14
     // qMid score = 2*2 + 1*3 + 1*1.5 - (0-1) = 4 + 3 + 1.5 - 0 = 8.5
     // qLow score = 1*2 = 2
