@@ -9,32 +9,42 @@ const CommunityNavBar = () => {
       <NavLink
         to={`/community/${id}`}
         id='home'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}
+        className={({ isActive }) =>
+          `community_menu_button ${isActive ? 'community_menu_selected' : ''}`
+        }
         end={true}>
         Home
       </NavLink>
       <NavLink
         to={`/community/${id}/bulletinBoard`}
         id='bulletin_board'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={({ isActive }) =>
+          `community_menu_button ${isActive ? 'community_menu_selected' : ''}`
+        }>
         Bulletin Board
       </NavLink>
       <NavLink
         to={`/community/${id}/invites`}
         id='invites'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={({ isActive }) =>
+          `community_menu_button ${isActive ? 'community_menu_selected' : ''}`
+        }>
         Invites
       </NavLink>
       <NavLink
         to={`/community/${id}/chat`}
         id='chat'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={({ isActive }) =>
+          `community_menu_button ${isActive ? 'community_menu_selected' : ''}`
+        }>
         Chat
       </NavLink>
       <NavLink
         to={`/community/${id}/statistics`}
         id='statistics'
-        className={({ isActive }) => `menu_button ${isActive ? 'menu_selected' : ''}`}>
+        className={({ isActive }) =>
+          `community_menu_button ${isActive ? 'community_menu_selected' : ''}`
+        }>
         Statistics
       </NavLink>
     </HStack>

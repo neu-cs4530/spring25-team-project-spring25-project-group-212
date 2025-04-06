@@ -6,11 +6,8 @@
   align-items: center;
 }
 
-.menu_button:first-child {
-  margin-top: 0;
-}
-
 .menu_button {
+  margin: 10px;
   height: 40px;
   width: 80%;
   border-radius: 5px;
