@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import useCommunityMessagingPage from '../../../hooks/useCommunityMessagingPage';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
@@ -11,7 +10,6 @@ import CommunityNavBar from './communityNavBar';
 import QuestionStack from '../questionPage/questionStack';
 
 const CommunityPage = () => {
-
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const location = useLocation();
   const isPreview = location.state?.isPreview || false;
