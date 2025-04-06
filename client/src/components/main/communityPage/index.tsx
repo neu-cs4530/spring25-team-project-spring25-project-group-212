@@ -1,17 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  Spinner,
-  Center,
-  Box,
-  VStack,
-  Text,
-  Input,
-  Button,
-  Flex,
-  Stack,
-  Heading,
-} from '@chakra-ui/react';
+import { Spinner, Center, Box, VStack, Text, Input, Button, Flex, Heading } from '@chakra-ui/react';
 import { useTheme } from 'next-themes';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
@@ -43,11 +32,9 @@ const CommunityPage = () => {
 
   const { user, socket } = useUserContext();
 
-  // Get theme
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
-  // Button colors based on theme
   const primaryBtnBg = isDark ? 'blue.300' : 'blue.500';
   const primaryBtnHoverBg = isDark ? 'blue.400' : 'blue.600';
   const primaryBtnActiveBg = isDark ? 'blue.500' : 'blue.700';
@@ -94,10 +81,7 @@ const CommunityPage = () => {
             {!editMode && (
               <VStack align='flex-start' gap={3} mb={4} ml={4}>
                 <Flex>
-                  <Text fontWeight='bold' mr={2}>
-                    Community Name:
-                  </Text>
-                  <Text>{community.name}</Text>
+                  <Heading size='4xl'>{community.name}</Heading>
                 </Flex>
                 <Box>
                   <Text fontWeight='bold' mb={1}>
