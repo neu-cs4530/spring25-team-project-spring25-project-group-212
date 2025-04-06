@@ -25,7 +25,6 @@ describe('Comment model', () => {
 
   describe('addComment', () => {
     test('addComment should return the updated question when given `question`', async () => {
-      // copy the question to avoid modifying the original
       const question = { ...QUESTIONS[0], comments: [com1] };
       mockingoose(QuestionModel).toReturn(question, 'findOneAndUpdate');
 
@@ -40,7 +39,6 @@ describe('Comment model', () => {
     });
 
     test('addComment should return the updated answer when given `answer`', async () => {
-      // copy the answer to avoid modifying the original
       const answer: DatabaseAnswer = { ...ans1, comments: [com1._id] };
       mockingoose(AnswerModel).toReturn(answer, 'findOneAndUpdate');
 
@@ -73,7 +71,7 @@ describe('Comment model', () => {
         _id: new mongoose.Types.ObjectId(),
         commentDateTime: new Date(),
         text: '',
-        commentBy: 'user123', // Missing commentDateTime
+        commentBy: 'user123',
       };
 
       const qid = 'validQuestionId';

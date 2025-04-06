@@ -113,7 +113,7 @@ describe('Question model', () => {
 
     test('should return questions sorted by trending', async () => {
       const sortSpy = jest.spyOn(sortUtils, 'sortQuestionsByTrending');
-      sortSpy.mockImplementation(qs => qs.reverse()); // fake sort logic for test
+      sortSpy.mockImplementation(qs => qs.reverse());
 
       mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
       QuestionModel.schema.path('answers', Object);
@@ -125,7 +125,6 @@ describe('Question model', () => {
       expect(sortSpy).toHaveBeenCalledTimes(1);
       expect(sortSpy).toHaveBeenCalledWith(expect.any(Array));
 
-      // ✅ Compare serialized versions to avoid Mongoose internal fields
       expect(JSON.parse(JSON.stringify(result))).toEqual(
         JSON.parse(JSON.stringify([...POPULATED_QUESTIONS].reverse())),
       );
@@ -142,22 +141,22 @@ describe('Question model', () => {
       const questions = [
         {
           _id: '65e9b716ff0e892116b2de01',
-          answers: [ans1, ans3], // 18, 19 => 19
+          answers: [ans1, ans3],
           askDateTime: new Date('2023-11-20T09:24:00'),
         },
         {
           _id: '65e9b716ff0e892116b2de02',
-          answers: [ans1, ans2, ans3, ans4], // 18, 20, 19, 19 => 20
+          answers: [ans1, ans2, ans3, ans4],
           askDateTime: new Date('2023-11-20T09:24:00'),
         },
         {
           _id: '65e9b716ff0e892116b2de03',
-          answers: [ans1], // 18 => 18
+          answers: [ans1],
           askDateTime: new Date('2023-11-19T09:24:00'),
         },
         {
           _id: '65e9b716ff0e892116b2de04',
-          answers: [ans4], // 19 => 19
+          answers: [ans4],
           askDateTime: new Date('2023-11-21T09:24:00'),
         },
         {
@@ -350,14 +349,13 @@ describe('Question model', () => {
         title: null,
       } as unknown as Question;
 
-      // ✅ Correct way to simulate a thrown error
       jest.spyOn(QuestionModel, 'create').mockRejectedValue(new Error('Mock create failure'));
 
       const result = await saveQuestion(invalidQuestion);
 
       expect(result).toEqual({ error: 'Error when saving a question' });
 
-      jest.restoreAllMocks(); // Clean up
+      jest.restoreAllMocks();
     });
   });
 
@@ -539,7 +537,6 @@ describe('Question model', () => {
     test('should return [] for upVotes and downVotes when they are undefined', async () => {
       const mockQuestion = {
         _id: 'someQuestionId',
-        // Simulate undefined votes
         upVotes: undefined,
         downVotes: undefined,
       };
@@ -548,7 +545,6 @@ describe('Question model', () => {
 
       const result = await addVoteToQuestion('someQuestionId', 'testUser', 'upvote');
 
-      // Verify fallback to empty arrays
       if ('error' in result) throw new Error('Unexpected error');
       expect(result.upVotes).toEqual([]);
       expect(result.downVotes).toEqual([]);
@@ -561,13 +557,10 @@ describe('Question model', () => {
     });
 
     test('should return saved questions sorted accordingly', async () => {
-      // Mock all questions
       mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
 
-      // Assume the user has saved two specific questions
       const savedQuestionIds = ['65e9b58910afe6e94fc6e6dc', '65e9b716ff0e892116b2de09'];
 
-      // Mock user
       mockingoose(UserModel).toReturn(
         {
           username: 'testUser',

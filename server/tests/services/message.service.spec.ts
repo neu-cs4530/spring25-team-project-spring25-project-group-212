@@ -42,13 +42,11 @@ describe('Message model', () => {
     };
 
     it('should create a message successfully if user exists', async () => {
-      // Mock the user existence check
       mockingoose(UserModel).toReturn(
         { _id: new mongoose.Types.ObjectId(), username: 'userX' },
         'findOne',
       );
 
-      // Mock the created message
       const mockCreatedMsg = {
         _id: new mongoose.Types.ObjectId(),
         ...mockMessage,
@@ -66,7 +64,6 @@ describe('Message model', () => {
     });
 
     it('should return an error if user does not exist', async () => {
-      // No user found
       mockingoose(UserModel).toReturn(null, 'findOne');
 
       const result = await saveMessage(mockMessage);

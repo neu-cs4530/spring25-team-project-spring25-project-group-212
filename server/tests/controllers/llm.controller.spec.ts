@@ -55,7 +55,6 @@ describe('POST /llm/assignCommunity', () => {
       ],
     };
     const mockGroupChatId = new ObjectId();
-    // Mock getAllCommunities to return one React community
     getAllCommunitiesSpy.mockResolvedValue([
       {
         ...mockCommunity,
@@ -64,13 +63,10 @@ describe('POST /llm/assignCommunity', () => {
         questions: [],
       },
     ]);
-    // Mock QuestionModel.find to return one unassigned question
     findSpy.mockResolvedValue([mockQuestion]);
 
-    // Mock LLM to suggest the React community
     assignCommunityFromLLMSpy.mockResolvedValue('React');
 
-    // Mock saveQuestionToCommunity
     saveQuestionToCommunitySpy.mockResolvedValue({
       _id: new mongoose.Types.ObjectId(),
       name: 'React',
@@ -142,7 +138,7 @@ describe('POST /llm/assignCommunity', () => {
 
     getAllCommunitiesSpy.mockResolvedValue([mockCommunityWithQuestion]);
 
-    findSpy.mockResolvedValue([]); // nothing should come from QuestionModel.find
+    findSpy.mockResolvedValue([]);
 
     const response = await supertest(app).post('/llm/assignCommunity');
 

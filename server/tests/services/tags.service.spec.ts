@@ -94,7 +94,7 @@ describe('Tag model', () => {
       mockingoose(QuestionModel).toReturn(POPULATED_QUESTIONS, 'find');
       QuestionModel.schema.path('tags', Object);
 
-      const result = await getTagCountMap(); // ) as Map<string, number>;
+      const result = await getTagCountMap();
 
       if (!result || 'error' in result) {
         throw new Error('Expected map, got undefined or error.');
