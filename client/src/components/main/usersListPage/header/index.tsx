@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex, Input, Text } from '@chakra-ui/react';
 import './index.css';
 import useUserSearch from '../../../../hooks/useUserSearch';
 
@@ -25,21 +26,34 @@ const UsersListHeader = ({ userCount, setUserFilter }: UserHeaderProps) => {
   const { val, handleInputChange } = useUserSearch(setUserFilter);
 
   return (
-    <div>
-      <div className='space_between right_padding'>
-        <div className='bold_title'>Users List</div>
-        <input
+    <Flex
+      direction='column'
+      gap={4}
+      p={4}
+      borderWidth='1px'
+      borderRadius='md'
+      boxShadow='sm'
+      bg='gray.50'>
+      <Flex justify='space-between' align='center'>
+        <Text fontSize='lg' fontWeight='bold'>
+          Users List
+        </Text>
+        <Input
           id='user_search_bar'
-          placeholder='Search Usernames ...'
-          type='text'
+          placeholder={`Search from ${userCount} users...`}
           value={val}
           onChange={handleInputChange}
+          bg='white'
+          borderColor='gray.300'
+          _placeholder={{ color: 'gray.500' }}
         />
-      </div>
-      <div className='space_between right_padding'>
-        <div id='user_count'>{userCount} users</div>
-      </div>
-    </div>
+      </Flex>
+      <Flex justify='flex-end'>
+        <Text id='user_count' fontSize='sm' color='gray.600'>
+          {userCount} users
+        </Text>
+      </Flex>
+    </Flex>
   );
 };
 

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Spinner, Center } from '@chakra-ui/react';
+import { Spinner, Center, Box, VStack, Text, Input, Button, Flex, Heading } from '@chakra-ui/react';
+import { useTheme } from 'next-themes';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
 import useUserContext from '../../../hooks/useUserContext';
 import { joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
-import './index.css';
 import CommunityNavBar from './communityNavBar';
 import QuestionStack from '../questionPage/questionStack';
 
@@ -32,6 +32,17 @@ const CommunityPage = () => {
 
   const { user, socket } = useUserContext();
 
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  const primaryBtnBg = isDark ? 'blue.300' : 'blue.500';
+  const primaryBtnHoverBg = isDark ? 'blue.400' : 'blue.600';
+  const primaryBtnActiveBg = isDark ? 'blue.500' : 'blue.700';
+
+  const deleteBtnBg = isDark ? 'red.300' : 'red.500';
+  const deleteBtnHoverBg = isDark ? 'red.400' : 'red.600';
+  const deleteBtnActiveBg = isDark ? 'red.500' : 'red.700';
+
   useEffect(() => {
     if (!community || !user || !socket) return undefined;
 
@@ -56,96 +67,125 @@ const CommunityPage = () => {
       </Center>
     );
   }
+
   const userHasJoinedCommunity = community.members.includes(user.username);
+
   return (
     <>
       {communityExistsError !== '' ? (
-        <strong>{communityExistsError}</strong>
+        <Text fontWeight='bold'>{communityExistsError}</Text>
       ) : (
-        <>
-          {' '}
-          <div id='community-page'>
-            <CommunityNavBar />
+        <Box>
+          <CommunityNavBar />
+          <Box p={4}>
             {!editMode && (
-              <div>
-                <strong>Community Name: </strong> {community.name}
-                <p>
-                  <strong>About: </strong>
-                  {community.about}
-                </p>
-                <p>
-                  <strong>Rules: </strong>
-                  {community.rules}
-                </p>
+              <VStack align='flex-start' gap={3} mb={4} ml={4}>
+                <Flex>
+                  <Heading size='4xl'>{community.name}</Heading>
+                </Flex>
+                <Box>
+                  <Text fontWeight='bold' mb={1}>
+                    About:
+                  </Text>
+                  <Text>{community.about}</Text>
+                </Box>
+                <Box>
+                  <Text fontWeight='bold' mb={1}>
+                    Rules:
+                  </Text>
+                  <Text>{community.rules}</Text>
+                </Box>
                 {userHasJoinedCommunity && canEditNameAboutRules && (
-                  <button
-                    className='login-button'
-                    style={{ marginLeft: '1rem' }}
+                  <Button
+                    bg={primaryBtnBg}
+                    color='white'
+                    _hover={{ bg: primaryBtnHoverBg }}
+                    _active={{ bg: primaryBtnActiveBg }}
                     onClick={() => {
                       setEditMode(true);
                       setNewName(community?.name || '');
                       setNewAbout(community?.about || '');
                       setNewRules(community?.rules || '');
-                    }}>
+                    }}
+                    p={2}
+                    m={0}
+                    borderRadius='md'>
                     Edit Name, About, and/or Rules
-                  </button>
+                  </Button>
                 )}
-              </div>
+              </VStack>
             )}
+
             {userHasJoinedCommunity && editMode && canEditNameAboutRules && (
-              <div>
-                <input
-                  className='input-text'
+              <VStack align='stretch' gap={3} mb={4}>
+                <Input
                   placeholder='Enter new name...'
-                  type='text'
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
+                  size='md'
+                  maxWidth='400px'
+                  borderColor='gray.300'
+                  _focus={{ borderColor: 'blue.500' }}
                 />
-                <input
-                  className='input-text'
+                <Input
                   placeholder='Enter new about...'
-                  type='text'
                   value={newAbout}
                   onChange={e => setNewAbout(e.target.value)}
+                  size='md'
+                  maxWidth='400px'
+                  borderColor='gray.300'
+                  _focus={{ borderColor: 'blue.500' }}
                 />
-                <input
-                  className='input-text'
+                <Input
                   placeholder='Enter new rules...'
-                  type='text'
                   value={newRules}
                   onChange={e => setNewRules(e.target.value)}
+                  size='md'
+                  maxWidth='400px'
+                  borderColor='gray.300'
+                  _focus={{ borderColor: 'blue.500' }}
                 />
-                <button
-                  className='login-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={handleEditNameAboutRules}>
-                  Save
-                </button>
-                <button
-                  className='delete-button'
-                  style={{ marginLeft: '1rem' }}
-                  onClick={() => setEditMode(false)}>
-                  Cancel
-                </button>
-              </div>
+                <Flex>
+                  <Button
+                    bg={primaryBtnBg}
+                    color='white'
+                    _hover={{ bg: primaryBtnHoverBg }}
+                    _active={{ bg: primaryBtnActiveBg }}
+                    onClick={handleEditNameAboutRules}
+                    mr={3}>
+                    Save
+                  </Button>
+                  <Button
+                    bg={deleteBtnBg}
+                    color='white'
+                    _hover={{ bg: deleteBtnHoverBg }}
+                    _active={{ bg: deleteBtnActiveBg }}
+                    onClick={() => setEditMode(false)}>
+                    Cancel
+                  </Button>
+                </Flex>
+              </VStack>
             )}
-            <div id='community-content'>
-              <div id='community-questions' style={{ marginBottom: 20 }}>
+
+            <Box mb={5}>
+              <Box mb={5}>
                 <CommunityQuestionHeader
                   titleText={titleText}
                   qcnt={qlist.length}
                   setQuestionOrder={setQuestionOrder}
                 />
-                <div id='question_list' className='question_list'>
+                <Box>
                   <QuestionStack questions={qlist} />
-                </div>
+                </Box>
                 {titleText === 'Search Results' && !qlist.length && (
-                  <div className='bold_title right_padding'>No Questions Found</div>
+                  <Text fontWeight='bold' pr={4}>
+                    No Questions Found
+                  </Text>
                 )}
-              </div>
-            </div>
-          </div>
-        </>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       )}
     </>
   );

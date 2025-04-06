@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { UploadButton } from 'react-uploader';
-import { Spinner, Center } from '@chakra-ui/react';
+import { Spinner, Center, Box, Flex, Input, Button, Text, Badge } from '@chakra-ui/react';
 import { Uploader } from 'uploader';
 import useCommunityMessagingPage from '../../../../hooks/useCommunityMessagingPage';
 import MessageCard from '../../messageCard';
@@ -123,33 +123,45 @@ const CommunityChat = () => {
       <CommunityNavBar />
       {userHasJoinedCommunity && (
         <>
-          <div className='online-users'>
-            <strong>Online Users:</strong>
-            <ul>
-              {onlineUsers.map((username, index) => (
-                <li key={index}>{username}</li>
-              ))}
-            </ul>
-          </div>
-          <div className='rename-chat'>
-            <input
-              className='custom-input'
-              type='text'
-              value={chatName}
-              onChange={e => setChatName(e.target.value)}
-              placeholder='Enter new chat name'
-            />
-            <button className='custom-button' onClick={handleRenameChat}>
-              Rename
-            </button>
-          </div>
-          <p>
-            <strong>Current Chat Name: </strong>
-            {chatName}
-          </p>
-          <div className='direct-message-container'>
-            <div id='community-chat' className='chat-container'>
-              <div className='chat-messages'>
+          <Box p={4}>
+            <Box mb={4}>
+              <Text fontWeight='bold' mb={2}>
+                Online Users:
+              </Text>
+              <Box as='ul' m={0} p={0} style={{ listStyleType: 'none' }}>
+                {onlineUsers.map((username, index) => (
+                  <Box as='li' key={index} display='flex' alignItems='center' mb={1}>
+                    <Box w='8px' h='8px' bg='green.500' borderRadius='full' mr={2} />
+                    {username}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+
+            <Box mb={4}>
+              <Flex alignItems='center' gap={2}>
+                <Input
+                  className='custom-input'
+                  type='text'
+                  value={chatName}
+                  onChange={e => setChatName(e.target.value)}
+                  placeholder='Enter new chat name'
+                />
+                <Button className='custom-button' colorScheme='blue' onClick={handleRenameChat}>
+                  Rename
+                </Button>
+              </Flex>
+            </Box>
+
+            <Text>
+              <strong>Current Chat Name: </strong>
+              <Badge colorScheme='blue'>{chatName}</Badge>
+            </Text>
+          </Box>
+
+          <Box className='direct-message-container'>
+            <Box id='community-chat' className='chat-container'>
+              <Box className='chat-messages'>
                 {communityChat?.messages && communityChat.messages.length > 0 ? (
                   communityChat.messages.map(message => (
                     <MessageCard
@@ -159,33 +171,33 @@ const CommunityChat = () => {
                     />
                   ))
                 ) : (
-                  <div>No messages yet.</div>
+                  <Box>No messages yet.</Box>
                 )}
-              </div>
+              </Box>
 
               {typingUsers.length > 0 && (
-                <div className='typing-indicator'>
+                <Box className='typing-indicator'>
                   {typingUsers.length === 1 && `${typingUsers[0]} is typing...`}
                   {typingUsers.length === 2 &&
                     `${typingUsers[0]} and ${typingUsers[1]} are typing...`}
                   {typingUsers.length > 2 && 'Many people are typing...'}
-                </div>
+                </Box>
               )}
 
-              <div className='message-input-container'>
-                <div className='message-input'>
-                  <input
+              <Box className='message-input-container'>
+                <Flex className='message-input' gap={2}>
+                  <Input
                     className='custom-input'
                     type='text'
                     value={newMessage}
                     onChange={handleTyping}
                     placeholder='Type a message...'
                   />
-                  <button
+                  <Button
                     className='emoji-button'
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                     😀
-                  </button>
+                  </Button>
                   <UploadButton
                     uploader={uploader}
                     options={uploaderOptions}
@@ -195,31 +207,31 @@ const CommunityChat = () => {
                       });
                     }}>
                     {({ onClick }) => (
-                      <button className='custom-button' onClick={onClick}>
+                      <Button className='custom-button' onClick={onClick}>
                         Upload File
-                      </button>
+                      </Button>
                     )}
                   </UploadButton>
-                  <button className='custom-button' onClick={handleSendMessage}>
+                  <Button className='custom-button' colorScheme='blue' onClick={handleSendMessage}>
                     Send
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type='button'
                     className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
                     onClick={() => setUseMarkdown(!useMarkdown)}
                     title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
                     MD
-                  </button>
-                </div>
+                  </Button>
+                </Flex>
 
                 {showEmojiPicker && (
-                  <div style={{ height: '300px', overflowY: 'auto' }}>
+                  <Box style={{ height: '300px', overflowY: 'auto' }}>
                     <EmojiPicker onEmojiClick={handleEmojiSelect} />
-                  </div>
+                  </Box>
                 )}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
         </>
       )}
     </>
