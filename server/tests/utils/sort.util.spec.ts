@@ -89,16 +89,106 @@ describe('sort.util', () => {
     expect(result[0]._id.toString()).toBe(savedId.toString());
   });
 
-  it('sortQuestionsByTrending sorts questions by activity score', () => {
-    const sorted = sortQuestionsByTrending(questions);
-    expect(sorted.length).toBe(3);
-    expect(sorted.map(q => q._id)).not.toEqual(questions.map(q => q._id));
+  it('sortQuestionsByTrending ranks questions based on weighted recent activity', () => {
+    const baseTime = Date.now();
+    const recent = (offset = 0) => new Date(baseTime - offset);
+
+    const qLow = makeQuestion({
+      askDateTime: new Date('2024-01-01'),
+      comments: [{ commentDateTime: recent(1000) }],
+      answers: [],
+      upVotes: [],
+      downVotes: [],
+    });
+
+    const qMid = makeQuestion({
+      askDateTime: new Date('2024-01-02'),
+      comments: [{ commentDateTime: recent(1000) }, { commentDateTime: recent(2000) }],
+      answers: [{ ansDateTime: recent(1000), comments: [] }],
+      upVotes: [{ username: 'u', timestamp: recent(1000) }],
+      downVotes: [],
+    });
+
+    const qHigh = makeQuestion({
+      askDateTime: new Date('2024-01-03'),
+      comments: [
+        { commentDateTime: recent(1000) },
+        { commentDateTime: recent(2000) },
+        { commentDateTime: recent(3000) },
+      ],
+      answers: [
+        { ansDateTime: recent(1000), comments: [] },
+        { ansDateTime: recent(2000), comments: [] },
+      ],
+      upVotes: [
+        { username: 'a', timestamp: recent(1000) },
+        { username: 'b', timestamp: recent(2000) },
+      ],
+      downVotes: [
+        { username: 'x', timestamp: recent(1000) },
+        { username: 'y', timestamp: recent(2000) },
+      ],
+    });
+
+    const sorted = sortQuestionsByTrending([qLow, qMid, qHigh]);
+
+    // This is an example of how the scoring might work:
+    // qHigh score = 3*2 + 2*3 + 2*1.5 - (2-1) = 6 + 6 + 3 - 1 = 14
+    // qMid score = 2*2 + 1*3 + 1*1.5 - (0-1) = 4 + 3 + 1.5 - 0 = 8.5
+    // qLow score = 1*2 = 2
+
+    expect(sorted.map(q => q._id)).toEqual([qHigh._id, qMid._id, qLow._id]);
   });
 
-  it('sortQuestionsByTrendingInCommunity sorts similarly to trending', () => {
-    const sorted = sortQuestionsByTrendingInCommunity(questions, 'community-id');
-    expect(sorted.length).toBe(3);
-    expect(sorted.map(q => q._id)).not.toEqual(questions.map(q => q._id));
+  it('sortQuestionsByTrendingInCommunity ranks questions by weighted activity in given community', () => {
+    const baseTime = Date.now();
+    const recent = (offset = 0) => new Date(baseTime - offset);
+
+    const qLow = makeQuestion({
+      askDateTime: new Date('2024-01-01'),
+      comments: [{ commentDateTime: recent(1000) }],
+      answers: [],
+      upVotes: [],
+      downVotes: [],
+    });
+
+    const qMid = makeQuestion({
+      askDateTime: new Date('2024-01-02'),
+      comments: [{ commentDateTime: recent(1000) }, { commentDateTime: recent(2000) }],
+      answers: [{ ansDateTime: recent(1000), comments: [] }],
+      upVotes: [{ username: 'u', timestamp: recent(1000) }],
+      downVotes: [],
+    });
+
+    const qHigh = makeQuestion({
+      askDateTime: new Date('2024-01-03'),
+      comments: [
+        { commentDateTime: recent(1000) },
+        { commentDateTime: recent(2000) },
+        { commentDateTime: recent(3000) },
+      ],
+      answers: [
+        { ansDateTime: recent(1000), comments: [] },
+        { ansDateTime: recent(2000), comments: [] },
+      ],
+      upVotes: [
+        { username: 'a', timestamp: recent(1000) },
+        { username: 'b', timestamp: recent(2000) },
+      ],
+      downVotes: [
+        { username: 'x', timestamp: recent(1000) },
+        { username: 'y', timestamp: recent(2000) },
+      ],
+    });
+
+    const sorted = sortQuestionsByTrendingInCommunity([qLow, qMid, qHigh], 'community-id');
+
+    // This is an example of how the scoring might work:
+    // qHigh score = 3*2 + 2*3 + 2*1.5 - (2-1) = 6 + 6 + 3 - 1 = 14
+    // qMid score = 2*2 + 1*3 + 1*1.5 - (0-1) = 4 + 3 + 1.5 - 0 = 8.5
+    // qLow score = 1*2 = 2
+
+    expect(sorted.map(q => q._id)).toEqual([qHigh._id, qMid._id, qLow._id]);
   });
 
   it('sortQuestionsByActive prioritizes questions with recent answers', () => {
