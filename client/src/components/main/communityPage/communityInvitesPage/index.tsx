@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Spinner, Center } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
 import UserCardView from '../../usersListPage/userCard';
@@ -16,7 +17,9 @@ const CommunityInvitesPage = () => {
   return (
     <div>
       {userList.length === 0 ? (
-        <strong>No Users to Invite or community does not exist</strong>
+        <Center height='100vh'>
+          <Spinner size='xl' />
+        </Center>
       ) : (
         <div>
           <CommunityNavBar />

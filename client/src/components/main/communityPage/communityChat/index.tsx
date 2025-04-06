@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { UploadButton } from 'react-uploader';
+import { Spinner, Center } from '@chakra-ui/react';
 import { Uploader } from 'uploader';
 import useCommunityMessagingPage from '../../../../hooks/useCommunityMessagingPage';
 import MessageCard from '../../messageCard';
@@ -109,7 +110,11 @@ const CommunityChat = () => {
   };
 
   if (!currentCommunity || !community) {
-    return <div>Loading...</div>;
+    return (
+      <Center height='100vh'>
+        <Spinner size='xl' />
+      </Center>
+    );
   }
   const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
 
