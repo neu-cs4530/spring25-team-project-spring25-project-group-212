@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Box, Input, Text } from '@chakra-ui/react';
+import { Flex, Input, Text } from '@chakra-ui/react';
 import './index.css';
 import useUserSearch from '../../../../hooks/useUserSearch';
 
