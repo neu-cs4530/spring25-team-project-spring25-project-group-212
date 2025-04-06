@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, ButtonGroup, Flex, Text } from '@chakra-ui/react';
 import OrderButton from '../../questionPage/header/orderButton';
 import { OrderType } from '../../../../types/types';
 import { orderTypeDisplayName } from '../../../../types/constants';
@@ -27,14 +28,20 @@ interface QuestionHeaderProps {
  * @param setQuestionOrder - Function to set the order of questions based on input message.
  */
 const CommunityQuestionHeader = ({ titleText, qcnt, setQuestionOrder }: QuestionHeaderProps) => (
-  <div>
-    <div className='space_between right_padding'>
-      <div className='bold_title'>{titleText}</div>
+  <Box p={4}>
+    {/* Title and Ask Question Button */}
+    <Flex justify='space-between' align='center' mb={4}>
+      <Text fontWeight='bold' fontSize='xl'>
+        {titleText}
+      </Text>
       <AskQuestionInCommunityButton />
-    </div>
-    <div className='space_between right_padding'>
-      <div id='question_count'>{qcnt} questions</div>
-      <div className='btns'>
+    </Flex>
+
+    <Flex justify='space-between' align='center'>
+      <Text id='question_count' fontSize='md' color='gray.600'>
+        {qcnt} questions
+      </Text>
+      <ButtonGroup gap={4}>
         {Object.keys(orderTypeDisplayName).map(order => (
           <OrderButton
             key={order}
@@ -42,9 +49,9 @@ const CommunityQuestionHeader = ({ titleText, qcnt, setQuestionOrder }: Question
             setQuestionOrder={setQuestionOrder}
           />
         ))}
-      </div>
-    </div>
-  </div>
+      </ButtonGroup>
+    </Flex>
+  </Box>
 );
 
 export default CommunityQuestionHeader;
