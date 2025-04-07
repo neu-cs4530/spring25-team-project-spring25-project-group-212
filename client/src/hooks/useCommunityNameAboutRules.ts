@@ -20,8 +20,8 @@ const useCommunityNameAboutRules = () => {
   const [canEditNameAboutRules, setCanEditNameAboutRules] = useState(false);
   const [rankingByMembers, setRankingByMembers] = useState<number | null>(null);
   const [rankingByQuestionsAnswers, setRankingByQuestionsAnswers] = useState<number | null>(null);
-  const [communityMemberCount, setCommunityMemberCount] = useState<number | null>(null); // Tracks member count
-  const [communityContentCount, setCommunityContentCount] = useState<number | null>(null); // Tracks questions + answers count
+  const [communityMemberCount, setCommunityMemberCount] = useState<number | null>(null);
+  const [communityContentCount, setCommunityContentCount] = useState<number | null>(null);
 
   useEffect(() => {
     const communityExistsCheck = async () => {
@@ -68,9 +68,8 @@ const useCommunityNameAboutRules = () => {
       try {
         const communities = await getCommunities();
         if (community) {
-          // Ranking by members with ties
           const sortedByMembers = communities
-            .slice() // Create a copy of the array to avoid mutating the original
+            .slice()
             .sort((a, b) => b.members.length - a.members.length);
 
           const memberRanks: { [id: string]: number } = {};
@@ -85,9 +84,8 @@ const useCommunityNameAboutRules = () => {
 
           setRankingByMembers(memberRanks[community._id.toString()]);
 
-          // Ranking by questions + answers with ties
           const sortedByQuestionsAnswers = communities
-            .slice() // Create a copy of the array to avoid mutating the original
+            .slice()
             .sort((a, b) => {
               const totalAnswersA = a.questions.reduce(
                 (sum, question) => sum + question.answers.length,
@@ -99,7 +97,7 @@ const useCommunityNameAboutRules = () => {
               );
               const totalA = a.questions.length + totalAnswersA;
               const totalB = b.questions.length + totalAnswersB;
-              return totalB - totalA; // Sort in descending order
+              return totalB - totalA;
             });
 
           const qaRanks: { [id: string]: number } = {};
