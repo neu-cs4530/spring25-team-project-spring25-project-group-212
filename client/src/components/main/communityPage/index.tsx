@@ -76,6 +76,13 @@ const CommunityPage = () => {
     };
   }, [community, user, socket, isPreview]);
 
+  useEffect(() => {
+    if (!community) {
+      return;
+    }
+    socket.emit('onlineUser', community?._id.toString(), user.username);
+  }, [community, socket, user.username]);
+
   if (!community) {
     return (
       <Center height='100vh'>

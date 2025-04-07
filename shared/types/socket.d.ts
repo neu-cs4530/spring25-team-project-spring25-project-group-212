@@ -130,6 +130,7 @@ export interface ClientToServerEvents {
   leaveUser: (userId: string) => void;
   messageSeen: (payload: ReadReceiptPayload) => void;
   requestUserCount: () => void;
+  onlineUser: (communityID: string, username: string) => void;
 }
 
 /**

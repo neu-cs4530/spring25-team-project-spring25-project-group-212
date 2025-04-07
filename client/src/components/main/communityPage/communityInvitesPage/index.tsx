@@ -7,11 +7,13 @@ import UsersListHeader from '../../usersListPage/header';
 import '../index.css';
 import CommunityNavBar from '../communityNavBar';
 import UserStack from '../../usersListPage/userStack';
+import useUserContext from '../../../../hooks/useUserContext';
 
 const CommunityInvitesPage = () => {
-  const { userList, setUserFilter, sendUserInvite } = useCommunityInvitesPage();
+  const { userList, setUserFilter, sendUserInvite, currentCommunity } = useCommunityInvitesPage();
   const navigate = useNavigate();
   const [showNoUsersMessage, setShowNoUsersMessage] = useState(false);
+  const { user: currentUser, socket } = useUserContext();
 
   const handleUserCardViewClickHandler = (user: SafeDatabaseUser): void => {
     navigate(`/user/${user.username}`);
@@ -26,6 +28,13 @@ const CommunityInvitesPage = () => {
 
     return () => clearTimeout(timeout);
   }, [userList]);
+
+  useEffect(() => {
+    if (!currentCommunity) {
+      return;
+    }
+    socket.emit('onlineUser', currentCommunity?._id.toString(), currentUser.username);
+  }, [currentCommunity, socket, currentUser.username]);
 
   return (
     <div>
