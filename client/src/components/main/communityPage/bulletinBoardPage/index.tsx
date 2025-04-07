@@ -3,7 +3,7 @@ import { useSyncDemo } from '@tldraw/sync';
 import 'tldraw/tldraw.css';
 import './index.css';
 import { JaaSMeeting } from '@jitsi/react-sdk';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
 import { useParams } from 'react-router-dom';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
@@ -11,7 +11,7 @@ import useUserContext from '../../../../hooks/useUserContext';
 import CommunityNavBar from '../communityNavBar';
 
 const BulletinBoardPage = () => {
-  const { user } = useUserContext();
+  const { user, socket } = useUserContext();
   const [isInCall, setIsInCall] = useState(true);
   const { id } = useParams();
   const {
@@ -33,6 +33,14 @@ const BulletinBoardPage = () => {
       setIsInCall(false);
     });
   };
+
+  useEffect(() => {
+    if (!community) {
+      return;
+    }
+    socket.emit('onlineUser', community?._id.toString(), user.username);
+  }, [community, socket, user.username]);
+
   const isUserInCommunity = community && community.members.includes(user.username);
   function SnapshotToolbar() {
     const editor = useEditor();

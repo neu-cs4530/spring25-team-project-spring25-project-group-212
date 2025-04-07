@@ -3,11 +3,13 @@ import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import { Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
 import { Badge, Box, HStack, Text, VStack } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import useCommunityStatisticsPage from '../../../../hooks/useCommunityStatisticsPage';
 import CommunityNavBar from '../communityNavBar';
 import QuestionStack from '../../questionPage/questionStack';
 import UserStack from '../../usersListPage/userStack';
 import StatisticsHeader from '../../statisticsPage/header';
+import useUserContext from '../../../../hooks/useUserContext';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement);
 
@@ -28,13 +30,22 @@ const CommunityStatisticsPage = () => {
     questionData,
     memberData,
     communityStatisticsError,
+    currentCommunity,
   } = useCommunityStatisticsPage();
+  const { user: currentUser, socket } = useUserContext();
 
   const navigate = useNavigate();
 
   const handleUserCardViewClickHandler = (user: SafeDatabaseUser): void => {
     navigate(`/user/${user.username}`);
   };
+
+  useEffect(() => {
+    if (!currentCommunity) {
+      return;
+    }
+    socket.emit('onlineUser', currentCommunity?._id.toString(), currentUser.username);
+  }, [currentCommunity, socket, currentUser.username]);
 
   return (
     <>
