@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Button } from '@chakra-ui/react';
 import useNewQuestionCommunity from '../../../../hooks/useNewQuestionCommunity';
 import Form from '../../baseComponents/form';
 import Input from '../../baseComponents/input';
@@ -80,13 +81,14 @@ const NewQuestionInCommunityPage = () => {
         setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
-        <button
-          className='form_postBtn'
+        <Button
+          colorPalette='blue'
+          size='xl'
           onClick={() => {
             postQuestion();
           }}>
           Post Question To Community
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>

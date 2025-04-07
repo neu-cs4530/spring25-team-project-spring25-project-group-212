@@ -1,6 +1,18 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Spinner, Center, Box, VStack, Text, Input, Button, Flex, Heading } from '@chakra-ui/react';
+import {
+  Spinner,
+  Center,
+  Box,
+  VStack,
+  Text,
+  Input,
+  Button,
+  Flex,
+  Heading,
+  SimpleGrid,
+  GridItem,
+} from '@chakra-ui/react';
 import { useTheme } from 'next-themes';
 import useCommunityQuestionPage from '../../../hooks/useCommunityQuestionPage';
 import CommunityQuestionHeader from './CommunityQuestionHeader';
@@ -28,6 +40,10 @@ const CommunityPage = () => {
     handleEditNameAboutRules,
     canEditNameAboutRules,
     communityExistsError,
+    rankingByMembers,
+    rankingByQuestionsAnswers,
+    communityMemberCount,
+    communityContentCount,
   } = useCommunityNameAboutRules();
 
   const { user, socket } = useUserContext();
@@ -70,6 +86,20 @@ const CommunityPage = () => {
 
   const userHasJoinedCommunity = community.members.includes(user.username);
 
+  const getMedalEmoji = (rank: number | null): string => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return '';
+  };
+
+  const getCountBadge = (count: number): string => {
+    if (count >= 100) return '🏆 for 100 or more';
+    if (count >= 50) return '⭐ for 50 or more';
+    if (count >= 10) return '🎖 for 10 or more';
+    return '';
+  };
+
   return (
     <>
       {communityExistsError !== '' ? (
@@ -83,18 +113,46 @@ const CommunityPage = () => {
                 <Flex>
                   <Heading size='4xl'>{community.name}</Heading>
                 </Flex>
-                <Box>
-                  <Text fontWeight='bold' mb={1}>
-                    About:
-                  </Text>
-                  <Text>{community.about}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight='bold' mb={1}>
-                    Rules:
-                  </Text>
-                  <Text>{community.rules}</Text>
-                </Box>
+                <SimpleGrid templateColumns='repeat(5, 1fr)' gap={4}>
+                  <GridItem rowSpan={2} colSpan={1}>
+                    <Text fontWeight='bold' mb={1}>
+                      About:
+                    </Text>
+                  </GridItem>
+                  <GridItem colSpan={4}>
+                    <Text>{community.about}</Text>
+                  </GridItem>
+                  <GridItem colSpan={4}>
+                    {rankingByMembers && (
+                      <Text>
+                        {getMedalEmoji(rankingByMembers) !== '' && (
+                          <>{getMedalEmoji(rankingByMembers)} in member count</>
+                        )}
+                      </Text>
+                    )}
+                    {rankingByQuestionsAnswers && (
+                      <Text>
+                        {getMedalEmoji(rankingByQuestionsAnswers) !== '' && (
+                          <>{getMedalEmoji(rankingByQuestionsAnswers)} in member count</>
+                        )}
+                      </Text>
+                    )}
+                    {communityMemberCount && getCountBadge(communityMemberCount) && (
+                      <Text>{getCountBadge(communityMemberCount)} members</Text>
+                    )}
+                    {communityContentCount && getCountBadge(communityContentCount) && (
+                      <Text>{getCountBadge(communityContentCount)} questions and answers</Text>
+                    )}
+                  </GridItem>
+                  <GridItem rowSpan={1} colSpan={1}>
+                    <Text fontWeight='bold' mb={1}>
+                      Rules:
+                    </Text>
+                  </GridItem>
+                  <GridItem colSpan={4}>
+                    <Text>{community.rules}</Text>
+                  </GridItem>
+                </SimpleGrid>
                 {userHasJoinedCommunity && canEditNameAboutRules && (
                   <Button
                     bg={primaryBtnBg}
