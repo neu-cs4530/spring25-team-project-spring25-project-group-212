@@ -18,6 +18,7 @@ import { getQuestionsByFilter } from '../services/questionService';
  * @returns setQuestionOrder - Function to set the sorting order of questions (e.g., newest, oldest).
  */
 const useCommunityQuestionPage = () => {
+  const { user } = useUserContext();
   const { socket } = useUserContext();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -53,7 +54,11 @@ const useCommunityQuestionPage = () => {
     const fetchData = async () => {
       try {
         if (id) {
-          const allQuestionsWithOrder = await getQuestionsByFilter(questionOrder);
+          const allQuestionsWithOrder = await getQuestionsByFilter(
+            questionOrder,
+            '',
+            user.username,
+          );
           const unfilteredCommunityQuestions: PopulatedDatabaseQuestion[] =
             await getQuestionsForCommunity(id);
           const unfilteredCommunityQuestionsIds = new Set(
@@ -129,7 +134,7 @@ const useCommunityQuestionPage = () => {
       socket.off('answerUpdate', handleAnswerUpdate);
       socket.off('viewsUpdate', handleViewsUpdate);
     };
-  }, [id, questionOrder, search, socket]);
+  }, [id, questionOrder, search, socket, user.username]);
 
   return { titleText, qlist, setQuestionOrder, qError };
 };
