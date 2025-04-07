@@ -1,5 +1,5 @@
 import { PopulatedDatabaseCommunity } from '@fake-stack-overflow/shared';
-import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Heading, VStack } from '@chakra-ui/react';
 
 const CommunityInviteCard = ({
   community,
