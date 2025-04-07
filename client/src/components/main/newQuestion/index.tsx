@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Button } from '@chakra-ui/react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import Form from '../baseComponents/form';
 import Input from '../baseComponents/input';
@@ -81,13 +82,14 @@ const NewQuestionPage = () => {
         setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
-        <button
-          className='form_postBtn'
+        <Button
+          colorPalette='blue'
+          size='xl'
           onClick={() => {
             postQuestion();
           }}>
           Post Question
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>
