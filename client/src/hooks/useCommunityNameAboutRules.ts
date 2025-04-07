@@ -84,21 +84,19 @@ const useCommunityNameAboutRules = () => {
 
           setRankingByMembers(memberRanks[community._id.toString()]);
 
-          const sortedByQuestionsAnswers = communities
-            .slice()
-            .sort((a, b) => {
-              const totalAnswersA = a.questions.reduce(
-                (sum, question) => sum + question.answers.length,
-                0,
-              );
-              const totalAnswersB = b.questions.reduce(
-                (sum, question) => sum + question.answers.length,
-                0,
-              );
-              const totalA = a.questions.length + totalAnswersA;
-              const totalB = b.questions.length + totalAnswersB;
-              return totalB - totalA;
-            });
+          const sortedByQuestionsAnswers = communities.slice().sort((a, b) => {
+            const totalAnswersA = a.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalAnswersB = b.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalA = a.questions.length + totalAnswersA;
+            const totalB = b.questions.length + totalAnswersB;
+            return totalB - totalA;
+          });
 
           const qaRanks: { [id: string]: number } = {};
           currentRank = 1;
