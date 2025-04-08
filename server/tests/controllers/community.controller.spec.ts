@@ -367,7 +367,7 @@ describe('Test communityController', () => {
       };
 
       saveCommunitySpy.mockResolvedValueOnce({ error: 'error creating community' });
-      populateDatabaseCommunitySpy.mockResolvedValueOnce(populatedSavedCommunity);
+      // populateDatabaseCommunitySpy.mockResolvedValueOnce(populatedSavedCommunity);
       const response = await supertest(app).post('/community/create').send(mockReqBody);
       expect(response.status).toEqual(500);
     });
