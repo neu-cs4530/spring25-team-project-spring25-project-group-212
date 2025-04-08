@@ -42,7 +42,7 @@ describe('Email Controller', () => {
       });
 
       expect(mockSendMail).toHaveBeenCalledWith({
-        from: '"FakeStackoverflow Team" <fakestackoverflow.digest@gmail.com>',
+        from: '"Community Overflow Team" <fakestackoverflow.digest@gmail.com>',
         to: receivers,
         subject,
         html: contents,
