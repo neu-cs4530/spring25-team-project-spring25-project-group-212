@@ -44,7 +44,7 @@ const AnswerView = ({
   handleAddComment,
   isMarkdown = false,
 }: AnswerProps) => (
-  <Flex borderBottom='1px solid' borderColor='gray.200' flexDir='row' m={4}>
+  <Flex borderBottom='1px solid' borderColor='gray.200' flexDir='row' mt={4} mb={4}>
     <Box id='answerText' className='answerText' ml={6}>
       {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
     </Box>

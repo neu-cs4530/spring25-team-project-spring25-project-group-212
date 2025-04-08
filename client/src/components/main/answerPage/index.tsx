@@ -24,10 +24,10 @@ const AnswerPage = () => {
   return (
     <>
       <VoteComponent question={question} />
-      <Box m={2}>
+      <Box mt={2} mb={2}>
         <AnswerHeader ansCount={question.answers.length} title={question.title} />
       </Box>
-      <Box m={2}>
+      <Box mt={2} mb={2}>
         <QuestionBody
           views={question.views.length}
           text={question.text}
