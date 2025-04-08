@@ -8,8 +8,6 @@ import {
   CommunitiesResponse,
   PopulatedDatabaseCommunity,
   PopulatedDatabaseQuestion,
-  PopulatedDatabaseChat,
-  DatabaseCommunity,
   AddQuestionToCommunityRequest,
   UserCommunityRequest,
   UpdateCommunityNameAboutRulesRequest,
@@ -26,7 +24,7 @@ import {
   removeOnlineUser,
   getOnlineUsers,
 } from '../services/community.service';
-import { populateDocument } from '../utils/database.util';
+import { populateDatabaseCommunity } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -61,38 +59,6 @@ const communityController = (socket: FakeSOSocket) => {
     req.body.rules !== undefined &&
     req.body.rules !== '';
 
-  const populateDatabaseCommunity = async (
-    community: DatabaseCommunity,
-  ): Promise<PopulatedDatabaseCommunity> => {
-    try {
-      const populatedChat = await populateDocument(community.groupChatId.toString(), 'chat');
-      if ('error' in populatedChat) {
-        throw new Error(`populateDatabaseCommunity chat: ${populatedChat.error}`);
-      }
-
-      const populatedQuestions = await Promise.all(
-        (community.questions || []).map(async questionId => {
-          const populatedQuestion = await populateDocument(questionId.toString(), 'question');
-          if ('error' in populatedQuestion) {
-            throw new Error(`populateDatabaseCommunity question: ${populatedQuestion.error}`);
-          }
-          return populatedQuestion as PopulatedDatabaseQuestion;
-        }),
-      );
-
-      const populatedCommunity: PopulatedDatabaseCommunity = {
-        ...community,
-        groupChat: populatedChat as PopulatedDatabaseChat,
-        questions: populatedQuestions,
-      };
-
-      populatedCommunity._id = community._id;
-
-      return populatedCommunity;
-    } catch (err: unknown) {
-      throw new Error((err as Error).message);
-    }
-  };
   /**
    * Creates a new community and saves it to the database.
    * If the community is invalid or saving fails, the HTTP response status is updated.
@@ -108,7 +74,6 @@ const communityController = (socket: FakeSOSocket) => {
 
     try {
       const requestCommunity: Omit<Community, 'groupChat' | 'questions'> = req.body.community;
-
       const result: CommunityResponse = await saveCommunity(requestCommunity);
 
       if ('error' in result) {
