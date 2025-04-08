@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+
 import { Box, Text, Button, VStack, Grid, GridItem, Flex } from '@chakra-ui/react';
 import { handleHyperlink } from '../../../../tool';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -51,9 +53,11 @@ const QuestionBody = ({
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
 
+
   useEffect(() => {
     handleSetQuestionSaved(currentUser.username, qid);
   }, [currentUser.username, qid, handleSetQuestionSaved]);
+
 
   return (
     <Grid
@@ -69,7 +73,13 @@ const QuestionBody = ({
       </GridItem>
       <GridItem>
         <Box mb={4}>
-          {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
+          {isMarkdown ? (
+          <div className='markdown-box'>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
+          </div>
+        ) : (
+          handleHyperlink(text)
+        )}
         </Box>
       </GridItem>
       <GridItem>
