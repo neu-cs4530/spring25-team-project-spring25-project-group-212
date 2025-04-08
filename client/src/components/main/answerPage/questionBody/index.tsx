@@ -53,11 +53,9 @@ const QuestionBody = ({
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
 
-
   useEffect(() => {
     handleSetQuestionSaved(currentUser.username, qid);
   }, [currentUser.username, qid, handleSetQuestionSaved]);
-
 
   return (
     <Grid
@@ -74,12 +72,12 @@ const QuestionBody = ({
       <GridItem>
         <Box mb={4}>
           {isMarkdown ? (
-          <div className='markdown-box'>
-            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
-          </div>
-        ) : (
-          handleHyperlink(text)
-        )}
+            <div className='markdown-box'>
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
+            </div>
+          ) : (
+            handleHyperlink(text)
+          )}
         </Box>
       </GridItem>
       <GridItem>

@@ -46,7 +46,7 @@ const AnswerView = ({
 }: AnswerProps) => (
   <Flex borderBottom='1px solid' borderColor='gray.200' flexDir='row' mt={4} mb={4}>
     <Box id='answerText' className='answerText' ml={6}>
-    {isMarkdown ? (
+      {isMarkdown ? (
         <div className='markdown-box'>
           <ReactMarkdown>{text}</ReactMarkdown>
         </div>
