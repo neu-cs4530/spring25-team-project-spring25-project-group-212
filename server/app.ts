@@ -108,13 +108,11 @@ if (process.env.NODE_ENV !== 'test') {
   cron.schedule(
     '0 0 * * *',
     async () => {
-      console.log('Running daily community tagging job...');
       try {
         await runLLMCommunityTagging();
       } catch (err) {
         console.error('LLM community tagging job failed:', err);
       }
-      console.log('Daily community tagging job worked!');
     },
     {
       timezone: 'America/New_York',
