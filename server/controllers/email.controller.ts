@@ -16,7 +16,7 @@ const emailController = () => {
     });
 
     await transporter.sendMail({
-      from: '"FakeStackoverflow Team" <fakestackoverflow.digest@gmail.com>',
+      from: '"Community Overflow Team" <fakestackoverflow.digest@gmail.com>',
       to: receivers,
       subject,
       html: contents,
@@ -116,7 +116,7 @@ const emailController = () => {
                     <h1> No questions were asked yesterday :( </h1>
                 `;
     } catch (error) {
-      return 'An error occurred. Please contact the FakeStackoverflow Team';
+      return 'An error occurred. Please contact the Community Overflow Team';
     }
   };
 

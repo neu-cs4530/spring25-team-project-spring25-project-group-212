@@ -180,7 +180,7 @@ const ProfileSettings: React.FC = () => {
                         />
                         <Text fontSize='sm' color='gray.500'>
                           By providing your email, you agree to receive daily emails from
-                          Fake-Stack-Overflow.
+                          Community-Overflow.
                         </Text>
                         <HStack>
                           <Button

@@ -1,3 +1,4 @@
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { downvoteQuestion, upvoteQuestion } from '../../../services/questionService';
 import './index.css';
 import useUserContext from '../../../hooks/useUserContext';
@@ -42,19 +43,21 @@ const VoteComponent = ({ question }: VoteComponentProps) => {
   };
 
   return (
-    <div className='vote-container'>
-      <button
-        className={`vote-button ${voted === 1 ? 'vote-button-upvoted' : ''}`}
+    <Box className='vote-container'>
+      <Button
+        colorPalette={voted === 1 ? 'green' : 'gray'}
+        variant={voted === 1 ? 'solid' : 'outline'}
         onClick={() => handleVote('upvote')}>
         Upvote
-      </button>
-      <button
-        className={`vote-button ${voted === -1 ? 'vote-button-downvoted' : ''}`}
+      </Button>
+      <Button
+        colorPalette={voted === -1 ? 'red' : 'gray'}
+        variant={voted === -1 ? 'solid' : 'outline'}
         onClick={() => handleVote('downvote')}>
         Downvote
-      </button>
-      <span className='vote-count'>{count}</span>
-    </div>
+      </Button>
+      <Flex className='vote-count'>{count}</Flex>
+    </Box>
   );
 };
 

@@ -75,13 +75,11 @@ const QuestionView = ({ question }: QuestionProps) => {
       bg='white'
       onClick={() => handleAnswer(question._id)}>
       <Grid templateColumns='1fr 2fr 1fr 1fr' gap={4} alignItems='center'>
-        {/* Answers and Views */}
         <GridItem>
           <Text fontWeight='bold'>{question.answers.length || 0} answers</Text>
           <Text>{question.views.length} views</Text>
         </GridItem>
 
-        {/* Question Title and Tags */}
         <GridItem>
           <Heading size='xl' m={2} textDecoration='underline'>
             {question.title}

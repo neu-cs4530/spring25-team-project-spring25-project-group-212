@@ -1,5 +1,6 @@
 import React from 'react';
 import './index.css';
+import { Flex, Text } from '@chakra-ui/react';
 import AskQuestionButton from '../../askQuestionButton';
 
 /**
@@ -21,11 +22,21 @@ interface AnswerHeaderProps {
  * @param title The title of the question or discussion thread.
  */
 const AnswerHeader = ({ ansCount, title }: AnswerHeaderProps) => (
-  <div id='answersHeader' className='space_between right_padding'>
-    <div className='bold_title'>{ansCount} answers</div>
-    <div className='bold_title answer_question_title'>{title}</div>
+  <Flex
+    id='answersHeader'
+    justify='space-between'
+    align='center'
+    p={4}
+    borderBottom='1px solid'
+    borderColor='gray.200'>
+    <Text fontSize='2xl' fontWeight='bold'>
+      {ansCount} answers
+    </Text>
+    <Text fontSize='2xl' fontWeight='bold' textAlign='center'>
+      {title}
+    </Text>
     <AskQuestionButton />
-  </div>
+  </Flex>
 );
 
 export default AnswerHeader;
