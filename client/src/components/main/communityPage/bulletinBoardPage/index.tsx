@@ -6,6 +6,7 @@ import { JaaSMeeting } from '@jitsi/react-sdk';
 import { useEffect, useState } from 'react';
 import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
 import { useParams } from 'react-router-dom';
+import { Box, Button, Text, VStack } from '@chakra-ui/react';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
 import useUserContext from '../../../../hooks/useUserContext';
 import CommunityNavBar from '../communityNavBar';
@@ -102,10 +103,21 @@ const BulletinBoardPage = () => {
                     onApiReady={handleApiReady}
                   />
                 ) : (
-                  <div>
-                    <p>Call ended. Click below to rejoin.</p>
-                    <button onClick={() => setIsInCall(true)}>Join Call</button>
-                  </div>
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='100%'>
+                    <VStack gap={4}>
+                      <Text fontSize='lg' fontWeight='bold'>
+                        Call ended. Click below to rejoin.
+                      </Text>
+                      <Button colorPalette='blue' onClick={() => setIsInCall(true)}>
+                        Join Call
+                      </Button>
+                    </VStack>
+                  </Box>
                 )}
               </div>
             )}
