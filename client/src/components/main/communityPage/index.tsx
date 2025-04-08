@@ -140,7 +140,7 @@ const CommunityPage = () => {
                     {rankingByQuestionsAnswers && (
                       <Text>
                         {getMedalEmoji(rankingByQuestionsAnswers) !== '' && (
-                          <>{getMedalEmoji(rankingByQuestionsAnswers)} in member count</>
+                          <>{getMedalEmoji(rankingByQuestionsAnswers)} in content</>
                         )}
                       </Text>
                     )}
