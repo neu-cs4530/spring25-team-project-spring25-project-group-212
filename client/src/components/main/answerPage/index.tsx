@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { getMetaData } from '../../../tool';
 import AnswerView from './answer';
 import AnswerHeader from './header';
@@ -24,16 +24,20 @@ const AnswerPage = () => {
   return (
     <>
       <VoteComponent question={question} />
-      <AnswerHeader ansCount={question.answers.length} title={question.title} />
-      <QuestionBody
-        views={question.views.length}
-        text={question.text}
-        askby={question.askedBy}
-        meta={getMetaData(new Date(question.askDateTime))}
-        isMarkdown={question.useMarkdown}
-        qid={questionID}
-        anonymous={question.anonymous}
-      />
+      <Box m={2}>
+        <AnswerHeader ansCount={question.answers.length} title={question.title} />
+      </Box>
+      <Box m={2}>
+        <QuestionBody
+          views={question.views.length}
+          text={question.text}
+          askby={question.askedBy}
+          meta={getMetaData(new Date(question.askDateTime))}
+          isMarkdown={question.useMarkdown}
+          qid={questionID}
+          anonymous={question.anonymous}
+        />
+      </Box>
       <CommentSection
         comments={question.comments}
         handleAddComment={(comment: Comment) => handleNewComment(comment, 'question', questionID)}
