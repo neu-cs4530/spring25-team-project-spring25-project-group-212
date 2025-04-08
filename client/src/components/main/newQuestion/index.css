@@ -8,7 +8,6 @@
   overflow-x: auto;
 }
 
-/* Headings */
 .markdown-box h1,
 .markdown-box h2,
 .markdown-box h3 {
@@ -26,12 +25,10 @@
   font-size: 1.25rem;
 }
 
-/* Paragraphs */
 .markdown-box p {
   margin: 0.75rem 0;
 }
 
-/* Lists */
 .markdown-box ul,
 .markdown-box ol {
   padding-left: 1.5rem;
@@ -41,7 +38,6 @@
   margin-bottom: 0.5rem;
 }
 
-/* Code blocks */
 .markdown-box pre {
   background-color: #2d2d2d;
   color: #f8f8f2;
@@ -57,7 +53,6 @@
   font-size: 0.95em;
 }
 
-/* Blockquotes */
 .markdown-box blockquote {
   border-left: 4px solid #ccc;
   padding-left: 1rem;
@@ -66,7 +61,6 @@
   font-style: italic;
 }
 
-/* Links */
 .markdown-box a {
   color: #007acc;
   text-decoration: underline;
