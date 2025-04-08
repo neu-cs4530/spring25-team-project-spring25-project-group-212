@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import rehypeHighlight from 'rehype-highlight';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
 import { DatabaseMessage, ReactionUpdatePayload, ReadReceiptPayload } from '../../../types/types';
@@ -141,7 +142,11 @@ const MessageCard = ({ message, totalUsers }: { message: DatabaseMessage; totalU
   if (delMessage.deletedAt || message.deletedAt) {
     messageContent = <p className='deleted-message'>Message has been deleted</p>;
   } else if ('useMarkdown' in message && message.useMarkdown) {
-    messageContent = <ReactMarkdown>{delMessage.msg}</ReactMarkdown>;
+    messageContent = (
+      <div className='markdown-box'>
+        <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{delMessage.msg}</ReactMarkdown>
+      </div>
+    );
   } else if (delMessage.msg.includes('/upcdn')) {
     messageContent = (
       <div className='pdf-preview'>
