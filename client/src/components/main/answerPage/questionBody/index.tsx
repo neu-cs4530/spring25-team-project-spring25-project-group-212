@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+
 import './index.css';
 import { handleHyperlink } from '../../../../tool';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -49,14 +51,22 @@ const QuestionBody = ({
 }: QuestionBodyProps) => {
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
+
   useEffect(() => {
     handleSetQuestionSaved(currentUser.username, qid);
   }, [currentUser.username, qid, handleSetQuestionSaved]);
+
   return (
     <div id='questionBody' className='questionBody right_padding'>
       <div className='bold_title answer_question_view'>{views} views</div>
       <div className='answer_question_text'>
-        {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
+        {isMarkdown ? (
+          <div className='markdown-box'>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
+          </div>
+        ) : (
+          handleHyperlink(text)
+        )}
       </div>
       <div className='answer_question_right'>
         <div className='question_author'>{anonymous ? <i>Anonymous</i> : askby}</div>

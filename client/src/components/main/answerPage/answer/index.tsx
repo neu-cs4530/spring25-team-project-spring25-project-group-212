@@ -45,7 +45,13 @@ const AnswerView = ({
 }: AnswerProps) => (
   <div className='answer right_padding'>
     <div id='answerText' className='answerText'>
-      {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
+      {isMarkdown ? (
+        <div className='markdown-box'>
+          <ReactMarkdown>{text}</ReactMarkdown>
+        </div>
+      ) : (
+        handleHyperlink(text)
+      )}
     </div>
     <div className='answerAuthor'>
       <div className='answer_author'>{ansBy}</div>

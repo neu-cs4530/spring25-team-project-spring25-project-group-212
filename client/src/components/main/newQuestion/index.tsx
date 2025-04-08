@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
 import { Button } from '@chakra-ui/react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import Form from '../baseComponents/form';
@@ -62,7 +63,7 @@ const NewQuestionPage = () => {
         <div className='markdown-preview' style={{ marginBottom: '20px' }}>
           <h3>Markdown Preview:</h3>
           <div className='markdown-box'>
-            <ReactMarkdown>{text}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
           </div>
         </div>
       )}
