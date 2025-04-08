@@ -131,6 +131,7 @@ export interface ClientToServerEvents {
   messageSeen: (payload: ReadReceiptPayload) => void;
   requestUserCount: () => void;
   onlineUser: (communityID: string, username: string) => void;
+  imageSent: (communityID: string) => void;
 }
 
 /**

@@ -103,6 +103,9 @@ const CommunityChat = () => {
   const handleFileUpload = async (url: string, username: string) => {
     try {
       const res = await uploadFile({ fileUrl: url, username });
+      if (community) {
+        socket.emit('imageSent', community?._id.toString());
+      }
       setNewMessage(prev => `${prev}${res}`);
     } catch (err) {
       throw Error('Error uploading file message');
