@@ -14,7 +14,7 @@ const assignCommunityFromLLM = async (
   const prompt = `You are an expert at categorizing Stack Overflow questions into appropriate communities. 
 Given a question and a list of communities with descriptions, return ONLY the name of the most appropriate community (no extra text).
 
-If none of the communities are a good fit for the question, return "Uncategorized".
+If none of the communities are a good fit for the question, return "Uncategorized". A question cannot be added to more than one community.
 
 Question:
 Title: "${question.title}"
