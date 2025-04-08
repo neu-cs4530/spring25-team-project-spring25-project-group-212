@@ -35,10 +35,16 @@ Community:`;
     });
 
     const llmText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!llmText) {
+      // console.error('LLM response missing expected content:', response.data);
+      throw new Error('LLM response was empty or malformed.');
+    }
+
+    // console.log(`Received response: "${llmText.trim()}"`);
     return llmText.trim();
   } catch (error) {
-    // should it be like this?
-    return 'Uncategorized';
+    // console.error('Error in assignCommunityFromLLM:', error);
+    throw new Error('Failed to assign community from LLM');
   }
 };
 
