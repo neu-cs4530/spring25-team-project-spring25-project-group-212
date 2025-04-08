@@ -32,7 +32,7 @@ const AnswerHeader = ({ ansCount, title }: AnswerHeaderProps) => (
     <Text fontSize='2xl' fontWeight='bold'>
       {ansCount} answers
     </Text>
-    <Text fontSize='lg' fontWeight='bold' textAlign='center'>
+    <Text fontSize='2xl' fontWeight='bold' textAlign='center'>
       {title}
     </Text>
     <AskQuestionButton />
