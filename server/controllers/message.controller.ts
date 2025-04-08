@@ -199,7 +199,7 @@ const messageController = (socket: FakeSOSocket) => {
         msg: fileUrl,
         msgFrom: username,
         msgDateTime: new Date(),
-        type: 'global',
+        type: 'direct',
         useMarkdown: false,
       });
 
@@ -207,7 +207,11 @@ const messageController = (socket: FakeSOSocket) => {
         return res.status(500).json({ error: message.error });
       }
 
-      socket.emit('messageUpdate', { msg: message });
+      socket.on('connection', conn => {
+        conn.on('onlineUser', (communityID: string) => {
+          socket.to(communityID).emit('messageUpdate', { msg: message });
+        });
+      });
 
       return res.json({ message, fileUrl });
     } catch (error) {
