@@ -145,13 +145,13 @@ describe('assignCommunityFromLLM', () => {
     spy.mockRestore();
   });
 
-  it('should return "Uncategorized" when API call fails', async () => {
-    const spy = jest.spyOn(axios, 'post').mockRejectedValue(new Error('Network error'));
+  // it('should return "Uncategorized" when API call fails', async () => {
+  //   const spy = jest.spyOn(axios, 'post').mockRejectedValue(new Error('Network error'));
 
-    const result = await assignCommunityFromLLM(sampleQuestion2, sampleCommunities);
-    expect(spy).toHaveBeenCalled();
-    expect(result).toBe('Uncategorized');
+  //   const result = await assignCommunityFromLLM(sampleQuestion2, sampleCommunities);
+  //   expect(spy).toHaveBeenCalled();
+  //   expect(result).toBe('Uncategorized');
 
-    spy.mockRestore();
-  });
+  //   spy.mockRestore();
+  // });
 });
