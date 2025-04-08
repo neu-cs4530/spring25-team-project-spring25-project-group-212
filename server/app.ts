@@ -106,7 +106,7 @@ if (process.env.NODE_ENV !== 'test') {
   });
 
   cron.schedule(
-    '20 21 * * *',
+    '55 21 * * *',
     async () => {
       console.log('Running daily community tagging job...');
       try {
