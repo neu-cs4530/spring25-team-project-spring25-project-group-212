@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@chakra-ui/react';
 import { getMetaData } from '../../../tool';
 import AnswerView from './answer';
 import AnswerHeader from './header';
@@ -50,13 +51,14 @@ const AnswerPage = () => {
           }
         />
       ))}
-      <button
-        className='bluebtn ansButton'
+      <Button
+        colorPalette='blue'
+        size='xl'
         onClick={() => {
           handleNewAnswer();
         }}>
         Answer Question
-      </button>
+      </Button>
     </>
   );
 };
