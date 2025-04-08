@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import './index.css';
+import { Box, Text, Button, VStack, Grid, GridItem, Flex } from '@chakra-ui/react';
 import { handleHyperlink } from '../../../../tool';
 import useUserContext from '../../../../hooks/useUserContext';
 import useQuestion from '../../../../hooks/useQuestion';
+
 /**
  * Interface representing the props for the QuestionBody component.
  *
@@ -49,35 +50,48 @@ const QuestionBody = ({
 }: QuestionBodyProps) => {
   const { user: currentUser } = useUserContext();
   const { handleToggleSaveQuestion, handleSetQuestionSaved, questionSaved } = useQuestion();
+
   useEffect(() => {
     handleSetQuestionSaved(currentUser.username, qid);
   }, [currentUser.username, qid, handleSetQuestionSaved]);
+
   return (
-    <div id='questionBody' className='questionBody right_padding'>
-      <div className='bold_title answer_question_view'>{views} views</div>
-      <div className='answer_question_text'>
-        {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
-      </div>
-      <div className='answer_question_right'>
-        <div className='question_author'>{anonymous ? <i>Anonymous</i> : askby}</div>
-        <div className='answer_question_meta'>asked {meta}</div>
-      </div>
-      <div>
-        {questionSaved ? (
-          <button
-            className='btn'
-            onClick={() => handleToggleSaveQuestion(currentUser.username, qid)}>
-            Unsave
-          </button>
-        ) : (
-          <button
-            className='btn'
-            onClick={() => handleToggleSaveQuestion(currentUser.username, qid)}>
-            Save
-          </button>
-        )}
-      </div>
-    </div>
+    <Grid
+      templateColumns='1fr 3fr 1fr 1fr'
+      gap={4}
+      alignItems='center'
+      borderBottom='1px solid'
+      borderColor='gray.200'>
+      <GridItem>
+        <Text fontSize='2xl' fontWeight='bold' mb={4} ml={4}>
+          {views} views
+        </Text>
+      </GridItem>
+      <GridItem>
+        <Box mb={4}>
+          {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
+        </Box>
+      </GridItem>
+      <GridItem>
+        <VStack align='start' gap={2} mb={4} ml={4}>
+          <Text color='gray.600' fontStyle={anonymous ? 'italic' : 'normal'}>
+            {anonymous ? 'Anonymous' : askby}
+          </Text>
+          <Text color='gray.400'>asked {meta}</Text>
+        </VStack>
+      </GridItem>
+      <GridItem>
+        <Flex justify='flex-end'>
+          <Button
+            colorPalette='blue'
+            variant='outline'
+            onClick={() => handleToggleSaveQuestion(currentUser.username, qid)}
+            mr={8}>
+            {questionSaved ? 'Unsave' : 'Save'}
+          </Button>
+        </Flex>
+      </GridItem>
+    </Grid>
   );
 };
 
