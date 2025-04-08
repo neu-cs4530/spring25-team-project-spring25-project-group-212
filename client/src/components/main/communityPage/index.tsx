@@ -144,11 +144,23 @@ const CommunityPage = () => {
                         )}
                       </Text>
                     )}
-                    {communityMemberCount && getCountBadge(communityMemberCount) && (
-                      <Text>{getCountBadge(communityMemberCount)} members</Text>
+                    {communityMemberCount ? (
+                      <>
+                        {getCountBadge(communityMemberCount) && (
+                          <Text>{getCountBadge(communityMemberCount)} members</Text>
+                        )}
+                      </>
+                    ) : (
+                      <></>
                     )}
-                    {communityContentCount && getCountBadge(communityContentCount) && (
-                      <Text>{getCountBadge(communityContentCount)} questions and answers</Text>
+                    {communityContentCount ? (
+                      <>
+                        {getCountBadge(communityContentCount) && (
+                          <Text>{getCountBadge(communityContentCount)} questions and answers</Text>
+                        )}
+                      </>
+                    ) : (
+                      <></>
                     )}
                   </GridItem>
                   <GridItem rowSpan={1} colSpan={1}>
