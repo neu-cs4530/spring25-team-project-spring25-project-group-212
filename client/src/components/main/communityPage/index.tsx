@@ -21,11 +21,13 @@ import { joinCommunity } from '../../../services/communityService';
 import useCommunityNameAboutRules from '../../../hooks/useCommunityNameAboutRules';
 import CommunityNavBar from './communityNavBar';
 import QuestionStack from '../questionPage/questionStack';
+import ReducedCommunityQuestionHeader from './minimalCommunityQuestionHeader';
 
 const CommunityPage = () => {
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const location = useLocation();
-  const isPreview = location.state?.isPreview || false;
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   const {
     community,
@@ -246,11 +248,19 @@ const CommunityPage = () => {
 
             <Box mb={5}>
               <Box mb={5}>
-                <CommunityQuestionHeader
-                  titleText={titleText}
-                  qcnt={qlist.length}
-                  setQuestionOrder={setQuestionOrder}
-                />
+                {!isPreview ? (
+                  <CommunityQuestionHeader
+                    titleText={titleText}
+                    qcnt={qlist.length}
+                    setQuestionOrder={setQuestionOrder}
+                  />
+                ) : (
+                  <ReducedCommunityQuestionHeader
+                    titleText={titleText}
+                    qcnt={qlist.length}
+                    setQuestionOrder={setQuestionOrder}
+                  />
+                )}
                 <Box>
                   <QuestionStack questions={qlist} />
                 </Box>

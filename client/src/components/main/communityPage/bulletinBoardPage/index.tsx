@@ -5,11 +5,11 @@ import './index.css';
 import { JaaSMeeting } from '@jitsi/react-sdk';
 import { useEffect, useState } from 'react';
 import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Box, Button, Text, VStack } from '@chakra-ui/react';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
-import useUserContext from '../../../../hooks/useUserContext';
 import CommunityNavBar from '../communityNavBar';
+import useUserContext from '../../../../hooks/useUserContext';
 
 const BulletinBoardPage = () => {
   const { user, socket } = useUserContext();
@@ -24,6 +24,9 @@ const BulletinBoardPage = () => {
     community,
   } = useBulletinBoardPage();
   const store = useSyncDemo({ roomId: `${id?.toString()}` });
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   const handleApiReady = (externalApi: IJitsiMeetExternalApi) => {
     externalApi.addListener('videoConferenceJoined', () => {
@@ -34,7 +37,6 @@ const BulletinBoardPage = () => {
       setIsInCall(false);
     });
   };
-
   useEffect(() => {
     if (!community) {
       return;
@@ -42,7 +44,6 @@ const BulletinBoardPage = () => {
     socket.emit('onlineUser', community?._id.toString(), user.username);
   }, [community, socket, user.username]);
 
-  const isUserInCommunity = community && community.members.includes(user.username);
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -80,7 +81,7 @@ const BulletinBoardPage = () => {
             <div
               className='tldraw__editor'
               style={{ flex: 1, borderRight: '1px solid #ccc', overflow: 'hidden' }}>
-              {isUserInCommunity ? (
+              {!isPreview ? (
                 <Tldraw
                   store={store}
                   components={{ SharePanel: SnapshotToolbar }}
@@ -90,7 +91,7 @@ const BulletinBoardPage = () => {
                 <Tldraw store={store} hideUi={true} />
               )}
             </div>
-            {isUserInCommunity && (
+            {!isPreview && (
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 {isInCall ? (
                   <JaaSMeeting

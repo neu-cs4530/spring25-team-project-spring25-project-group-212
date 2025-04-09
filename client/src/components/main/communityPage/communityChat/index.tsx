@@ -3,6 +3,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { UploadButton } from 'react-uploader';
 import { Spinner, Center, Box, Flex, Input, Button, Text, Badge } from '@chakra-ui/react';
 import { Uploader } from 'uploader';
+import { useLocation } from 'react-router-dom';
 import useCommunityMessagingPage from '../../../../hooks/useCommunityMessagingPage';
 import MessageCard from '../../messageCard';
 import useUserContext from '../../../../hooks/useUserContext';
@@ -44,6 +45,10 @@ const CommunityChat = () => {
   const { user, socket } = useUserContext();
 
   const [chatName, setChatName] = useState(community?.groupChat?.name || '');
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   useEffect(() => {
     if (!currentCommunity || !user || !socket) return undefined;
@@ -119,12 +124,11 @@ const CommunityChat = () => {
       </Center>
     );
   }
-  const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
 
   return (
     <>
       <CommunityNavBar />
-      {userHasJoinedCommunity && (
+      {!isPreview ? (
         <>
           <Box p={4}>
             <Box mb={4}>
@@ -239,6 +243,10 @@ const CommunityChat = () => {
             </Box>
           </Box>
         </>
+      ) : (
+        <div>
+          <strong>Join the community to send messages!</strong>
+        </div>
       )}
     </>
   );

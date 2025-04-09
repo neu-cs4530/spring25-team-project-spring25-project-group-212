@@ -15,6 +15,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
     "npm": "^11.0.0",
+    "rehype-highlight": "^7.0.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },

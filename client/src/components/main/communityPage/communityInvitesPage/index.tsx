@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Spinner, Center, Box, Text } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
@@ -35,33 +35,45 @@ const CommunityInvitesPage = () => {
     }
     socket.emit('onlineUser', currentCommunity?._id.toString(), currentUser.username);
   }, [currentCommunity, socket, currentUser.username]);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   return (
     <div>
-      {userList.length === 0 ? (
-        <Center height='100vh'>
-          {showNoUsersMessage ? (
-            <Text fontSize='lg' color='gray.500'>
-              No users to invite.
-            </Text>
+      {!isPreview ? (
+        <div>
+          {userList.length === 0 ? (
+            <Center height='100vh'>
+              {showNoUsersMessage ? (
+                <Text fontSize='lg' color='gray.500'>
+                  No users to invite.
+                </Text>
+              ) : (
+                <Spinner size='xl' />
+              )}
+            </Center>
           ) : (
-            <Spinner size='xl' />
+            <div>
+              <CommunityNavBar />
+              <Box px={6} py={4}>
+                <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
+              </Box>
+              <div>
+                <UserStack
+                  users={userList}
+                  handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+                  handleButtonClick={sendUserInvite}
+                  buttonText='Invite'
+                />
+              </div>
+            </div>
           )}
-        </Center>
+        </div>
       ) : (
         <div>
           <CommunityNavBar />
-          <Box px={6} py={4}>
-            <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
-          </Box>
-          <div>
-            <UserStack
-              users={userList}
-              handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-              handleButtonClick={sendUserInvite}
-              buttonText='Invite'
-            />
-          </div>
+          <strong>Join the community to send invites to your friends!</strong>
         </div>
       )}
     </div>
