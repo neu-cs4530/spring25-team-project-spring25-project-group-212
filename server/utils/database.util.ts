@@ -183,9 +183,17 @@ export const populateDatabaseCommunity = async (
     );
 
     const populatedCommunity: PopulatedDatabaseCommunity = {
-      ...community,
+      _id: community._id,
+      name: community.name,
+      about: community.about,
+      rules: community.rules,
+      members: community.members ?? [],
+      admins: community.admins ?? [],
+      createdBy: community.createdBy,
       groupChat: populatedChat as PopulatedDatabaseChat,
       questions: populatedQuestions,
+      pendingInvites: community.pendingInvites ?? [],
+      memberHistory: community.memberHistory ?? [],
     };
 
     populatedCommunity._id = community._id;
