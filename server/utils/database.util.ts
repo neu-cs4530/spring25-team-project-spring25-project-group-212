@@ -156,6 +156,13 @@ export const populateDocument = async (
   }
 };
 
+/**
+ * Fetches and fully populates a community document with its group chat and questions.
+ *
+ * @param {DatabaseCommunity} community - The raw community document from the database.
+ * @returns {Promise<PopulatedDatabaseCommunity>} - A populated community including its chat and questions.
+ * @throws {Error} - Throws if population of chat or any question fails.
+ */
 export const populateDatabaseCommunity = async (
   community: DatabaseCommunity,
 ): Promise<PopulatedDatabaseCommunity> => {

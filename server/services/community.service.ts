@@ -140,6 +140,12 @@ export const saveQuestionToCommunity = async (
   }
 };
 
+/**
+ * Adds a user to a community and the associated group chat.
+ * @param communityId - The ID of the community to join.
+ * @param username - The username of the user joining the community.
+ * @returns {Promise<CommunityResponse>} - The updated community or an error message.
+ */
 export const joinCommunityService = async (
   communityId: string,
   username: string,
@@ -168,6 +174,12 @@ export const joinCommunityService = async (
   }
 };
 
+/**
+ * Updates an existing community with new values.
+ * @param communityId - The ID of the community to update.
+ * @param updates - A partial Community object containing fields to update.
+ * @returns {Promise<CommunityResponse>} - The updated community or an error message.
+ */
 export const updateCommunity = async (
   communityId: string,
   updates: Partial<Community>,
