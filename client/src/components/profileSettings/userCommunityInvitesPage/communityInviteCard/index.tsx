@@ -23,10 +23,16 @@ const CommunityInviteCard = ({
       </Heading>
 
       <Box display='flex' justifyContent='space-between'>
-        <Button colorPalette='blue' onClick={() => handleAcceptInvite(community._id.toString())}>
+        <Button
+          colorPalette='blue'
+          size='md'
+          onClick={() => handleAcceptInvite(community._id.toString())}>
           Accept Invite
         </Button>
-        <Button colorPalette='red' onClick={() => handleDeclineInvite(community._id.toString())}>
+        <Button
+          colorPalette='red'
+          size='md'
+          onClick={() => handleDeclineInvite(community._id.toString())}>
           Decline Invite
         </Button>
       </Box>
