@@ -88,6 +88,13 @@ const messageController = (socket: FakeSOSocket) => {
     res.json(messages);
   };
 
+  /**
+   * Adds a reaction to a message.
+   *
+   * @param req The HTTP request object containing the message ID, emoji, and username.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const addReaction = async (req: Request, res: Response) => {
     const { messageId, emoji, username } = req.body;
 
@@ -100,6 +107,13 @@ const messageController = (socket: FakeSOSocket) => {
     res.json(result);
   };
 
+  /**
+   * Removes a reaction from a message.
+   *
+   * @param req The HTTP request object containing the message ID, emoji, and username.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const removeReaction = async (req: Request, res: Response) => {
     const { messageId, emoji, username } = req.body;
 
@@ -112,6 +126,13 @@ const messageController = (socket: FakeSOSocket) => {
     res.json(result);
   };
 
+  /**
+   * Fetches all reactions for a specific message.
+   *
+   * @param req The HTTP request object containing the message ID as a parameter.
+   * @param res The HTTP response object used to send back the reactions.
+   * @returns A Promise that resolves to void.
+   */
   const getReactionsRoute = async (req: Request, res: Response) => {
     const { messageId } = req.params;
     const reactions = await getReactions(messageId);
@@ -131,6 +152,13 @@ const messageController = (socket: FakeSOSocket) => {
     clientSocket.on('disconnect', () => {});
   });
 
+  /**
+   * Marks a message as seen by a specific user.
+   *
+   * @param req The HTTP request object containing the message ID as a parameter and the user ID in the body.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const markMessageAsSeenRoute = async (req: Request, res: Response) => {
     const { messageId } = req.params;
     const { userId } = req.body;
@@ -160,6 +188,13 @@ const messageController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Deletes a message.
+   *
+   * @param req The HTTP request object containing the message ID as a parameter and the username in the body.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const deleteMessageRoute = async (req: Request, res: Response) => {
     try {
       const { messageId } = req.params;
@@ -174,6 +209,13 @@ const messageController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Restores a deleted message.
+   *
+   * @param req The HTTP request object containing the message ID as a parameter.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const restoreMessageRoute = async (req: Request, res: Response) => {
     try {
       const { messageId } = req.params;
@@ -187,6 +229,13 @@ const messageController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Handles uploading a file and saving it as a message.
+   *
+   * @param req The HTTP request object containing the file URL and username in the body.
+   * @param res The HTTP response object used to send back the result of the operation.
+   * @returns A Promise that resolves to void.
+   */
   const uploadFileRoute = async (req: Request, res: Response) => {
     try {
       const { fileUrl, username } = req.body;

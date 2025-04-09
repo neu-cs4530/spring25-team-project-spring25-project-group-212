@@ -4,7 +4,19 @@ import { DatabaseCommunity, Community, Question } from '../types/types';
 import QuestionModel from '../models/questions.model';
 import assignCommunityFromLLM from '../services/llm.service';
 
+/**
+ * Creates and configures the LLM controller.
+ * Provides methods for tagging questions with communities using an LLM (Large Language Model).
+ */
 const llmController = () => {
+  /**
+   * Runs the LLM-based community tagging process.
+   * This function retrieves all communities and unassigned questions, uses an LLM to suggest
+   * communities for the questions, and assigns the questions to the suggested communities.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the tagging process is complete.
+   * @throws {Error} - Throws an error if retrieving communities fails.
+   */
   const runLLMCommunityTagging = async (): Promise<void> => {
     const communitiesResponse = await getAllCommunities();
     if ('error' in communitiesResponse) {
