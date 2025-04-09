@@ -5,13 +5,11 @@ import './index.css';
 import { JaaSMeeting } from '@jitsi/react-sdk';
 import { useState } from 'react';
 import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
-import useUserContext from '../../../../hooks/useUserContext';
 import CommunityNavBar from '../communityNavBar';
 
 const BulletinBoardPage = () => {
-  const { user } = useUserContext();
   const [isInCall, setIsInCall] = useState(true);
   const { id } = useParams();
   const {
@@ -23,6 +21,9 @@ const BulletinBoardPage = () => {
     community,
   } = useBulletinBoardPage();
   const store = useSyncDemo({ roomId: `${id?.toString()}` });
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   const handleApiReady = (externalApi: IJitsiMeetExternalApi) => {
     externalApi.addListener('videoConferenceJoined', () => {
@@ -33,7 +34,7 @@ const BulletinBoardPage = () => {
       setIsInCall(false);
     });
   };
-  const isUserInCommunity = community && community.members.includes(user.username);
+
   function SnapshotToolbar() {
     const editor = useEditor();
     return (
@@ -71,7 +72,7 @@ const BulletinBoardPage = () => {
             <div
               className='tldraw__editor'
               style={{ flex: 1, borderRight: '1px solid #ccc', overflow: 'hidden' }}>
-              {isUserInCommunity ? (
+              {!isPreview ? (
                 <Tldraw
                   store={store}
                   components={{ SharePanel: SnapshotToolbar }}
@@ -81,7 +82,7 @@ const BulletinBoardPage = () => {
                 <Tldraw store={store} hideUi={true} />
               )}
             </div>
-            {isUserInCommunity && (
+            {!isPreview && (
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 {isInCall ? (
                   <JaaSMeeting

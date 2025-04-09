@@ -13,7 +13,8 @@ import QuestionStack from '../questionPage/questionStack';
 const CommunityPage = () => {
   const { titleText, qlist, setQuestionOrder } = useCommunityQuestionPage();
   const location = useLocation();
-  const isPreview = location.state?.isPreview || false;
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   const {
     community,

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Spinner, Center, Box } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
@@ -13,27 +13,39 @@ const CommunityInvitesPage = () => {
   const handleUserCardViewClickHandler = (user: SafeDatabaseUser): void => {
     navigate(`/user/${user.username}`);
   };
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPreview = searchParams.get('preview') === 'true';
 
   return (
     <div>
-      {userList.length === 0 ? (
-        <Center height='100vh'>
-          <Spinner size='xl' />
-        </Center>
+      {!isPreview ? (
+        <div>
+          {userList.length === 0 ? (
+            <Center height='100vh'>
+              <Spinner size='xl' />
+            </Center>
+          ) : (
+            <div>
+              <CommunityNavBar />
+              <Box px={6} py={4}>
+                <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
+              </Box>
+              <div>
+                <UserStack
+                  users={userList}
+                  handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+                  handleButtonClick={sendUserInvite}
+                  buttonText='Invite'
+                />
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         <div>
           <CommunityNavBar />
-          <Box px={6} py={4}>
-            <UsersListHeader userCount={userList.length} setUserFilter={setUserFilter} />
-          </Box>
-          <div>
-            <UserStack
-              users={userList}
-              handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-              handleButtonClick={sendUserInvite}
-              buttonText='Invite'
-            />
-          </div>
+          <strong>Join the community to send invites to your friends!</strong>
         </div>
       )}
     </div>
