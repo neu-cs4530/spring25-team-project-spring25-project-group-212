@@ -170,16 +170,13 @@ const CommunityChat = () => {
             <Box id='community-chat' className='chat-container'>
               <Box className='chat-messages'>
                 {communityChat?.messages && communityChat.messages.length > 0 ? (
-                  [...communityChat.messages]
-                    .slice()
-                    .reverse()
-                    .map(message => (
-                      <MessageCard
-                        key={String(message._id)}
-                        message={message}
-                        totalUsers={currentCommunity?.members.length || 1}
-                      />
-                    ))
+                  communityChat.messages.map(message => (
+                    <MessageCard
+                      key={String(message._id)}
+                      message={message}
+                      totalUsers={currentCommunity?.members.length || 1}
+                    />
+                  ))
                 ) : (
                   <Box>No messages yet.</Box>
                 )}
