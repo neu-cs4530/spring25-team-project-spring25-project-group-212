@@ -399,7 +399,6 @@ describe('updateCommunity', () => {
   });
 
   it('should return an error if an exception occurs', async () => {
-    // Mock CommunityModel.findOneAndUpdate to throw an error
     jest
       .spyOn(CommunityModel, 'findOneAndUpdate')
       .mockRejectedValueOnce(new Error('Database error'));
