@@ -8,8 +8,6 @@ import {
   CommunitiesResponse,
   PopulatedDatabaseCommunity,
   PopulatedDatabaseQuestion,
-  PopulatedDatabaseChat,
-  DatabaseCommunity,
   AddQuestionToCommunityRequest,
   UserCommunityRequest,
   UpdateCommunityNameAboutRulesRequest,
@@ -26,7 +24,7 @@ import {
   removeOnlineUser,
   getOnlineUsers,
 } from '../services/community.service';
-import { populateDocument } from '../utils/database.util';
+import { populateDatabaseCommunity } from '../utils/database.util';
 
 const communityController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -61,38 +59,6 @@ const communityController = (socket: FakeSOSocket) => {
     req.body.rules !== undefined &&
     req.body.rules !== '';
 
-  const populateDatabaseCommunity = async (
-    community: DatabaseCommunity,
-  ): Promise<PopulatedDatabaseCommunity> => {
-    try {
-      const populatedChat = await populateDocument(community.groupChatId.toString(), 'chat');
-      if ('error' in populatedChat) {
-        throw new Error(`populateDatabaseCommunity chat: ${populatedChat.error}`);
-      }
-
-      const populatedQuestions = await Promise.all(
-        (community.questions || []).map(async questionId => {
-          const populatedQuestion = await populateDocument(questionId.toString(), 'question');
-          if ('error' in populatedQuestion) {
-            throw new Error(`populateDatabaseCommunity question: ${populatedQuestion.error}`);
-          }
-          return populatedQuestion as PopulatedDatabaseQuestion;
-        }),
-      );
-
-      const populatedCommunity: PopulatedDatabaseCommunity = {
-        ...community,
-        groupChat: populatedChat as PopulatedDatabaseChat,
-        questions: populatedQuestions,
-      };
-
-      populatedCommunity._id = community._id;
-
-      return populatedCommunity;
-    } catch (err: unknown) {
-      throw new Error((err as Error).message);
-    }
-  };
   /**
    * Creates a new community and saves it to the database.
    * If the community is invalid or saving fails, the HTTP response status is updated.
@@ -108,7 +74,6 @@ const communityController = (socket: FakeSOSocket) => {
 
     try {
       const requestCommunity: Omit<Community, 'groupChat' | 'questions'> = req.body.community;
-
       const result: CommunityResponse = await saveCommunity(requestCommunity);
 
       if ('error' in result) {
@@ -173,6 +138,11 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Gets all questions that are associated with a particular community
+   * @param req Community ID
+   * @param res List of questions associated with that community
+   */
   const getQuestionsByCommunityId = async (req: Request, res: Response): Promise<void> => {
     try {
       const communityId: string = req.params.id as string;
@@ -183,6 +153,11 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Adds a question to community
+   * @param req community ID and question ID
+   * @param res updated community
+   */
   const addQuestionToCommunity = async (
     req: AddQuestionToCommunityRequest,
     res: Response,
@@ -204,6 +179,11 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Adds a user to the list of members of a community, "joining" them
+   * @param req Community ID and username of user joining
+   * @param res Updated community with user in the list of members
+   */
   const joinCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
     try {
       const communityId: string = req.params.id;
@@ -236,12 +216,18 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Updates name, about, and rules for a particular community
+   * @param req Community ID, updated name, rules, and about
+   * @param res Updated community
+   */
   const updateCommunityNameAboutRules = async (
     req: UpdateCommunityNameAboutRulesRequest,
     res: Response,
   ): Promise<void> => {
     if (!isUpdateCommunityNameAboutRulesRequestValid(req)) {
       res.status(400).send('Invalid update community name, about, and/or rules body');
+      return;
     }
 
     try {
@@ -255,7 +241,8 @@ const communityController = (socket: FakeSOSocket) => {
         throw new Error(updatedCommunity.error);
       }
 
-      res.status(200).send(updatedCommunity);
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      res.status(200).send(populatedUpdatedCommunity);
     } catch (err: unknown) {
       res
         .status(500)
@@ -265,6 +252,11 @@ const communityController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Sends invite to user by adding a username to the list of community invites
+   * @param req Community ID and username
+   * @param res Updated community with added pending invite
+   */
   const inviteUserToCommunity = async (req: UserCommunityRequest, res: Response): Promise<void> => {
     try {
       const communityId = req.params.id;
@@ -287,12 +279,23 @@ const communityController = (socket: FakeSOSocket) => {
       const updatedCommunity = await updateCommunity(communityId, {
         pendingInvites: updatedPendingInvites,
       });
-      res.status(200).send(updatedCommunity);
+
+      if ('error' in updatedCommunity) {
+        throw new Error('Error updating community');
+      }
+
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      res.status(200).send(populatedUpdatedCommunity);
     } catch (err: unknown) {
       res.status(500).send(`Error when inviting user to community: ${(err as Error).message}`);
     }
   };
 
+  /**
+   * Removes pending invite from community (after user accepts/declines it)
+   * @param req Community ID and username
+   * @param res Updated community with removed pending invite
+   */
   const removeInvite = async (req: UserCommunityRequest, res: Response): Promise<void> => {
     try {
       const communityId = req.params.id;
@@ -311,7 +314,12 @@ const communityController = (socket: FakeSOSocket) => {
       const updatedCommunity = await updateCommunity(communityId, {
         pendingInvites: updatedPendingInvites,
       });
-      res.status(200).send(updatedCommunity);
+      if ('error' in updatedCommunity) {
+        throw new Error('Error updating community');
+      }
+
+      const populatedUpdatedCommunity = await populateDatabaseCommunity(updatedCommunity);
+      res.status(200).send(populatedUpdatedCommunity);
     } catch (err: unknown) {
       res
         .status(500)
@@ -340,6 +348,11 @@ const communityController = (socket: FakeSOSocket) => {
     });
   });
 
+  /**
+   * Gets all online users for a community
+   * @param req Community ID
+   * @param res List of usernames
+   */
   const getOnlineUsersForCommunity = async (req: Request, res: Response): Promise<void> => {
     const communityID = req.params.id;
     try {

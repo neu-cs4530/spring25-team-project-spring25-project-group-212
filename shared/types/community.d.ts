@@ -82,7 +82,7 @@ export interface PopulatedDatabaseCommunity {
  */
 export interface CreateCommunityRequest extends Request {
   body: {
-    community: Omit<Community, 'groupChat', 'questions'>;
+    community: Omit<Community, 'groupChat' | 'questions'>;
   };
 }
 

@@ -51,7 +51,6 @@ const checkKeywordInQuestion = (q: Question, keywordlist: string[]): boolean => 
  */
 export const getQuestionsByOrder = async (
   order: OrderType,
-  communityId?: string,
 ): Promise<PopulatedDatabaseQuestion[]> => {
   try {
     const qlist: PopulatedDatabaseQuestion[] = await QuestionModel.find().populate<{
