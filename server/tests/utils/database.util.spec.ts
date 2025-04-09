@@ -20,7 +20,6 @@ jest.mock('../../models/users.model');
 jest.mock('../../models/tags.model');
 jest.mock('../../models/comments.model');
 
-// Make sure your mocks use ObjectIds correctly:
 const chatObjectId = new mongoose.Types.ObjectId('507f191e810c19729de860ea');
 const questionObjectId1 = new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6fe');
 const questionObjectId2 = new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6ff');
@@ -268,9 +267,6 @@ describe('populateDatabaseCommunity', () => {
   });
 
   it('should populate chat and all questions successfully', async () => {
-    // Spy on the populateDocument function
-
-    // Fake behavior: return the correct objects based on the type
     populateDocumentMock.mockImplementation(
       async (id: string, type: 'question' | 'answer' | 'chat') => {
         if (type === 'chat') return mockPopulatedChat;
@@ -329,7 +325,6 @@ describe('populateDatabaseCommunity', () => {
       memberHistory: [],
     };
 
-    // First call for chat succeeds
     const chatMock = {
       _id: new mongoose.Types.ObjectId(),
       messages: [],
@@ -341,8 +336,8 @@ describe('populateDatabaseCommunity', () => {
 
     const populateMock = jest.spyOn(databaseUtil, 'populateDocument');
     populateMock
-      .mockImplementationOnce(async () => chatMock) // chat
-      .mockImplementationOnce(async () => ({ error: 'Question not found' })); // question
+      .mockImplementationOnce(async () => chatMock)
+      .mockImplementationOnce(async () => ({ error: 'Question not found' }));
 
     await expect(populateDatabaseCommunity(community)).rejects.toThrow(
       'populateDatabaseCommunity question: Question not found',
