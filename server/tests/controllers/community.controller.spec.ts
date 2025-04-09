@@ -3,15 +3,7 @@ import supertest from 'supertest';
 import mongoose from 'mongoose';
 import * as util from '../../services/community.service';
 import { app } from '../../app';
-import {
-  Community,
-  CreateCommunityRequest,
-  DatabaseAnswer,
-  DatabaseChat,
-  DatabaseTag,
-  PopulatedDatabaseChat,
-  PopulatedDatabaseCommunity,
-} from '../../types/types';
+import { Community, PopulatedDatabaseChat } from '../../types/types';
 import * as databaseUtil from '../../utils/database.util';
 import { POPULATED_QUESTIONS } from '../mockData.models';
 import { T2_DESC, T3_DESC } from '../../data/posts_strings';
@@ -27,43 +19,11 @@ const updateCommunitySpy = jest.spyOn(util, 'updateCommunity');
 
 const now = new Date();
 
-const chatResponse: DatabaseChat = {
-  _id: new mongoose.Types.ObjectId(),
-  name: '',
-  participants: ['user1', 'user2'],
-  messages: [new mongoose.Types.ObjectId()],
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
 const populatedChatResponse: PopulatedDatabaseChat = {
   _id: new mongoose.Types.ObjectId(),
   name: '',
   participants: ['user1'],
   messages: [],
-  createdAt: now,
-  updatedAt: now,
-};
-
-const populatedChatResponse2: PopulatedDatabaseChat = {
-  _id: new mongoose.Types.ObjectId(),
-  name: '',
-  participants: ['user1', 'user2'],
-  messages: [
-    {
-      _id: chatResponse.messages[0],
-      msg: 'Hello!',
-      msgFrom: 'user1',
-      msgDateTime: new Date('2025-01-01'),
-      user: {
-        _id: new mongoose.Types.ObjectId(),
-        username: 'user1',
-      },
-      type: 'direct',
-      useMarkdown: false,
-      seenBy: [],
-    },
-  ],
   createdAt: now,
   updatedAt: now,
 };
@@ -76,20 +36,6 @@ const savedCommunity = {
   members: ['user1'],
   admins: ['user1'],
   createdBy: 'user1',
-  groupChatId: new ObjectId(),
-  questions: [],
-  pendingInvites: [],
-  memberHistory: [{ _id: new ObjectId(), date: now, count: 1 }],
-};
-
-const savedCommunity2 = {
-  _id: new ObjectId(),
-  name: 'Java',
-  about: 'about2',
-  rules: 'rules2',
-  members: ['user2'],
-  admins: ['user2'],
-  createdBy: 'user2',
   groupChatId: new ObjectId(),
   questions: [],
   pendingInvites: [],
@@ -204,6 +150,7 @@ describe('Test communityController', () => {
       const mockReqBody = {
         community: mockReqBodyCommunity,
       };
+
       const response = await supertest(app).post('/community/create').send(mockReqBody);
       expect(response.status).toEqual(400);
     });
@@ -737,6 +684,27 @@ describe('Test communityController', () => {
         .send('user2');
       expect(res.status).toEqual(500);
     });
+    it('should return 500 error when joinCommunityService returns an error object', async () => {
+      joinCommunityServiceSpy.mockResolvedValueOnce({ error: 'error joining user to community' });
+
+      const res = await supertest(app)
+        .post(`/community/join/${populatedSavedCommunityWithUser2._id.toString()}`)
+        .send('user2');
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('error joining user to community');
+    });
+    it('should return 500 error when updateCommunity returns an error object', async () => {
+      joinCommunityServiceSpy.mockResolvedValueOnce(savedCommunity);
+      updateCommunitySpy.mockResolvedValueOnce({ error: 'error updating community' });
+
+      const res = await supertest(app)
+        .post(`/community/join/${populatedSavedCommunityWithUser2._id.toString()}`)
+        .send('user2');
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('error updating community');
+    });
   });
 
   describe('PATCH /updateCommunityNameAboutRules', () => {
@@ -829,64 +797,260 @@ describe('Test communityController', () => {
   });
 
   describe('PATCH /inviteUserToCommunity', () => {
-    const savedCommunityWithUpdatedPendingUsers = {
-      _id: new ObjectId(),
+    const communityId = new mongoose.Types.ObjectId();
+    const username = 'newUser';
+
+    const updatedCommunity = {
+      ...savedCommunity,
+      pendingInvites: [username],
+    };
+
+    const populatedUpdatedCommunity = {
+      _id: communityId,
       name: 'C++',
       about: 'about',
       rules: 'rules',
       members: ['user1'],
       admins: ['user1'],
       createdBy: 'user1',
-      groupChatId: new ObjectId(),
-      questions: [],
-      pendingInvites: [],
-      memberHistory: [{ _id: new ObjectId(), date: now, count: 1 }],
-    };
-
-    const populatedSavedCommunityWithUpdatedPendingUsers = {
-      _id: new ObjectId(),
-      name: 'C++2',
-      about: 'about2',
-      rules: 'rules2',
-      members: ['user1'],
-      admins: ['user1'],
-      createdBy: 'user1',
-      groupChat: populatedChatResponse,
-      questions: [],
-      pendingInvites: [],
-      memberHistory: [{ _id: new ObjectId(), date: now, count: 1 }],
-    };
-
-    const populatedSavedCommunityWithUpdatedPendingUsersIso = {
-      _id: populatedSavedCommunityWithUpdatedPendingUsers._id.toString(),
-      name: 'C++2',
-      about: 'about2',
-      rules: 'rules2',
-      members: ['user1'],
-      admins: ['user1'],
-      createdBy: 'user1',
       groupChat: {
-        ...populatedChatResponse,
-        _id: populatedChatResponse._id.toString(),
-        createdAt: populatedChatResponse.createdAt.toISOString(),
-        updatedAt: populatedChatResponse.updatedAt.toISOString(),
+        _id: populatedChatResponse._id,
+        name: '',
+        participants: ['user1'],
+        messages: [],
+        createdAt: populatedChatResponse.createdAt,
+        updatedAt: populatedChatResponse.updatedAt,
       },
       questions: [],
-      pendingInvites: [],
-      memberHistory: [
-        {
-          _id: populatedSavedCommunityWithUpdatedPendingUsers.memberHistory[0]._id.toString(),
-          date: now.toISOString(),
-          count: 1,
-        },
-      ],
+      pendingInvites: [username],
+      memberHistory: savedCommunity.memberHistory,
     };
-    it('should add user to list of pending invites', async () => {
+
+    const populatedUpdatedCommunityIso = {
+      ...populatedUpdatedCommunity,
+      _id: populatedUpdatedCommunity._id.toString(),
+      groupChat: {
+        ...populatedUpdatedCommunity.groupChat,
+        _id: populatedUpdatedCommunity.groupChat._id.toString(),
+        createdAt: populatedUpdatedCommunity.groupChat.createdAt.toISOString(),
+        updatedAt: populatedUpdatedCommunity.groupChat.updatedAt.toISOString(),
+      },
+      memberHistory: populatedUpdatedCommunity.memberHistory.map(entry => ({
+        ...entry,
+        _id: entry._id.toString(),
+        date: entry.date.toISOString(),
+      })),
+    };
+
+    it('should successfully invite a user to the community', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunity);
+      updateCommunitySpy.mockResolvedValueOnce(updatedCommunity);
+      populateDatabaseCommunitySpy.mockResolvedValueOnce(populatedUpdatedCommunity);
+
       const res = await supertest(app)
-        .patch(
-          `/community/inviteUserToCommunity/${savedCommunityWithUpdatedPendingUsers._id.toString()}`,
-        )
-        .send({ name: 'C++2', about: 'about2', rules: 'rules2' });
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(200);
+      expect(res.body).toEqual(populatedUpdatedCommunityIso);
+    });
+
+    it('should return 500 if user is already a member', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce({
+        ...savedCommunity,
+        members: ['user1', username],
+      });
+
+      const res = await supertest(app)
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('User already in community');
+    });
+
+    it('should return 500 if user is already invited', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce({
+        ...savedCommunity,
+        pendingInvites: [username],
+      });
+
+      const res = await supertest(app)
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('User already invited to community');
+    });
+
+    it('should return 500 if getCommunityById fails', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce({ error: 'get failed' });
+
+      const res = await supertest(app)
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('get failed');
+    });
+
+    it('should return 500 if updateCommunity fails', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunity);
+      updateCommunitySpy.mockResolvedValueOnce({ error: 'update failed' });
+
+      const res = await supertest(app)
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('Error updating community');
+    });
+
+    it('should return 500 if populateDatabaseCommunity throws error', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunity);
+      updateCommunitySpy.mockResolvedValueOnce(updatedCommunity);
+      populateDatabaseCommunitySpy.mockRejectedValueOnce(new Error('populating failed'));
+
+      const res = await supertest(app)
+        .patch(`/community/inviteUserToCommunity/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('populating failed');
+    });
+  });
+
+  describe('GET /onlineUsers/:id', () => {
+    it('should return the list of online users for a valid community ID', async () => {
+      const communityID = savedCommunity._id.toString();
+      const mockOnlineUsers = ['user1', 'user2'];
+
+      jest.spyOn(util, 'getOnlineUsers').mockReturnValueOnce(mockOnlineUsers);
+
+      const response = await supertest(app).get(`/community/onlineUsers/${communityID}`);
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ onlineUsers: mockOnlineUsers });
+    });
+
+    it('should return 500 if an error occurs while retrieving online users', async () => {
+      const communityID = savedCommunity._id.toString();
+
+      jest.spyOn(util, 'getOnlineUsers').mockImplementationOnce(() => {
+        throw new Error('Error retrieving online users');
+      });
+
+      const response = await supertest(app).get(`/community/onlineUsers/${communityID}`);
+      expect(response.status).toEqual(500);
+      expect(response.text).toContain('Error while retrieving online users');
+    });
+  });
+
+  describe('PATCH /removeInvite', () => {
+    const communityId = new mongoose.Types.ObjectId();
+    const username = 'userToRemove';
+
+    const savedCommunityWithInvite = {
+      _id: communityId,
+      name: 'C++',
+      about: 'about',
+      rules: 'rules',
+      members: ['user1'],
+      admins: ['user1'],
+      createdBy: 'user1',
+      groupChatId: new mongoose.Types.ObjectId(),
+      questions: [],
+      pendingInvites: [username, 'otherUser'],
+      memberHistory: [{ _id: new mongoose.Types.ObjectId(), date: now, count: 1 }],
+    };
+
+    const updatedCommunity = {
+      ...savedCommunityWithInvite,
+      pendingInvites: ['otherUser'], // removed username
+    };
+
+    const populatedUpdatedCommunity = {
+      ...populatedSavedCommunity,
+      pendingInvites: ['otherUser'],
+      _id: communityId,
+    };
+
+    const populatedUpdatedCommunityIso = {
+      ...populatedUpdatedCommunity,
+      _id: populatedUpdatedCommunity._id.toString(),
+      groupChat: {
+        ...populatedUpdatedCommunity.groupChat,
+        _id: populatedUpdatedCommunity.groupChat._id.toString(),
+        createdAt: populatedUpdatedCommunity.groupChat.createdAt.toISOString(),
+        updatedAt: populatedUpdatedCommunity.groupChat.updatedAt.toISOString(),
+      },
+      memberHistory: populatedUpdatedCommunity.memberHistory.map(entry => ({
+        _id: entry._id.toString(),
+        date: entry.date.toISOString(),
+        count: entry.count,
+      })),
+    };
+
+    it('should remove the user from pendingInvites', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunityWithInvite);
+      updateCommunitySpy.mockResolvedValueOnce(updatedCommunity);
+      populateDatabaseCommunitySpy.mockResolvedValueOnce(populatedUpdatedCommunity);
+
+      const res = await supertest(app)
+        .patch(`/community/removeInvite/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(200);
+      expect(res.body).toEqual(populatedUpdatedCommunityIso);
+    });
+
+    it('should return 500 if user is not in pendingInvites', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce({
+        ...savedCommunityWithInvite,
+        pendingInvites: ['otherUser'],
+      });
+
+      const res = await supertest(app)
+        .patch(`/community/removeInvite/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('No pending invites for this user');
+    });
+
+    it('should return 500 if getCommunityById fails', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce({ error: 'could not find community' });
+
+      const res = await supertest(app)
+        .patch(`/community/removeInvite/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('could not find community');
+    });
+
+    it('should return 500 if updateCommunity fails', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunityWithInvite);
+      updateCommunitySpy.mockResolvedValueOnce({ error: 'update failed' });
+
+      const res = await supertest(app)
+        .patch(`/community/removeInvite/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('Error updating community');
+    });
+
+    it('should return 500 if populateDatabaseCommunity throws error', async () => {
+      getCommunityByIdSpy.mockResolvedValueOnce(savedCommunityWithInvite);
+      updateCommunitySpy.mockResolvedValueOnce(updatedCommunity);
+      populateDatabaseCommunitySpy.mockRejectedValueOnce(new Error('populating failed'));
+
+      const res = await supertest(app)
+        .patch(`/community/removeInvite/${communityId.toString()}`)
+        .send({ username });
+
+      expect(res.status).toEqual(500);
+      expect(res.text).toContain('populating failed');
     });
   });
 });

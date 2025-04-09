@@ -58,8 +58,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when fetching questions by filter: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when fetching questions by filter`);
       }
     }
   };
@@ -99,8 +97,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when fetching question by id: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when fetching question by id`);
       }
     }
   };
@@ -169,8 +165,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when saving question: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when saving question`);
       }
     }
   };

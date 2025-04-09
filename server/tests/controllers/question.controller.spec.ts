@@ -15,6 +15,8 @@ import {
   VoteResponse,
 } from '../../types/types';
 
+const getQuestionsBySavedSpy = jest.spyOn(questionUtil, 'getQuestionsBySaved');
+const filterQuestionsByAskedBySpy = jest.spyOn(questionUtil, 'filterQuestionsByAskedBy');
 const addVoteToQuestionSpy = jest.spyOn(questionUtil, 'addVoteToQuestion');
 const getQuestionsByOrderSpy: jest.SpyInstance = jest.spyOn(questionUtil, 'getQuestionsByOrder');
 const filterQuestionsBySearchSpy: jest.SpyInstance = jest.spyOn(
@@ -740,6 +742,82 @@ describe('Test questionController', () => {
       const response = await supertest(app).get('/question/getQuestion').query(mockReqQuery);
 
       expect(response.status).toBe(500);
+    });
+  });
+  describe('GET /question/getQuestion', () => {
+    beforeEach(() => {
+      getQuestionsByOrderSpy.mockReset();
+      getQuestionsBySavedSpy.mockReset();
+      filterQuestionsBySearchSpy.mockReset();
+      filterQuestionsByAskedBySpy.mockReset();
+    });
+
+    it('should return questions sorted by order if order !== "saved"', async () => {
+      getQuestionsByOrderSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
+      filterQuestionsBySearchSpy.mockReturnValueOnce(MOCK_POPULATED_QUESTIONS);
+
+      const res = await supertest(app).get('/question/getQuestion?order=recent');
+
+      expect(res.status).toBe(200);
+      expect(getQuestionsByOrderSpy).toHaveBeenCalledWith('recent');
+      expect(res.body).toEqual(EXPECTED_QUESTIONS);
+    });
+
+    it('should return questions sorted by saved if order === "saved"', async () => {
+      getQuestionsBySavedSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
+      filterQuestionsBySearchSpy.mockReturnValueOnce(MOCK_POPULATED_QUESTIONS);
+
+      const res = await supertest(app).get(
+        '/question/getQuestion?order=saved&username=question3_user',
+      );
+
+      expect(res.status).toBe(200);
+      expect(getQuestionsBySavedSpy).toHaveBeenCalledWith('question3_user');
+      expect(res.body).toEqual(EXPECTED_QUESTIONS);
+    });
+
+    it('should filter questions by askedBy if provided', async () => {
+      getQuestionsByOrderSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
+      filterQuestionsByAskedBySpy.mockReturnValueOnce([MOCK_POPULATED_QUESTIONS[2]]);
+      filterQuestionsBySearchSpy.mockReturnValueOnce([MOCK_POPULATED_QUESTIONS[2]]);
+
+      const res = await supertest(app).get(
+        '/question/getQuestion?order=recent&askedBy=question3_user',
+      );
+
+      expect(res.status).toBe(200);
+      expect(filterQuestionsByAskedBySpy).toHaveBeenCalled();
+      expect(res.body).toEqual([simplifyQuestion(MOCK_POPULATED_QUESTIONS[2])]);
+    });
+
+    it('should return 500 if getQuestionsByOrder throws', async () => {
+      getQuestionsByOrderSpy.mockRejectedValueOnce(new Error('Failed'));
+
+      const res = await supertest(app).get('/question/getQuestion?order=popular');
+
+      expect(res.status).toBe(500);
+      expect(res.text).toContain('Error when fetching questions by filter');
+    });
+
+    it('should return 500 if getQuestionsBySaved throws', async () => {
+      getQuestionsBySavedSpy.mockRejectedValueOnce(new Error('Failed'));
+
+      const res = await supertest(app).get('/question/getQuestion?order=saved&username=test');
+
+      expect(res.status).toBe(500);
+      expect(res.text).toContain('Error when fetching questions by filter');
+    });
+
+    it('should return 500 if filterQuestionsBySearch throws', async () => {
+      getQuestionsByOrderSpy.mockResolvedValueOnce(MOCK_POPULATED_QUESTIONS);
+      filterQuestionsBySearchSpy.mockImplementationOnce(() => {
+        throw new Error('Search error');
+      });
+
+      const res = await supertest(app).get('/question/getQuestion');
+
+      expect(res.status).toBe(500);
+      expect(res.text).toContain('Error when fetching questions by filter');
     });
   });
 });

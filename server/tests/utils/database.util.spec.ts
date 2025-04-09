@@ -1,8 +1,16 @@
-import { populateDocument } from '../../utils/database.util';
+import mongoose from 'mongoose';
+import { populateDocument, populateDatabaseCommunity } from '../../utils/database.util';
 import QuestionModel from '../../models/questions.model';
 import AnswerModel from '../../models/answers.model';
 import ChatModel from '../../models/chat.model';
 import UserModel from '../../models/users.model';
+import * as databaseUtil from '../../utils/database.util';
+
+import {
+  PopulatedDatabaseChat,
+  PopulatedDatabaseQuestion,
+  DatabaseCommunity,
+} from '../../types/types';
 
 jest.mock('../../models/questions.model');
 jest.mock('../../models/answers.model');
@@ -11,6 +19,67 @@ jest.mock('../../models/messages.model');
 jest.mock('../../models/users.model');
 jest.mock('../../models/tags.model');
 jest.mock('../../models/comments.model');
+
+// Make sure your mocks use ObjectIds correctly:
+const chatObjectId = new mongoose.Types.ObjectId('507f191e810c19729de860ea');
+const questionObjectId1 = new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6fe');
+const questionObjectId2 = new mongoose.Types.ObjectId('65e9b58910afe6e94fc6e6ff');
+const populateDocumentMock = jest.spyOn(databaseUtil, 'populateDocument');
+
+const mockCommunity: DatabaseCommunity = {
+  _id: new mongoose.Types.ObjectId(),
+  name: 'Test Community',
+  about: 'A test community',
+  rules: 'Be nice',
+  members: ['user1'],
+  admins: ['user1'],
+  createdBy: 'user1',
+  groupChatId: chatObjectId,
+  questions: [questionObjectId1, questionObjectId2],
+  pendingInvites: [],
+  memberHistory: [],
+};
+
+const mockPopulatedChat: PopulatedDatabaseChat = {
+  _id: chatObjectId,
+  messages: [],
+  participants: ['user1'],
+  name: 'Test Chat',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const mockPopulatedQuestion1: PopulatedDatabaseQuestion = {
+  _id: questionObjectId1,
+  title: 'Q1 Title',
+  text: 'Q1 Text',
+  tags: [],
+  answers: [],
+  askedBy: 'user1',
+  askDateTime: new Date(),
+  views: [],
+  upVotes: [],
+  downVotes: [],
+  comments: [],
+  useMarkdown: false,
+  anonymous: false,
+};
+
+const mockPopulatedQuestion2: PopulatedDatabaseQuestion = {
+  _id: questionObjectId2,
+  title: 'Q2 Title',
+  text: 'Q2 Text',
+  tags: [],
+  answers: [],
+  askedBy: 'user1',
+  askDateTime: new Date(),
+  views: [],
+  upVotes: [],
+  downVotes: [],
+  comments: [],
+  useMarkdown: false,
+  anonymous: false,
+};
 
 describe('populateDocument', () => {
   afterEach(() => {
@@ -190,5 +259,93 @@ describe('populateDocument', () => {
     expect(result).toEqual({
       error: 'Error when fetching and populating a document: Invalid type provided.',
     });
+  });
+});
+
+describe('populateDatabaseCommunity', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should populate chat and all questions successfully', async () => {
+    // Spy on the populateDocument function
+
+    // Fake behavior: return the correct objects based on the type
+    populateDocumentMock.mockImplementation(
+      async (id: string, type: 'question' | 'answer' | 'chat') => {
+        if (type === 'chat') return mockPopulatedChat;
+        if (type === 'question') {
+          if (id === questionObjectId1.toString()) return mockPopulatedQuestion1;
+          if (id === questionObjectId2.toString()) return mockPopulatedQuestion2;
+        }
+        return { error: 'Unknown type' };
+      },
+    );
+
+    const result = await populateDatabaseCommunity(mockCommunity);
+
+    expect(result.groupChat).toEqual(mockPopulatedChat);
+    expect(result.questions).toEqual([mockPopulatedQuestion1, mockPopulatedQuestion2]);
+    expect(result._id).toEqual(mockCommunity._id);
+  });
+
+  it('should throw an error if populateDocument returns an error for chat', async () => {
+    const community: DatabaseCommunity = {
+      _id: new mongoose.Types.ObjectId(),
+      name: 'Test',
+      about: 'About',
+      rules: 'Rules',
+      members: ['user1'],
+      admins: ['user1'],
+      createdBy: 'user1',
+      groupChatId: new mongoose.Types.ObjectId(),
+      questions: [],
+      pendingInvites: [],
+      memberHistory: [],
+    };
+
+    jest
+      .spyOn(databaseUtil, 'populateDocument')
+      .mockImplementationOnce(async () => ({ error: 'Chat not found' }));
+
+    await expect(populateDatabaseCommunity(community)).rejects.toThrow(
+      'populateDatabaseCommunity chat: Chat not found',
+    );
+  });
+
+  it('should throw an error if populateDocument returns an error for a question', async () => {
+    const qid = new mongoose.Types.ObjectId();
+    const community: DatabaseCommunity = {
+      _id: new mongoose.Types.ObjectId(),
+      name: 'Test',
+      about: 'About',
+      rules: 'Rules',
+      members: ['user1'],
+      admins: ['user1'],
+      createdBy: 'user1',
+      groupChatId: new mongoose.Types.ObjectId(),
+      questions: [qid],
+      pendingInvites: [],
+      memberHistory: [],
+    };
+
+    // First call for chat succeeds
+    const chatMock = {
+      _id: new mongoose.Types.ObjectId(),
+      messages: [],
+      participants: ['user1'],
+      name: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const populateMock = jest.spyOn(databaseUtil, 'populateDocument');
+    populateMock
+      .mockImplementationOnce(async () => chatMock) // chat
+      .mockImplementationOnce(async () => ({ error: 'Question not found' })); // question
+
+    await expect(populateDatabaseCommunity(community)).rejects.toThrow(
+      'populateDatabaseCommunity question: Question not found',
+    );
   });
 });
