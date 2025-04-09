@@ -1,5 +1,8 @@
 import './index.css';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github-dark.css'; // or another theme
+import { Button } from '@chakra-ui/react';
 import Form from '../baseComponents/form';
 import TextArea from '../baseComponents/textarea';
 import useAnswerForm from '../../../hooks/useAnswerForm';
@@ -33,14 +36,15 @@ const NewAnswerPage = () => {
         <div className='markdown-preview' style={{ marginBottom: '20px' }}>
           <h3>Markdown Preview:</h3>
           <div className='markdown-box'>
-            <ReactMarkdown>{text}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
           </div>
         </div>
       )}
+
       <div className='btn_indicator_container'>
-        <button className='form_postBtn' onClick={postAnswer}>
+        <Button colorPalette='blue' size='xl' onClick={postAnswer}>
           Post Answer
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>

@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+import { Button } from '@chakra-ui/react';
 import useNewQuestion from '../../../hooks/useNewQuestion';
 import Form from '../baseComponents/form';
 import Input from '../baseComponents/input';
@@ -61,7 +63,7 @@ const NewQuestionPage = () => {
         <div className='markdown-preview' style={{ marginBottom: '20px' }}>
           <h3>Markdown Preview:</h3>
           <div className='markdown-box'>
-            <ReactMarkdown>{text}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
           </div>
         </div>
       )}
@@ -81,13 +83,14 @@ const NewQuestionPage = () => {
         setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
-        <button
-          className='form_postBtn'
+        <Button
+          colorPalette='blue'
+          size='xl'
           onClick={() => {
             postQuestion();
           }}>
           Post Question
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>

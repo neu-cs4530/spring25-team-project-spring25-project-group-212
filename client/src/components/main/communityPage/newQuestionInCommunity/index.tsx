@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Button } from '@chakra-ui/react';
+import rehypeHighlight from 'rehype-highlight';
 import useNewQuestionCommunity from '../../../../hooks/useNewQuestionCommunity';
 import Form from '../../baseComponents/form';
 import Input from '../../baseComponents/input';
 import TextArea from '../../baseComponents/textarea';
 import Checkbox from '../../baseComponents/checkbox';
+import './index.css';
 
 /**
  * NewQuestionInCommunityPage component allows users to submit a new question with a title,
@@ -60,7 +63,7 @@ const NewQuestionInCommunityPage = () => {
         <div className='markdown-preview' style={{ marginBottom: '20px' }}>
           <h3>Markdown Preview:</h3>
           <div className='markdown-box'>
-            <ReactMarkdown>{text}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{text}</ReactMarkdown>
           </div>
         </div>
       )}
@@ -80,13 +83,14 @@ const NewQuestionInCommunityPage = () => {
         setState={setAnonymous}
       />
       <div className='btn_indicator_container'>
-        <button
-          className='form_postBtn'
+        <Button
+          colorPalette='blue'
+          size='xl'
           onClick={() => {
             postQuestion();
           }}>
           Post Question To Community
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>

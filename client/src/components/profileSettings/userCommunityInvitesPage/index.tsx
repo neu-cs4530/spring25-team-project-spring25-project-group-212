@@ -1,5 +1,6 @@
+import React from 'react';
+import { Box, Heading, SimpleGrid, Text, Center } from '@chakra-ui/react';
 import useUserCommunityInvitesPage from '../../../hooks/useUserCommunityInvitesPage';
-import '../index.css';
 import CommunityInviteCard from './communityInviteCard';
 
 const UserCommunityInvitesPage = () => {
@@ -7,21 +8,29 @@ const UserCommunityInvitesPage = () => {
     useUserCommunityInvitesPage();
 
   return (
-    <div>
+    <Box mx='auto' p={6}>
+      <Heading as='h1' size='lg' mb={6} textAlign='center'>
+        Community Invites
+      </Heading>
       {communitiesInvitedTo.length === 0 ? (
-        <div>No Invites</div>
+        <Center>
+          <Text fontSize='lg' color='gray.500'>
+            No Invites
+          </Text>
+        </Center>
       ) : (
-        <div>
-          {communitiesInvitedTo.map(c => (
+        <SimpleGrid columns={4} gap={6}>
+          {communitiesInvitedTo.map(community => (
             <CommunityInviteCard
-              key={c._id.toString()}
+              key={community._id.toString()}
               handleAcceptInvite={handleAcceptInvite}
               handleDeclineInvite={handleDeclineInvite}
-              community={c}></CommunityInviteCard>
+              community={community}
+            />
           ))}
-        </div>
+        </SimpleGrid>
       )}
-    </div>
+    </Box>
   );
 };
 

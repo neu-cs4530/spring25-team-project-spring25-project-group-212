@@ -145,12 +145,12 @@ describe('assignCommunityFromLLM', () => {
     spy.mockRestore();
   });
 
-  it('should return "Uncategorized" when API call fails', async () => {
+  it('should throw an error when API call fails', async () => {
     const spy = jest.spyOn(axios, 'post').mockRejectedValue(new Error('Network error'));
 
-    const result = await assignCommunityFromLLM(sampleQuestion2, sampleCommunities);
-    expect(spy).toHaveBeenCalled();
-    expect(result).toBe('Uncategorized');
+    await expect(assignCommunityFromLLM(sampleQuestion2, sampleCommunities)).rejects.toThrow(
+      'Failed to assign community from LLM',
+    );
 
     spy.mockRestore();
   });

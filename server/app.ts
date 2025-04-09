@@ -90,7 +90,6 @@ app.use('/games', gameController(socket));
 app.use('/community', communityController(socket));
 app.use('/notification', notificationController(socket));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/llm', llmController());
 
 // Export the app instance
 export { app, server, startServer };
@@ -98,7 +97,7 @@ export { app, server, startServer };
 const cron = require('node-cron');
 const { handleSendDigestEmail } = emailController();
 
-const { runLLMCommunityTagging } = require('./controllers/llm.controller');
+const { runLLMCommunityTagging } = llmController();
 
 if (process.env.NODE_ENV !== 'test') {
   cron.schedule('0 8 * * *', async () => {
@@ -106,12 +105,17 @@ if (process.env.NODE_ENV !== 'test') {
     await handleSendDigestEmail();
   });
 
-  cron.schedule('0 0 * * *', async () => {
-    console.log('Running daily community tagging job...');
-    try {
-      await runLLMCommunityTagging();
-    } catch (err) {
-      console.error('LLM community tagging job failed:', err);
-    }
-  });
+  cron.schedule(
+    '0 0 * * *',
+    async () => {
+      try {
+        await runLLMCommunityTagging();
+      } catch (err) {
+        console.error('LLM community tagging job failed:', err);
+      }
+    },
+    {
+      timezone: 'America/New_York',
+    },
+  );
 }

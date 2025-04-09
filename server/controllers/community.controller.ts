@@ -341,6 +341,11 @@ const communityController = (socket: FakeSOSocket) => {
         socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
       }
     });
+
+    conn.on('onlineUser', (communityID: string, username: string) => {
+      addOnlineUser(communityID, username);
+      socket.to(communityID).emit('onlineUsersUpdate', { users: getOnlineUsers(communityID) });
+    });
   });
 
   /**
