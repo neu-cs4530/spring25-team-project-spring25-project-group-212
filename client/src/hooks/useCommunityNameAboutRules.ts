@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { PopulatedDatabaseCommunity } from '@fake-stack-overflow/shared';
-import { getCommunityById, updateCommunityNameAboutRules } from '../services/communityService';
+import {
+  getCommunities,
+  getCommunityById,
+  updateCommunityNameAboutRules,
+} from '../services/communityService';
 import useUserContext from './useUserContext';
 
 const useCommunityNameAboutRules = () => {
@@ -14,6 +18,10 @@ const useCommunityNameAboutRules = () => {
   const [newRules, setNewRules] = useState('');
   const [err, setErr] = useState('');
   const [canEditNameAboutRules, setCanEditNameAboutRules] = useState(false);
+  const [rankingByMembers, setRankingByMembers] = useState<number | null>(null);
+  const [rankingByQuestionsAnswers, setRankingByQuestionsAnswers] = useState<number | null>(null);
+  const [communityMemberCount, setCommunityMemberCount] = useState<number | null>(null);
+  const [communityContentCount, setCommunityContentCount] = useState<number | null>(null);
 
   useEffect(() => {
     const communityExistsCheck = async () => {
@@ -55,6 +63,82 @@ const useCommunityNameAboutRules = () => {
     fetchCommunityAndSetCanEdit();
   }, [id, user.username]);
 
+  useEffect(() => {
+    const fetchRankings = async () => {
+      try {
+        const communities = await getCommunities();
+        if (community) {
+          const sortedByMembers = communities
+            .slice()
+            .sort((a, b) => b.members.length - a.members.length);
+
+          const memberRanks: { [id: string]: number } = {};
+          let currentRank = 1;
+
+          sortedByMembers.forEach((c, index) => {
+            if (index > 0 && sortedByMembers[index - 1].members.length !== c.members.length) {
+              currentRank = index + 1;
+            }
+            memberRanks[c._id.toString()] = currentRank;
+          });
+
+          setRankingByMembers(memberRanks[community._id.toString()]);
+
+          const sortedByQuestionsAnswers = communities.slice().sort((a, b) => {
+            const totalAnswersA = a.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalAnswersB = b.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalA = a.questions.length + totalAnswersA;
+            const totalB = b.questions.length + totalAnswersB;
+            return totalB - totalA;
+          });
+
+          const qaRanks: { [id: string]: number } = {};
+          currentRank = 1;
+
+          sortedByQuestionsAnswers.forEach((c, index) => {
+            const totalAnswersC = c.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalC = c.questions.length + totalAnswersC;
+
+            const totalAnswersPrev = sortedByQuestionsAnswers[index - 1]?.questions.reduce(
+              (sum, question) => sum + question.answers.length,
+              0,
+            );
+            const totalPrev =
+              (sortedByQuestionsAnswers[index - 1]?.questions.length || 0) +
+              (totalAnswersPrev || 0);
+            if (index > 0 && totalPrev !== totalC) {
+              currentRank = index + 1;
+            }
+            qaRanks[c._id.toString()] = currentRank;
+          });
+
+          setRankingByQuestionsAnswers(qaRanks[community._id.toString()]);
+
+          setCommunityMemberCount(community.members.length);
+          const totalAnswers = community.questions.reduce(
+            (sum, question) => sum + question.answers.length,
+            0,
+          );
+          const totalContent = community.questions.length + totalAnswers;
+          setCommunityContentCount(totalContent);
+        }
+      } catch (error) {
+        setErr('Error calculating community rankings');
+      }
+    };
+
+    fetchRankings();
+  }, [community]);
+
   const handleEditNameAboutRules = async () => {
     if (!community) {
       return;
@@ -95,6 +179,10 @@ const useCommunityNameAboutRules = () => {
     communityExistsError: err,
     handleEditNameAboutRules,
     canEditNameAboutRules,
+    rankingByMembers,
+    rankingByQuestionsAnswers,
+    communityMemberCount,
+    communityContentCount,
   };
 };
 

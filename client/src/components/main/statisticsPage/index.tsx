@@ -1,3 +1,4 @@
+import { Box, Text, VStack, Badge, HStack } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import { useNavigate } from 'react-router-dom';
 import useStatisticsPage from '../../../hooks/useStatisticsPage';
@@ -32,80 +33,140 @@ const StatisticsPage = () => {
   };
 
   return (
-    <>
+    <VStack gap={6} align='stretch' p={6}>
       <StatisticsHeader />
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The most questions asked by ${topAskingUsers.length > 1 ? 'users' : 'a user'}: ${topAskerQuestionCount}`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <UserStack
-          users={topAskingUsers}
-          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-        />
-      </div>
-      {(!topAskingUsers.length || topAskingUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Top Asking User Found</div>
-      )}
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The most questions asked by ${topAskingUsers.length > 1 ? 'users' : 'a user'}:`}
+          </Text>
+          {!topAskingUsers.length || topAskingUsers.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No questions asked
+            </Text>
+          ) : (
+            <Badge colorScheme='blue' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topAskerQuestionCount} Questions
+            </Badge>
+          )}
+        </HStack>
+        {(!topAskingUsers.length || topAskingUsers.length !== 0) && (
+          <UserStack
+            users={topAskingUsers}
+            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+          />
+        )}
+      </Box>
 
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The most answers made by ${topAnsweringUsers.length > 1 ? 'users' : 'a user'}: ${topAnswererAnswerCount}`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <UserStack
-          users={topAnsweringUsers}
-          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-        />
-      </div>
-      {(!topAnsweringUsers.length || topAnsweringUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Top Answering User Found</div>
-      )}
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The most answers made by ${topAnsweringUsers.length > 1 ? 'users' : 'a user'}:`}
+          </Text>
+          {!topAnsweringUsers.length || topAnsweringUsers.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No answers made
+            </Text>
+          ) : (
+            <Badge colorScheme='orange' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topAnswererAnswerCount} Answers
+            </Badge>
+          )}
+        </HStack>
+        {(!topAnsweringUsers.length || topAnsweringUsers.length !== 0) && (
+          <UserStack
+            users={topAnsweringUsers}
+            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+          />
+        )}
+      </Box>
 
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The most votes cast by ${topVotingUsers.length > 1 ? 'users' : 'a user'}: ${topVoterCount}`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <UserStack
-          users={topVotingUsers}
-          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-        />
-      </div>
-      {(!topVotingUsers.length || topVotingUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Top Voting User Found</div>
-      )}
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The most votes cast by ${topVotingUsers.length > 1 ? 'users' : 'a user'}:`}
+          </Text>
+          {!topVotingUsers.length || topVotingUsers.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No votes cast
+            </Text>
+          ) : (
+            <Badge colorScheme='purple' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topVoterCount} Votes
+            </Badge>
+          )}
+        </HStack>
+        {(!topVotingUsers.length || topVotingUsers.length !== 0) && (
+          <UserStack
+            users={topVotingUsers}
+            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+          />
+        )}
+      </Box>
 
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The most questions viewed by ${topViewingUsers.length > 1 ? 'users' : 'a user'}: ${topViewerCount}`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <UserStack
-          users={topViewingUsers}
-          handleUserCardViewClickHandler={handleUserCardViewClickHandler}
-        />
-      </div>
-      {(!topViewingUsers.length || topViewingUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Top Viewing User Found</div>
-      )}
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The most questions viewed by ${topViewingUsers.length > 1 ? 'users' : 'a user'}:`}
+          </Text>
+          {!topViewingUsers.length || topViewingUsers.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No questions viewed
+            </Text>
+          ) : (
+            <Badge colorScheme='green' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topViewerCount} Views
+            </Badge>
+          )}
+        </HStack>
+        {(!topViewingUsers.length || topViewingUsers.length !== 0) && (
+          <UserStack
+            users={topViewingUsers}
+            handleUserCardViewClickHandler={handleUserCardViewClickHandler}
+          />
+        )}
+      </Box>
 
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The most viewed ${topViewedQuestions.length > 1 ? 'questions' : 'question'}: ${topViewedQuestionViews} views`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <QuestionStack questions={topViewedQuestions} />
-      </div>
-      {(!topAskingUsers.length || topAskingUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Most Viewed Question Found</div>
-      )}
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The most viewed ${topViewedQuestions.length > 1 ? 'questions' : 'question'}:`}
+          </Text>
+          {!topViewedQuestions.length || topViewedQuestions.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No questions viewed
+            </Text>
+          ) : (
+            <Badge colorScheme='teal' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topViewedQuestionViews} Views
+            </Badge>
+          )}
+        </HStack>
+        {(!topViewedQuestions.length || topViewedQuestions.length !== 0) && (
+          <QuestionStack questions={topViewedQuestions} />
+        )}
+      </Box>
 
-      <div className='right_bottom_padding'>
-        <div className='not_quite_so_bold_title'>{`The best voted ${topVotedQuestions.length > 1 ? 'questions' : 'question'}: ${topVotedQuestionVotes}`}</div>
-      </div>
-      <div id='users_list' className='users_list'>
-        <QuestionStack questions={topVotedQuestions} />
-      </div>
-      {(!topAskingUsers.length || topAskingUsers.length === 0) && (
-        <div className='bold_title right_padding'>No Best Voted Question Found</div>
-      )}
-    </>
+      <Box>
+        <HStack mb={3}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            {`The best voted ${topVotedQuestions.length > 1 ? 'questions' : 'question'}:`}
+          </Text>
+          {!topVotedQuestions.length || topVotedQuestions.length === 0 ? (
+            <Text fontWeight='bold' color='gray.600'>
+              No questions voted
+            </Text>
+          ) : (
+            <Badge colorScheme='cyan' fontSize='md' px={3} py={1} borderRadius='md'>
+              {topVotedQuestionVotes} Votes
+            </Badge>
+          )}
+        </HStack>
+        {(!topVotedQuestions.length || topVotedQuestions.length !== 0) && (
+          <QuestionStack questions={topVotedQuestions} />
+        )}
+      </Box>
+    </VStack>
   );
 };
 

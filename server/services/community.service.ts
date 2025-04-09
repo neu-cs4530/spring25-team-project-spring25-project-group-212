@@ -25,7 +25,6 @@ export const saveCommunity = async (
   try {
     const chat = await ChatModel.create({ participants: communityPayload.createdBy, messages: [] });
 
-    // create a new community with the group chat id and no questions to start
     const CommunityWithModel = {
       ...communityPayload,
       groupChatId: chat._id,

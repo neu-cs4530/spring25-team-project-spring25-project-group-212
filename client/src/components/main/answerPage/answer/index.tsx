@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Flex } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import { handleHyperlink } from '../../../../tool';
 import CommentSection from '../../commentSection';
@@ -43,16 +44,22 @@ const AnswerView = ({
   handleAddComment,
   isMarkdown = false,
 }: AnswerProps) => (
-  <div className='answer right_padding'>
-    <div id='answerText' className='answerText'>
-      {isMarkdown ? <ReactMarkdown>{text}</ReactMarkdown> : handleHyperlink(text)}
-    </div>
-    <div className='answerAuthor'>
-      <div className='answer_author'>{ansBy}</div>
-      <div className='answer_question_meta'>{meta}</div>
-    </div>
+  <Flex borderBottom='1px solid' borderColor='gray.200' flexDir='row' mt={4} mb={4}>
+    <Box id='answerText' className='answerText' ml={6}>
+      {isMarkdown ? (
+        <div className='markdown-box'>
+          <ReactMarkdown>{text}</ReactMarkdown>
+        </div>
+      ) : (
+        handleHyperlink(text)
+      )}
+    </Box>
+    <Box className='answerAuthor' mr={6}>
+      <Box className='answer_author'>{ansBy}</Box>
+      <Box className='answer_question_meta'>{meta}</Box>
+    </Box>
     <CommentSection comments={comments} handleAddComment={handleAddComment} />
-  </div>
+  </Flex>
 );
 
 export default AnswerView;

@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/react';
 import useNewCommunity from '../../../hooks/useNewCommunity';
 import Form from '../baseComponents/form';
 import Input from '../baseComponents/input';
@@ -44,13 +45,14 @@ const NewCommunityPage = () => {
         err={rulesErr}
       />
       <div className='btn_indicator_container'>
-        <button
-          className='form_postBtn'
+        <Button
+          colorPalette='blue'
+          size='xl'
           onClick={() => {
             postCommunity();
           }}>
           Create Community
-        </button>
+        </Button>
         <div className='mandatory_indicator'>* indicates mandatory fields</div>
       </div>
     </Form>

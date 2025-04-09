@@ -3,13 +3,16 @@ import { useSyncDemo } from '@tldraw/sync';
 import 'tldraw/tldraw.css';
 import './index.css';
 import { JaaSMeeting } from '@jitsi/react-sdk';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IJitsiMeetExternalApi } from '@jitsi/react-sdk/lib/types';
 import { useLocation, useParams } from 'react-router-dom';
+import { Box, Button, Text, VStack } from '@chakra-ui/react';
 import useBulletinBoardPage from '../../../../hooks/useBulletinBoardPage';
 import CommunityNavBar from '../communityNavBar';
+import useUserContext from '../../../../hooks/useUserContext';
 
 const BulletinBoardPage = () => {
+  const { user, socket } = useUserContext();
   const [isInCall, setIsInCall] = useState(true);
   const { id } = useParams();
   const {
@@ -34,6 +37,12 @@ const BulletinBoardPage = () => {
       setIsInCall(false);
     });
   };
+  useEffect(() => {
+    if (!community) {
+      return;
+    }
+    socket.emit('onlineUser', community?._id.toString(), user.username);
+  }, [community, socket, user.username]);
 
   function SnapshotToolbar() {
     const editor = useEditor();
@@ -95,10 +104,21 @@ const BulletinBoardPage = () => {
                     onApiReady={handleApiReady}
                   />
                 ) : (
-                  <div>
-                    <p>Call ended. Click below to rejoin.</p>
-                    <button onClick={() => setIsInCall(true)}>Join Call</button>
-                  </div>
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='100%'>
+                    <VStack gap={4}>
+                      <Text fontSize='lg' fontWeight='bold'>
+                        Call ended. Click below to rejoin.
+                      </Text>
+                      <Button colorPalette='blue' onClick={() => setIsInCall(true)}>
+                        Join Call
+                      </Button>
+                    </VStack>
+                  </Box>
                 )}
               </div>
             )}

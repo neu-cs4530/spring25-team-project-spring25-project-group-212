@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '@fake-stack-overflow/shared';
+import {
+  PopulatedDatabaseCommunity,
+  PopulatedDatabaseQuestion,
+  SafeDatabaseUser,
+} from '@fake-stack-overflow/shared';
 import { getCommunityById, getQuestionsForCommunity } from '../services/communityService';
 import { getUsers } from '../services/userService';
 
 const useCommunityStatisticsPage = () => {
   const { id } = useParams();
+  const [currentCommunity, setCurrentCommunity] = useState<PopulatedDatabaseCommunity | null>(null);
   const [topVotedQuestions, setTopVotedQuestions] = useState<PopulatedDatabaseQuestion[]>([]);
   const [topViewedQuestions, setTopViewedQuestions] = useState<PopulatedDatabaseQuestion[]>([]);
 
@@ -62,6 +67,22 @@ const useCommunityStatisticsPage = () => {
       },
     ],
   });
+
+  useEffect(() => {
+    const fetchCommunity = async () => {
+      try {
+        if (!id) {
+          throw new Error('Unable to get community ID');
+        }
+        const community = await getCommunityById(id);
+        setCurrentCommunity(community);
+      } catch (error) {
+        throw Error('Error fetching community');
+      }
+    };
+
+    fetchCommunity();
+  }, [id]);
 
   useEffect(() => {
     /**
@@ -317,6 +338,7 @@ const useCommunityStatisticsPage = () => {
     questionData,
     memberData,
     communityStatisticsError,
+    currentCommunity,
   };
 };
 

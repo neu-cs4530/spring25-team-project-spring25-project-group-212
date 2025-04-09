@@ -37,8 +37,7 @@ Community:`;
     const llmText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
     return llmText.trim();
   } catch (error) {
-    // should it be like this?
-    return 'Uncategorized';
+    throw new Error('Failed to assign community from LLM');
   }
 };
 
