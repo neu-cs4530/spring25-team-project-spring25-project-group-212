@@ -30,7 +30,6 @@ const ReducedCommunityQuestionHeader = ({
   setQuestionOrder,
 }: QuestionHeaderProps) => (
   <Box p={4}>
-    {/* Title and Ask Question Button */}
     <Flex justify='space-between' align='center' mb={4}>
       <Text fontWeight='bold' fontSize='xl'>
         {titleText}

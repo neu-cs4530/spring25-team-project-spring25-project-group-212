@@ -124,7 +124,6 @@ const CommunityChat = () => {
       </Center>
     );
   }
-  // const userHasJoinedCommunity = currentCommunity.members.includes(user.username);
 
   return (
     <>
