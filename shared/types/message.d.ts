@@ -2,17 +2,32 @@ import { ObjectId } from 'mongodb';
 import { Request } from 'express';
 
 /**
+ * Represents a reaction to a message.
+ * - `emoji`: The emoji used for the reaction.
+ * - `userId`: The ID of the user who reacted.
+ */
+export interface Reaction {
+  emoji: string;
+  userId: ObjectId;
+}
+
+/**
  * Represents a message in a chat.
  * - `msg`: The text content of the message.
  * - `msgFrom`: The username of the user sending the message.
  * - `msgDateTime`: The date and time when the message was sent.
  * - `type`: The type of the message, either 'global' or 'direct'.
+ * - `useMarkdown`: Whether to render the message content as markdown.
  */
 export interface Message {
   msg: string;
   msgFrom: string;
   msgDateTime: Date;
   type: 'global' | 'direct';
+  reactions?: Reaction[];
+  useMarkdown: boolean;
+  deletedAt?: Date | null;
+  deletedMessage?: string | null;
 }
 
 /**
@@ -22,9 +37,13 @@ export interface Message {
  * - `msgFrom`: The username of the user sending the message.
  * - `msgDateTime`: The date and time when the message was sent.
  * - `type`: The type of the message, either 'global' or 'direct'.
+ * - `useMarkdown`: Whether to render the message content as markdown.
  */
 export interface DatabaseMessage extends Message {
   _id: ObjectId;
+  seenBy: ObjectId[];
+  deletedAt?: Date | null;
+  deletedMessage?: string | null;
 }
 
 /**

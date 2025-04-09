@@ -41,4 +41,85 @@ const getMessages = async (): Promise<DatabaseMessage[]> => {
   return res.data;
 };
 
-export { addMessage, getMessages };
+/**
+ * Adds a reaction to a message.
+ *
+ * @param messageId - The ID of the message being reacted to.
+ * @param emoji - The emoji being added as a reaction.
+ * @param username - The username of the person reacting.
+ * @throws Error if the request fails or the response status is not 200.
+ */
+const addReaction = async (messageId: string, emoji: string, username: string) => {
+  const res = await api.post(`${MESSAGE_API_URL}/addReaction`, { messageId, emoji, username });
+
+  if (res.status !== 200) {
+    throw new Error('Error adding reaction');
+  }
+  return res.data;
+};
+
+const getReactions = async (messageId: string) => {
+  const res = await api.get(`${MESSAGE_API_URL}/getReactions/${messageId}`);
+
+  if (res.status !== 200) {
+    throw new Error('Error fetching reactions');
+  }
+  return res.data;
+};
+
+/**
+ * Marks a message as seen by a user.
+ *
+ * @param messageId - The ID of the message being marked as seen.
+ * @param userId - The ID of the user who saw the message.
+ * @throws Error if the request fails or the response status is not 200.
+ */
+const markMessageAsSeen = async (messageId: string, userId: string) => {
+  const res = await api.post(`${MESSAGE_API_URL}/messages/${messageId}/seen`, {
+    userId,
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error marking message as seen');
+  }
+  return res.data;
+};
+
+const deleteMessage = async (messageId: string, username: string) => {
+  const res = await api.delete(`${MESSAGE_API_URL}/messages/${messageId}/delete`, {
+    data: { username },
+  });
+
+  if (res.status !== 200) {
+    throw new Error('Error deleting the message');
+  }
+  return res.data;
+};
+
+const restoreMessage = async (messageId: string) => {
+  const res = await api.put(`${MESSAGE_API_URL}/messages/${messageId}/restore`);
+  if (res.status !== 200) {
+    throw new Error('Error restoring the message');
+  }
+  return res.data;
+};
+
+const uploadFile = async (payload: { fileUrl: string; username: string }): Promise<string> => {
+  const res = await api.post(`${MESSAGE_API_URL}/uploads`, payload);
+
+  if (res.status !== 200) {
+    throw new Error('Error uploading the file');
+  }
+  return res.data.fileUrl;
+};
+
+export {
+  addMessage,
+  getMessages,
+  addReaction,
+  getReactions,
+  markMessageAsSeen,
+  deleteMessage,
+  restoreMessage,
+  uploadFile,
+};

@@ -15,6 +15,7 @@ import {
   filterQuestionsByAskedBy,
   filterQuestionsBySearch,
   getQuestionsByOrder,
+  getQuestionsBySaved,
   saveQuestion,
 } from '../services/question.service';
 import { processTags } from '../services/tag.service';
@@ -36,9 +37,15 @@ const questionController = (socket: FakeSOSocket) => {
     const { order } = req.query;
     const { search } = req.query;
     const { askedBy } = req.query;
+    const { username } = req.query;
 
     try {
-      let qlist: PopulatedDatabaseQuestion[] = await getQuestionsByOrder(order);
+      let qlist: PopulatedDatabaseQuestion[];
+      if (order === 'saved') {
+        qlist = await getQuestionsBySaved(username);
+      } else {
+        qlist = await getQuestionsByOrder(order);
+      }
 
       // Filter by askedBy if provided
       if (askedBy) {
@@ -51,8 +58,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when fetching questions by filter: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when fetching questions by filter`);
       }
     }
   };
@@ -92,8 +97,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when fetching question by id: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when fetching question by id`);
       }
     }
   };
@@ -162,8 +165,6 @@ const questionController = (socket: FakeSOSocket) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send(`Error when saving question: ${err.message}`);
-      } else {
-        res.status(500).send(`Error when saving question`);
       }
     }
   };

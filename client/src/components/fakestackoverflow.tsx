@@ -17,6 +17,16 @@ import UsersListPage from './main/usersListPage';
 import ProfileSettings from './profileSettings';
 import AllGamesPage from './main/games/allGamesPage';
 import GamePage from './main/games/gamePage';
+import NewCommunityPage from './main/newCommunity';
+import CommunityPage from './main/communityPage';
+import NewQuestionInCommunityPage from './main/communityPage/newQuestionInCommunity';
+import CommunitiesListPage from './main/communitiesListPage';
+import StatisticsPage from './main/statisticsPage';
+import BulletinBoardPage from './main/communityPage/bulletinBoardPage';
+import UserCommunityInvitesPage from './profileSettings/userCommunityInvitesPage';
+import CommunityInvitesPage from './main/communityPage/communityInvitesPage';
+import CommunityStatisticsPage from './main/communityPage/communityStatistics';
+import CommunityChat from './main/communityPage/communityChat';
 
 const ProtectedRoute = ({
   user,
@@ -66,6 +76,17 @@ const FakeStackOverflow = ({ socket }: { socket: FakeSOSocket | null }) => {
             <Route path='/user/:username' element={<ProfileSettings />} />
             <Route path='/games' element={<AllGamesPage />} />
             <Route path='/games/:gameID' element={<GamePage />} />
+            <Route path='/new/community' element={<NewCommunityPage />} />
+            <Route path='/community/:id' element={<CommunityPage />} />
+            <Route path='/new/questionInCommunity/:id' element={<NewQuestionInCommunityPage />} />
+            <Route path='/community' element={<Navigate to='/community/list' replace />} />
+            <Route path='/community/list' element={<CommunitiesListPage />} />
+            <Route path='/statistics' element={<StatisticsPage />} />
+            <Route path='/community/:id/bulletinBoard' element={<BulletinBoardPage />} />
+            <Route path='/user/:username/communityInvites' element={<UserCommunityInvitesPage />} />
+            <Route path='/community/:id/invites' element={<CommunityInvitesPage />} />
+            <Route path='/community/:id/statistics' element={<CommunityStatisticsPage />} />
+            <Route path='/community/:id/chat' element={<CommunityChat />} />
           </Route>
         }
       </Routes>

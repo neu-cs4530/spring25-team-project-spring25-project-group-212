@@ -5,9 +5,11 @@ import {
   deleteUser,
   resetPassword,
   updateBiography,
+  updateEmail,
 } from '../services/userService';
-import { SafeDatabaseUser } from '../types/types';
+import { PopulatedDatabaseQuestion, SafeDatabaseUser } from '../types/types';
 import useUserContext from './useUserContext';
+import { getQuestionsByFilter } from '../services/questionService';
 
 /**
  * A custom hook to encapsulate all logic/state for the ProfileSettings component.
@@ -24,6 +26,8 @@ const useProfileSettings = () => {
   const [loading, setLoading] = useState(false);
   const [editBioMode, setEditBioMode] = useState(false);
   const [newBio, setNewBio] = useState('');
+  const [editEmailMode, setEditEmailMode] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -32,6 +36,13 @@ const useProfileSettings = () => {
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const [topVotedQuestion, setTopVotedQuestion] = useState<PopulatedDatabaseQuestion | null>(null);
+  const [topVotedCount, setTopVotedCount] = useState(0);
+  const [topViewedQuestion, setTopViewedQuestion] = useState<PopulatedDatabaseQuestion | null>(
+    null,
+  );
+  const [topViewedCount, setTopViewedCount] = useState(0);
 
   const canEditProfile =
     currentUser.username && userData?.username ? currentUser.username === userData.username : false;
@@ -53,6 +64,47 @@ const useProfileSettings = () => {
     };
 
     fetchUserData();
+  }, [username]);
+
+  useEffect(() => {
+    if (!username) {
+      setTopVotedQuestion(null);
+      setTopViewedQuestion(null);
+    }
+
+    const fetchQuestions = async () => {
+      const allQuestions = await getQuestionsByFilter();
+      let topVoted = null;
+      let topVotedVotes = -Infinity;
+      let topViewed = null;
+      let topViewedViews = -Infinity;
+
+      allQuestions.forEach(question => {
+        if (
+          (question.askedBy === username && question.anonymous === false) ||
+          question.answers.some(ans => ans.ansBy === username)
+        ) {
+          const netVotes = question.upVotes.length - question.downVotes.length;
+          if (netVotes > topVotedVotes) {
+            topVotedVotes = netVotes;
+            topVoted = question;
+          }
+
+          const viewsCount = question.views.length;
+          if (viewsCount > topViewedViews) {
+            topViewedViews = viewsCount;
+            topViewed = question;
+          }
+        }
+      });
+
+      setTopVotedQuestion(topVoted);
+      setTopVotedCount(topVotedVotes);
+      setTopViewedQuestion(topViewed);
+      setTopViewedCount(topViewedViews);
+    };
+
+    fetchQuestions();
   }, [username]);
 
   /**
@@ -119,6 +171,28 @@ const useProfileSettings = () => {
   };
 
   /**
+   * Handler for update the user email
+   */
+  const handleUpdateEmail = async () => {
+    if (!username) return;
+    try {
+      const updatedUser = await updateEmail(username, newEmail);
+
+      await new Promise(resolve => {
+        setUserData(updatedUser);
+        setEditEmailMode(false);
+        resolve(null);
+      });
+
+      setSuccessMessage('Email updated!');
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage('Failed to update email.');
+      setSuccessMessage(null);
+    }
+  };
+
+  /**
    * Handler for deleting the user (triggers confirmation modal)
    */
   const handleDeleteUser = () => {
@@ -139,6 +213,14 @@ const useProfileSettings = () => {
     });
   };
 
+  /**
+   * Handler for navigating to invites list page
+   */
+  const handleUserInvites = () => {
+    if (!username) return;
+    navigate(`/user/${username}/communityInvites`);
+  };
+
   return {
     userData,
     newPassword,
@@ -150,6 +232,10 @@ const useProfileSettings = () => {
     setEditBioMode,
     newBio,
     setNewBio,
+    editEmailMode,
+    setEditEmailMode,
+    newEmail,
+    setNewEmail,
     successMessage,
     errorMessage,
     showConfirmation,
@@ -161,7 +247,13 @@ const useProfileSettings = () => {
     togglePasswordVisibility,
     handleResetPassword,
     handleUpdateBiography,
+    handleUpdateEmail,
     handleDeleteUser,
+    topVotedQuestion,
+    topVotedCount,
+    topViewedQuestion,
+    topViewedCount,
+    handleUserInvites,
   };
 };
 

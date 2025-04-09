@@ -1,0 +1,13 @@
+.community_menu_button {
+    margin: 20px;
+    height: 40px;
+    width: 80%;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 40px;
+    color: cornflowerblue;
+}
+  
+.community_menu_selected     {
+    background: #cccccc;
+}

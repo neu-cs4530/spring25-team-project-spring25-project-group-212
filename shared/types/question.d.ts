@@ -10,8 +10,20 @@ import { Comment, DatabaseComment } from './comment';
  * - `unanswered`: Sort by questions with no answers.
  * - `active`: Sort by questions with recent activity (views, answers, votes).
  * - `mostViewed`: Sort by the most viewed questions.
+ * - `saved`: Sort by questions saved by the user.
+ * - `trending`: Sort by questions trending in a specific community.
  */
-export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed';
+export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed' | 'saved' | 'trending';
+
+/**
+ * Represents a vote with a timestamp.
+ * - `username`: The username associated with the vote
+ * - `timestamp`: The datetime associated with the vote
+ */
+export interface Vote {
+  username: string;
+  timestamp: Date;
+}
 
 /**
  * Represents a question.
@@ -25,6 +37,8 @@ export type OrderType = 'newest' | 'unanswered' | 'active' | 'mostViewed';
  * - `upVotes`: An array of usernames who have upvoted the question.
  * - `downVotes`: An array of usernames who have downvoted the question.
  * - `comments`: An array of comments related to the question.
+ * - `useMarkdown`: Boolean indicating whether markdown formatting is enabled.
+ * - `anonymous`: A boolean representing if the question should show up as anonymous.
  */
 export interface Question {
   title: string;
@@ -34,9 +48,11 @@ export interface Question {
   askDateTime: Date;
   answers: Answer[];
   views: string[];
-  upVotes: string[];
-  downVotes: string[];
+  upVotes: Vote[];
+  downVotes: Vote[];
   comments: Comment[];
+  useMarkdown: boolean;
+  anonymous: boolean;
 }
 
 /**
@@ -75,7 +91,7 @@ export type QuestionResponse = DatabaseQuestion | { error: string };
 /**
  * Type representing an object with the vote success message, updated upVotes,
  */
-export type VoteInterface = { msg: string; upVotes: string[]; downVotes: string[] };
+export type VoteInterface = { msg: string; upVotes: Vote[]; downVotes: Vote[] };
 
 /**
  * Type representing possible responses for a vote-related operation.
@@ -89,12 +105,14 @@ export type VoteResponse = VoteInterface | { error: string };
  * - `order`: The order in which to sort the questions.
  * - `search`: The search string used to find questions.
  * - `askedBy`: The username of the user who asked the question.
+ * - `username`: The username of the user making the request.
  */
 export interface FindQuestionRequest extends Request {
   query: {
     order: OrderType;
     search: string;
     askedBy: string;
+    username: string;
   };
 }
 
@@ -124,10 +142,12 @@ export interface AddQuestionRequest extends Request {
  * Interface for the request body when upvoting or downvoting a question.
  * - `qid`: The unique identifier of the question being voted on (body).
  * - `username`: The username of the user casting the vote (body).
+ * - `communityId`: Optional, in case the question was upvoted in a community (to track trending score within that community)
  */
 export interface VoteRequest extends Request {
   body: {
     qid: string;
     username: string;
+    communityId?: string;
   };
 }

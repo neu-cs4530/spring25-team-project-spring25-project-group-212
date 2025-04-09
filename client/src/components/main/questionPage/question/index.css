@@ -4,6 +4,12 @@
   border-top: #000000 1px dashed;
 }
 
+.question_content {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
 .postStats {
   color: #bbbbbb;
   text-align: center;

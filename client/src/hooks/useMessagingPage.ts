@@ -10,12 +10,28 @@ import { addMessage, getMessages } from '../services/messageService';
  * @returns newMessage - The new message to be sent.
  * @returns setNewMessage - The function to set the new message.
  * @returns handleSendMessage - The function to handle sending a new message.
+ * @returns useMarkdown - The state indicating whether to use markdown.
+ * @returns setUseMarkdown - The function to set the use markdown state.
  */
 const useMessagingPage = () => {
   const { user, socket } = useUserContext();
   const [messages, setMessages] = React.useState<DatabaseMessage[]>([]);
   const [newMessage, setNewMessage] = React.useState<string>('');
   const [error, setError] = React.useState<string>('');
+  const [useMarkdown, setUseMarkdown] = React.useState<boolean>(false);
+  const [totalUsers, setTotalUsers] = React.useState<number>(0);
+
+  useEffect(() => {
+    const handleUserCountUpdate = (count: number) => {
+      setTotalUsers(count);
+    };
+
+    socket.on('userCountUpdate', handleUserCountUpdate);
+
+    return () => {
+      socket.off('userCountUpdate', handleUserCountUpdate);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -55,6 +71,7 @@ const useMessagingPage = () => {
       msg: newMessage,
       msgFrom: user.username,
       msgDateTime: new Date(),
+      useMarkdown,
     };
 
     await addMessage(newMsg);
@@ -62,7 +79,16 @@ const useMessagingPage = () => {
     setNewMessage('');
   };
 
-  return { messages, newMessage, setNewMessage, handleSendMessage, error };
+  return {
+    messages,
+    newMessage,
+    setNewMessage,
+    handleSendMessage,
+    error,
+    useMarkdown,
+    setUseMarkdown,
+    totalUsers,
+  };
 };
 
 export default useMessagingPage;

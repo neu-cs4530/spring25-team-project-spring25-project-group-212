@@ -1,5 +1,6 @@
-import React from 'react';
+import { useState } from 'react';
 import './index.css';
+import EmojiPicker from 'emoji-picker-react';
 import useDirectMessage from '../../../hooks/useDirectMessage';
 import ChatsListCard from './chatsListCard';
 import UsersListPage from '../usersListPage';
@@ -22,8 +23,19 @@ const DirectMessage = () => {
     handleChatSelect,
     handleUserSelect,
     handleCreateChat,
+    handleRenameChat,
     error,
+    useMarkdown,
+    setUseMarkdown,
+    totalUsers,
   } = useDirectMessage();
+
+  const [newChatName, setNewChatName] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const handleEmojiSelect = (emojiObject: { emoji: string }) => {
+    setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
+  };
 
   return (
     <>
@@ -53,23 +65,67 @@ const DirectMessage = () => {
         <div className='chat-container'>
           {selectedChat ? (
             <>
-              <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
-              <div className='chat-messages'>
-                {selectedChat.messages.map(message => (
-                  <MessageCard key={String(message._id)} message={message} />
-                ))}
+              <div>
+                <strong>{selectedChat.name}</strong>
               </div>
-              <div className='message-input'>
+              <div className='rename-chat'>
                 <input
                   className='custom-input'
                   type='text'
-                  value={newMessage}
-                  onChange={e => setNewMessage(e.target.value)}
-                  placeholder='Type a message...'
+                  value={newChatName}
+                  onChange={e => setNewChatName(e.target.value)}
+                  placeholder='Enter new chat name'
                 />
-                <button className='custom-button' onClick={handleSendMessage}>
-                  Send
+                <button className='custom-button' onClick={() => handleRenameChat(newChatName)}>
+                  Rename
                 </button>
+                <div className='message-controls'>
+                  <button className='custom-button' onClick={handleSendMessage}>
+                    Send
+                  </button>
+                  <button
+                    type='button'
+                    className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+                    onClick={() => setUseMarkdown(!useMarkdown)}
+                    title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+                    MD
+                  </button>
+                </div>
+              </div>
+              <h2>Chat Participants: {selectedChat.participants.join(', ')}</h2>
+              <div className='chat-messages'>
+                {selectedChat.messages.map(message => (
+                  <MessageCard
+                    key={String(message._id)}
+                    message={message}
+                    totalUsers={totalUsers}
+                  />
+                ))}
+              </div>
+              <div className='message-input-container'>
+                <div className='message-input'>
+                  <input
+                    className='custom-input'
+                    type='text'
+                    value={newMessage}
+                    onChange={e => setNewMessage(e.target.value)}
+                    placeholder='Type a message...'
+                  />
+                  <button
+                    className='emoji-button'
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                    😀
+                  </button>
+                  <button className='custom-button' onClick={handleSendMessage}>
+                    Send
+                  </button>
+                </div>
+
+                {showEmojiPicker && (
+                  <div style={{ height: '200px', overflowY: 'auto' }}>
+                    <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                  </div>
+                )}
               </div>
             </>
           ) : (

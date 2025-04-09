@@ -1,3 +1,4 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/fE-a_qEp)
 The individual and team project for this class are designed to mirror the experiences of a software engineer joining a new development team: you will be “onboarded” to our codebase, make several individual contributions, and then form a team to propose, develop and implement new features. The codebase that we’ll be developing on is a Fake Stack Overflow project (let’s call it HuskyFlow). You will get an opportunity to work with the starter code which provides basic skeleton for the app and then additional features will be proposed and implemented by you! All implementation will take place in the TypeScript programming language, using React for the user interface.
 
 ## Getting Started
@@ -101,3 +102,105 @@ npm run stryker
 ```sh
 node --max-old-space-size=4096 ./node_modules/.bin/stryker run
 ```
+
+# Community Overflow
+---
+
+## 🛠️ Local Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/neu-cs4530/spring25-team-project-spring25-project-group-212
+cd spring25-team-project-spring25-project-group-212
+```
+
+### 2. Install Dependencies
+
+Run the following in the root, `client`, and `server` directories:
+
+```bash
+npm install
+```
+
+### 3. Environment Variables
+
+#### In the `client` directory, create a `.env` file with:
+
+```
+REACT_APP_SERVER_URL=http://localhost:8000
+```
+
+#### In the `server` directory, create a `.env` file with:
+
+```
+MONGODB_URI=mongodb://127.0.0.1:27017
+CLIENT_URL=http://localhost:3000
+PORT=8000
+GEMINI_API_KEY={Add your gemini api key here}
+```
+
+To get a Gemini API key, follow the instructions here: [https://aistudio.google.com/welcome](https://aistudio.google.com/welcome)
+
+---
+
+## ☁️ Using Your Own MongoDB Database
+
+1. Create a new cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2. In **Network Access**, allow access from anywhere.
+3. Connect to your cluster; it should open in MongoDB Compass.
+4. Populate the database:
+
+```bash
+cd server
+npx ts-node populate_db.ts <your_connection_string>/fake_so
+```
+
+---
+
+## 🚀 Deploying to Render
+
+### Server Setup
+
+1. Go to the [Render Dashboard](https://dashboard.render.com/) and create a **new Web Service**.
+2. Select the GitHub project.
+3. Choose:
+   - **Language**: Node
+   - **Branch**: `main`
+   - **Root Directory**: `server`
+   - **Build Command**: `cd ..; npm install; npm run build --workspace=server`
+   - **Start Command**: `npm run start:prod`
+4. Add an environment variable:
+
+```
+MONGODB_URI = <your MongoDB connection string>
+```
+
+5. Deploy the service.
+
+### Client Setup
+
+1. Create a **new Static Site** on Render.
+2. Select the GitHub project.
+3. Choose:
+   - **Branch**: `main`
+   - **Root Directory**: `client`
+   - **Build Command**: `cd ..; npm install; npm run build --workspace=shared; npm run build --workspace=client`
+   - **Publish Directory**: `build`
+4. Add environment variables:
+
+```
+REACT_APP_SERVER_URL = <your deployed server URL>
+CLIENT_URL = <your deployed client URL>
+```
+
+5. Add a **"Rewrite" action**:
+
+```
+Source: /*  
+Destination: /index.html
+```
+
+6. Save and deploy the site.
+
+---

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Flex, Box, Text, Spacer, Button } from '@chakra-ui/react';
+import { FiLogOut, FiUser } from 'react-icons/fi';
 import useHeader from '../../hooks/useHeader';
 import './index.css';
 import useUserContext from '../../hooks/useUserContext';
@@ -10,30 +12,35 @@ import useUserContext from '../../hooks/useUserContext';
  * when they press Enter.
  */
 const Header = () => {
-  const { val, handleInputChange, handleKeyDown, handleSignOut } = useHeader();
+  const { handleSignOut } = useHeader();
   const { user: currentUser } = useUserContext();
   const navigate = useNavigate();
+
   return (
-    <div id='header' className='header'>
-      <div></div>
-      <div className='title'>Fake Stack Overflow</div>
-      <input
-        id='searchBar'
-        placeholder='Search ...'
-        type='text'
-        value={val}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-      />
-      <button onClick={handleSignOut} className='logout-button'>
-        Log out
-      </button>
-      <button
-        className='view-profile-button'
-        onClick={() => navigate(`/user/${currentUser.username}`)}>
-        View Profile
-      </button>
-    </div>
+    <Flex id='header' className='header' align='center' px={4} py={2}>
+      <Box>
+        <Text fontSize='3xl' fontWeight='bold'>
+          Community Overflow
+        </Text>
+      </Box>
+      <Spacer />
+      <Flex gap={2}>
+        <Button
+          aria-label='View Profile'
+          onClick={() => navigate(`/user/${currentUser.username}`)}
+          variant='ghost'
+          colorScheme='whiteAlpha'>
+          <FiUser />
+        </Button>
+        <Button
+          aria-label='Log Out'
+          onClick={handleSignOut}
+          variant='ghost'
+          colorScheme='whiteAlpha'>
+          <FiLogOut />
+        </Button>
+      </Flex>
+    </Flex>
   );
 };
 

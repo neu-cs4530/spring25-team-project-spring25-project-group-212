@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,13 +18,9 @@ const AskQuestionButton = () => {
   };
 
   return (
-    <button
-      className='bluebtn'
-      onClick={() => {
-        handleNewQuestion();
-      }}>
+    <Button colorPalette='blue' size='xl' onClick={handleNewQuestion}>
       Ask a Question
-    </button>
+    </Button>
   );
 };
 

@@ -113,3 +113,39 @@
   font-weight: bold;
   margin-top: 15px;
 }
+
+.rename-chat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rename-chat .custom-input {
+  flex: 1;
+  min-width: 150px;
+}
+
+.message-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.markdown-toggle {
+  background-color: #e0e0e0;
+  color: #666;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.markdown-toggle.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.markdown-toggle:hover {
+  opacity: 0.9;
+}

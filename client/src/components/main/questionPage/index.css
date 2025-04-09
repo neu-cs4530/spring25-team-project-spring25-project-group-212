@@ -5,3 +5,9 @@
 .question_list:last-child {
   border-bottom: #000000 1px dashed;
 }
+
+.email_popup {
+  padding: 20%;
+  background-color: white;
+  opacity: 1; 
+}

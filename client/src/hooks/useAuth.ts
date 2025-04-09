@@ -101,7 +101,8 @@ const useAuth = (authType: 'login' | 'signup') => {
       }
 
       setUser(user);
-      navigate('/home');
+
+      navigate('/home?emailPopup=open');
     } catch (error) {
       setErr((error as Error).message);
     }

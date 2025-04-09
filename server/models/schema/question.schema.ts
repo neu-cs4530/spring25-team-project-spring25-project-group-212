@@ -1,4 +1,9 @@
 import { Schema } from 'mongoose';
+
+const voteSchema: Schema = new Schema({
+  username: { type: String, required: true },
+  timestamp: { type: Date, required: true },
+});
 /**
  * Mongoose schema for the Question collection.
  *
@@ -14,6 +19,7 @@ import { Schema } from 'mongoose';
  * - `upVotes`: An array of usernames that have upvoted the question.
  * - `downVotes`: An array of usernames that have downvoted the question.
  * - `comments`: Comments that have been added to the question by users.
+ * - `useMarkdown`: Boolean indicating whether markdown formatting is enabled for this question.
  */
 const questionSchema: Schema = new Schema(
   {
@@ -32,9 +38,17 @@ const questionSchema: Schema = new Schema(
       type: Date,
     },
     views: [{ type: String }],
-    upVotes: [{ type: String }],
-    downVotes: [{ type: String }],
+    upVotes: { type: [voteSchema], default: [] },
+    downVotes: { type: [voteSchema], default: [] },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+    useMarkdown: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    anonymous: {
+      type: Boolean,
+    },
   },
   { collection: 'Question' },
 );

@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import * as http from 'http';
+import path from 'path';
 
 import answerController from './controllers/answer.controller';
 import questionController from './controllers/question.controller';
@@ -18,6 +19,10 @@ import userController from './controllers/user.controller';
 import messageController from './controllers/message.controller';
 import chatController from './controllers/chat.controller';
 import gameController from './controllers/game.controller';
+import communityController from './controllers/community.controller';
+import notificationController from './controllers/notification.controller';
+import emailController from './controllers/email.controller';
+import llmController from './controllers/llm.controller';
 
 dotenv.config();
 
@@ -82,6 +87,35 @@ app.use('/messaging', messageController(socket));
 app.use('/user', userController(socket));
 app.use('/chat', chatController(socket));
 app.use('/games', gameController(socket));
+app.use('/community', communityController(socket));
+app.use('/notification', notificationController(socket));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Export the app instance
 export { app, server, startServer };
+
+const cron = require('node-cron');
+const { handleSendDigestEmail } = emailController();
+
+const { runLLMCommunityTagging } = llmController();
+
+if (process.env.NODE_ENV !== 'test') {
+  cron.schedule('0 8 * * *', async () => {
+    console.log('Running a task every minute');
+    await handleSendDigestEmail();
+  });
+
+  cron.schedule(
+    '0 0 * * *',
+    async () => {
+      try {
+        await runLLMCommunityTagging();
+      } catch (err) {
+        console.error('LLM community tagging job failed:', err);
+      }
+    },
+    {
+      timezone: 'America/New_York',
+    },
+  );
+}

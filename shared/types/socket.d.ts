@@ -1,9 +1,11 @@
 import { PopulatedDatabaseAnswer } from './answer';
 import { PopulatedDatabaseChat } from './chat';
 import { DatabaseMessage } from './message';
-import { PopulatedDatabaseQuestion } from './question';
+import { PopulatedDatabaseQuestion, Vote } from './question';
 import { SafeDatabaseUser } from './user';
 import { BaseMove, GameInstance, GameInstanceID, GameMove, GameState } from './game';
+import { PopulatedDatabaseCommunity } from './community';
+import { DatabaseNotification } from './notification';
 
 /**
  * Payload for an answer update event.
@@ -41,8 +43,8 @@ export interface GameErrorPayload {
  */
 export interface VoteUpdatePayload {
   qid: string;
-  upVotes: string[];
-  downVotes: string[];
+  upVotes: Vote[];
+  downVotes: Vote[];
 }
 
 /**
@@ -52,7 +54,7 @@ export interface VoteUpdatePayload {
  */
 export interface ChatUpdatePayload {
   chat: PopulatedDatabaseChat;
-  type: 'created' | 'newMessage' | 'newParticipant';
+  type: 'created' | 'newMessage' | 'newParticipant' | 'renamed';
 }
 
 /**
@@ -93,6 +95,17 @@ export interface GameMovePayload {
   move: GameMove<BaseMove>;
 }
 
+export interface ReactionUpdatePayload {
+  messageId: string;
+  reactions?: { emoji: string; userId: string }[];
+}
+
+export interface ReadReceiptPayload {
+  messageId: string;
+  seenBy: string[];
+  seenAt: string;
+}
+
 /**
  * Interface representing the events the client can emit to the server.
  * - `makeMove`: Client can emit a move in the game.
@@ -100,6 +113,8 @@ export interface GameMovePayload {
  * - `leaveGame`: Client can leave a game.
  * - `joinChat`: Client can join a chat.
  * - `leaveChat`: Client can leave a chat.
+ * - `joinUser`: Client can join a user.
+ * - `leaveUser`: Client can leave a user.
  */
 export interface ClientToServerEvents {
   makeMove: (move: GameMovePayload) => void;
@@ -107,6 +122,60 @@ export interface ClientToServerEvents {
   leaveGame: (gameID: string) => void;
   joinChat: (chatID: string) => void;
   leaveChat: (chatID: string | undefined) => void;
+  userTyping: (communityID: string, username: string) => void;
+  userStoppedTyping: (communityID: string, username: string) => void;
+  joinCommunity: (communityID: string, username: string) => void;
+  leaveCommunity: (communityID: string, username: string) => void;
+  joinUser: (userId: string) => void;
+  leaveUser: (userId: string) => void;
+  messageSeen: (payload: ReadReceiptPayload) => void;
+  requestUserCount: () => void;
+  onlineUser: (communityID: string, username: string) => void;
+  imageSent: (communityID: string) => void;
+}
+
+/**
+ * Interface representing the payload for a community update event.
+ * - `community`: The updated community object.
+ * - `type`: The type of modification (`'created'`, `'deleted'`, or `'updated'`).
+ */
+export interface CommunityUpdatePayload {
+  community: PopulatedDatabaseCommunity;
+  type: 'created' | 'deleted' | 'updated';
+}
+
+/**
+ * Payload for a notification update event.
+ * - `notification`: The updated notification object.
+ */
+export interface NotificationUpdatePayload {
+  notification: DatabaseNotification;
+}
+
+/**
+ * Payload for a message restored event.
+ * - `message`: The restored message.
+ */
+export interface MessageRestoredPayload {
+  updatedMessage?: DatabaseMessage;
+}
+
+/**
+ * Payload for a message deleted event.
+ * - `messageId`: The ID of the deleted message.
+ * - `deletedMessage`: The string of the deleted message.
+ */
+export interface MessageDeletedPayload {
+  messageId: string;
+  deletedMessage?: string;
+}
+
+/**
+ * Payload for an online users update event.
+ * - `users`: An array of usernames representing the online users.
+ */
+export interface OnlineUsersUpdatePayload {
+  users: string[];
 }
 
 /**
@@ -121,6 +190,12 @@ export interface ClientToServerEvents {
  * - `gameUpdate`: Server sends updated game state.
  * - `gameError`: Server sends error message related to game operation.
  * - `chatUpdate`: Server sends updated chat.
+ * - `typingUpdate`: Server sends updated typing users.
+ * - `communityUpdate`: Server sends updated community.
+ * - `notificationUpdate`: Server sends updated notification.
+ * - `readReceiptUpdate`: Server sends updated read receipt for a message.
+ * - `userCountUpdate`: Server sends updated user count.
+ * - `onlineUsersUpdate`: Server sends the list of online users.
  */
 export interface ServerToClientEvents {
   questionUpdate: (question: PopulatedDatabaseQuestion) => void;
@@ -129,8 +204,17 @@ export interface ServerToClientEvents {
   voteUpdate: (vote: VoteUpdatePayload) => void;
   commentUpdate: (comment: CommentUpdatePayload) => void;
   messageUpdate: (message: MessageUpdatePayload) => void;
+  messageRestored: (payload: MessageRestoredPayload) => void;
+  messageDeleted: (payload: MessageDeletedPayload) => void;
   userUpdate: (user: UserUpdatePayload) => void;
   gameUpdate: (game: GameUpdatePayload) => void;
   gameError: (error: GameErrorPayload) => void;
   chatUpdate: (chat: ChatUpdatePayload) => void;
+  reactionUpdate: (payload: ReactionUpdatePayload) => void;
+  typingUpdate: (typingUsers: string[]) => void;
+  communityUpdate: (community: CommunityUpdatePayload) => void;
+  notificationUpdate: (notification: NotificationUpdatePayload) => void;
+  readReceiptUpdate: (payload: ReadReceiptPayload) => void;
+  userCountUpdate: (count: number) => void;
+  onlineUsersUpdate: (payload: OnlineUsersUpdatePayload) => void;
 }

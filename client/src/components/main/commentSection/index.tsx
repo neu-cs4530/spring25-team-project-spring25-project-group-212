@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@chakra-ui/react';
 import { getMetaData } from '../../../tool';
 import { Comment, DatabaseComment } from '../../../types/types';
 import './index.css';
@@ -78,9 +79,9 @@ const CommentSection = ({ comments, handleAddComment }: CommentSectionProps) => 
                 onChange={e => setText(e.target.value)}
                 className='comment-textarea'
               />
-              <button className='add-comment-button' onClick={handleAddCommentClick}>
+              <Button colorPalette='blue' onClick={handleAddCommentClick}>
                 Add Comment
-              </button>
+              </Button>
             </div>
             {textErr && <small className='error'>{textErr}</small>}
           </div>

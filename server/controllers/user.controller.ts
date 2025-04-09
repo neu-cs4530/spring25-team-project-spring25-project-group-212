@@ -6,6 +6,8 @@ import {
   UserByUsernameRequest,
   FakeSOSocket,
   UpdateBiographyRequest,
+  UpdateSavedQuestionsRequest,
+  UpdateEmailRequest,
 } from '../types/types';
 import {
   deleteUserByUsername,
@@ -15,6 +17,17 @@ import {
   saveUser,
   updateUser,
 } from '../services/user.service';
+
+/**
+ * Validates that the request body contains all required fields to update an email and that the email is in a valid format.
+ * @param req The incoming request containing user data.
+ * @returns `true` if the body contains valid user fields and email is valid; otherwise, `false`.
+ */
+export const isUpdateEmailBodyValid = (req: UpdateEmailRequest): boolean => {
+  if (req.body === undefined || req.body.username === undefined) return false;
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return regex.test(req.body.email) || req.body.email === '';
+};
 
 const userController = (socket: FakeSOSocket) => {
   const router: Router = express.Router();
@@ -60,6 +73,7 @@ const userController = (socket: FakeSOSocket) => {
       ...requestUser,
       dateJoined: new Date(),
       biography: requestUser.biography ?? '',
+      savedQuestions: [],
     };
 
     try {
@@ -236,6 +250,83 @@ const userController = (socket: FakeSOSocket) => {
     }
   };
 
+  /**
+   * Toggles save question for a user.
+   * @param req The request containing the username and questionId in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
+  const toggleSaveQuestion = async (
+    req: UpdateSavedQuestionsRequest,
+    res: Response,
+  ): Promise<void> => {
+    try {
+      const { username, qid } = req.body;
+
+      const user = await getUserByUsername(username);
+
+      if ('error' in user) {
+        throw Error(user.error);
+      }
+
+      let updatedUser;
+      if (user.savedQuestions.some(q => q === qid)) {
+        updatedUser = await updateUser(username, {
+          savedQuestions: user.savedQuestions.filter(q => q !== qid),
+        });
+      } else {
+        updatedUser = await updateUser(username, {
+          savedQuestions: [...user.savedQuestions, qid],
+        });
+      }
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating user biography: ${error}`);
+    }
+  };
+
+  /**
+   * Updates a user's email.
+   * @param req The request containing the username and email in the body.
+   * @param res The response, either confirming the update or returning an error.
+   * @returns A promise resolving to void.
+   */
+  const updateEmail = async (req: UpdateEmailRequest, res: Response): Promise<void> => {
+    try {
+      if (!isUpdateEmailBodyValid(req)) {
+        res.status(400).send('Invalid user body');
+        return;
+      }
+
+      const { username, email } = req.body;
+
+      const updatedUser = await updateUser(username, { email });
+
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+
+      socket.emit('userUpdate', {
+        user: updatedUser,
+        type: 'updated',
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error when updating user email: ${error}`);
+    }
+  };
+
   // Define routes for the user-related operations.
   router.post('/signup', createUser);
   router.post('/login', userLogin);
@@ -244,6 +335,8 @@ const userController = (socket: FakeSOSocket) => {
   router.get('/getUsers', getUsers);
   router.delete('/deleteUser/:username', deleteUser);
   router.patch('/updateBiography', updateBiography);
+  router.patch('/toggleSaveQuestion', toggleSaveQuestion);
+  router.patch('/updateEmail', updateEmail);
   return router;
 };
 

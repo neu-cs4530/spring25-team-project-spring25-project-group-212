@@ -7,7 +7,16 @@ import MessageCard from '../messageCard';
  * and provides functionality to send and receive messages.
  */
 const MessagingPage = () => {
-  const { messages, newMessage, setNewMessage, handleSendMessage, error } = useMessagingPage();
+  const {
+    messages,
+    newMessage,
+    setNewMessage,
+    handleSendMessage,
+    error,
+    useMarkdown,
+    setUseMarkdown,
+    totalUsers,
+  } = useMessagingPage();
 
   return (
     <div className='chat-room'>
@@ -16,7 +25,7 @@ const MessagingPage = () => {
       </div>
       <div className='chat-messages'>
         {messages.map(message => (
-          <MessageCard key={String(message._id)} message={message} />
+          <MessageCard key={String(message._id)} message={message} totalUsers={totalUsers} />
         ))}
       </div>
       <div className='message-input'>
@@ -27,9 +36,18 @@ const MessagingPage = () => {
           onChange={e => setNewMessage(e.target.value)}
         />
         <div className='message-actions'>
-          <button type='button' className='send-button' onClick={handleSendMessage}>
-            Send
-          </button>
+          <div className='message-controls'>
+            <button type='button' className='send-button' onClick={handleSendMessage}>
+              Send
+            </button>
+            <button
+              type='button'
+              className={`markdown-toggle ${useMarkdown ? 'active' : ''}`}
+              onClick={() => setUseMarkdown(!useMarkdown)}
+              title={useMarkdown ? 'Disable Markdown' : 'Enable Markdown'}>
+              MD
+            </button>
+          </div>
           {error && <span className='error-message'>{error}</span>}
         </div>
       </div>
