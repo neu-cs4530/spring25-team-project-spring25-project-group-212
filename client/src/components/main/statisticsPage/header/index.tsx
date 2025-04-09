@@ -5,7 +5,7 @@
 const StatisticsHeader = () => (
   <div>
     <div className='space_between right_padding'>
-      <div className='bold_title'>Statistics</div>
+      <div className='bold_title'>User Statistics</div>
     </div>
   </div>
 );
