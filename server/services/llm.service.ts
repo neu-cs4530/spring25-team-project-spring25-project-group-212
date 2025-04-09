@@ -5,6 +5,14 @@ const API_KEY = process.env.GEMINI_API_KEY;
 const API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
+/**
+ * Uses the Gemini LLM to determine the most appropriate community for a given question.
+ * If no suitable match is found, it returns "Uncategorized".
+ *
+ * @param question - The question to categorize, including its title and text.
+ * @param communities - A list of available communities with their names and descriptions.
+ * @returns {Promise<string>} - The name of the best-matching community, or "Uncategorized".
+ */
 const assignCommunityFromLLM = async (
   question: Question,
   communities: Community[],

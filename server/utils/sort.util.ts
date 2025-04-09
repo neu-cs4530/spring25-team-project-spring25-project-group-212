@@ -96,6 +96,15 @@ export const sortQuestionsBySaved = (
 ): PopulatedDatabaseQuestion[] =>
   sortQuestionsByNewest(qlist).filter(q => slist.includes(q._id.toString()));
 
+/**
+ * Calculates a trending score for a question based on recent activity.
+ * The score is determined by the number of recent comments, answers, and votes,
+ * with different weights assigned to each type of interaction.
+ *
+ * @param {PopulatedDatabaseQuestion} question - The question to score.
+ * @param {number} timeWindow - The time window (in ms) to consider for recent activity.
+ * @returns {number} - The computed trending score.
+ */
 const calculateTrendingScore = (
   question: PopulatedDatabaseQuestion,
   timeWindow: number,
@@ -124,6 +133,14 @@ const calculateTrendingScore = (
   );
 };
 
+/**
+ * Sorts a list of questions by their trending score in descending order.
+ * Recent activity such as comments, answers, and upvotes are weighted to determine the score.
+ *
+ * @param {PopulatedDatabaseQuestion[]} qlist - The list of questions to sort.
+ * @param {number} [timeWindow=172800000] - The time window in milliseconds (default is 2 days).
+ * @returns {PopulatedDatabaseQuestion[]} - The questions sorted by trending score.
+ */
 export const sortQuestionsByTrending = (
   qlist: PopulatedDatabaseQuestion[],
   timeWindow: number = 2 * 24 * 60 * 60 * 1000, // last 2 days
@@ -136,6 +153,15 @@ export const sortQuestionsByTrending = (
   return questionsWithScores.map(q => q.ques);
 };
 
+/**
+ * Sorts a list of questions from a specific community by their trending score in descending order.
+ * Recent activity such as comments, answers, and votes are considered.
+ *
+ * @param {PopulatedDatabaseQuestion[]} qlist - The list of questions to sort.
+ * @param {string} communityId - The ID of the community the questions belong to.
+ * @param {number} [timeWindow=172800000] - The time window in milliseconds (default is 2 days).
+ * @returns {PopulatedDatabaseQuestion[]} - The questions sorted by trending score.
+ */
 export const sortQuestionsByTrendingInCommunity = (
   qlist: PopulatedDatabaseQuestion[],
   communityId: string,

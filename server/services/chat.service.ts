@@ -18,7 +18,6 @@ import { saveMessage } from './message.service';
  */
 export const saveChat = async (chatPayload: Chat): Promise<ChatResponse> => {
   try {
-    // Save the messages provided in the arugment to the database
     const messageIds: ObjectId[] = await Promise.all(
       chatPayload.messages.map(async msg => {
         const savedMessage: MessageResponse = await saveMessage(msg);
@@ -31,7 +30,6 @@ export const saveChat = async (chatPayload: Chat): Promise<ChatResponse> => {
       }),
     );
 
-    // Create the chat using participant IDs and saved message IDs
     return await ChatModel.create({
       name: chatPayload.name || '',
       participants: chatPayload.participants,
@@ -118,18 +116,16 @@ export const addParticipantToChat = async (
   userId: string,
 ): Promise<ChatResponse> => {
   try {
-    // Validate if user exists
     const userExists: DatabaseUser | null = await UserModel.findById(userId);
 
     if (!userExists) {
       throw new Error('User does not exist.');
     }
 
-    // Add participant if not already in the chat
     const updatedChat: DatabaseChat | null = await ChatModel.findOneAndUpdate(
       { _id: chatId, participants: { $ne: userId } },
       { $push: { participants: userId } },
-      { new: true }, // Return the updated document
+      { new: true },
     );
 
     if (!updatedChat) {
