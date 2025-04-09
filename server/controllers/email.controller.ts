@@ -3,7 +3,19 @@ import { getQuestionsByOrder } from '../services/question.service';
 import { getUsersList } from '../services/user.service';
 import { PopulatedDatabaseQuestion } from '../types/types';
 
+/**
+ * Creates and configures the email controller.
+ * Provides methods for sending emails, retrieving email addresses, generating email content, and handling daily digest emails.
+ */
 const emailController = () => {
+  /**
+   * Sends an email to the specified recipients.
+   *
+   * @param {string[]} receivers - The list of email addresses to send the email to.
+   * @param {string} subject - The subject of the email.
+   * @param {string} contents - The HTML content of the email.
+   * @returns {Promise<void>} - A promise that resolves when the email is sent.
+   */
   const send = async (receivers: string[], subject: string, contents: string) => {
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -23,6 +35,12 @@ const emailController = () => {
     });
   };
 
+  /**
+   * Retrieves the list of email addresses of all users.
+   *
+   * @returns {Promise<string[]>} - A promise that resolves to an array of email addresses.
+   * If an error occurs, an empty array is returned.
+   */
   const getEmails = async () => {
     try {
       const users = await getUsersList();
@@ -39,6 +57,13 @@ const emailController = () => {
     }
   };
 
+  /**
+   * Finds the top questions based on the specified category (most voted or most viewed).
+   *
+   * @param {PopulatedDatabaseQuestion[]} questions - The list of questions to evaluate.
+   * @param {'voted' | 'viewed'} category - The category to evaluate ('voted' for top voted, 'viewed' for most viewed).
+   * @returns {PopulatedDatabaseQuestion[]} - An array of the top questions in the specified category.
+   */
   const topQuestionFinder = (
     questions: PopulatedDatabaseQuestion[],
     category: 'voted' | 'viewed',
@@ -64,6 +89,12 @@ const emailController = () => {
     return topQuestions;
   };
 
+  /**
+   * Generates the HTML content for the daily digest email.
+   *
+   * @returns {Promise<string>} - A promise that resolves to the HTML content of the email.
+   * If an error occurs, a generic error message is returned.
+   */
   const getContents = async () => {
     try {
       const allQuestions = await getQuestionsByOrder('newest');
@@ -120,6 +151,11 @@ const emailController = () => {
     }
   };
 
+  /**
+   * Handles sending the daily digest email to all users.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the email is sent.
+   */
   const handleSendDigestEmail = async () => {
     await send(
       await getEmails(),
