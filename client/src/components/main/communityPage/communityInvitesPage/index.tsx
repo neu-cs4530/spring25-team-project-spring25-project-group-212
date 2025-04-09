@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Spinner, Center, Box, Text } from '@chakra-ui/react';
 import { SafeDatabaseUser } from '@fake-stack-overflow/shared';
 import useCommunityInvitesPage from '../../../../hooks/useCommunityInvitesPage';
@@ -46,13 +46,13 @@ const CommunityInvitesPage = () => {
           {userList.length === 0 ? (
             <Center height='100vh'>
               {showNoUsersMessage ? (
-            <Text fontSize='lg' color='gray.500'>
-              No users to invite.
-            </Text>
-          ) : (
-            <Spinner size='xl' />
+                <Text fontSize='lg' color='gray.500'>
+                  No users to invite.
+                </Text>
+              ) : (
+                <Spinner size='xl' />
               )}
-        </Center>
+            </Center>
           ) : (
             <div>
               <CommunityNavBar />
